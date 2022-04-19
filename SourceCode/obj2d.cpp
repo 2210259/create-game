@@ -18,19 +18,19 @@ OBJ2D::OBJ2D(Renderer* renderer,
     Collider* collider,
     BG* bg,
     ActorComponent* actorComponent,
-    ItemComponent* itemComponent)
+    WeaponComponent* weaponComponent)
     : renderer_(renderer)
     , collider_(collider)
     , bg_(bg)
     , actorComponent_(actorComponent)
-    , itemComponent_(itemComponent)
+    , weaponComponent_(weaponComponent)
 {
     transform_ = new Transform;
     if (transform_)         transform_->setParent(this);
     if (renderer_)          renderer_->setParent(this);
     if (collider_)          collider_->setParent(this);
     if (actorComponent_)    actorComponent_->setParent(this);
-    if (itemComponent_)     itemComponent_->setParent(this);
+    if (weaponComponent_)   weaponComponent_->setParent(this);
 }
 
 //--------------------------------------------------------------
@@ -42,7 +42,7 @@ OBJ2D::~OBJ2D()
     safe_delete(renderer_);
     safe_delete(collider_);
     safe_delete(actorComponent_);
-    safe_delete(itemComponent_);
+    safe_delete(weaponComponent_);
 }
 
 //--------------------------------------------------------------
@@ -126,7 +126,7 @@ void Collider::draw(const VECTOR2& scrollPos) {
     {
         const VECTOR2 pos{ attackBox_.left - scrollPos.x, attackBox_.top - scrollPos.y };
         const VECTOR2 size{ attackBox_.right - attackBox_.left, attackBox_.bottom - attackBox_.top };
-        primitive::rect(pos, size, { 0, 0 }, 0, { 1, 0, 0, 0.5f });
+        primitive::rect(pos, size, { 0, 0 }, 0, { 1, 0, 0, 1 });
     }
     // primitive::rect(
     //     VECTOR2(attackBox_.left, attackBox_.top) - scrollPos,

@@ -77,8 +77,8 @@ void Game::update()
         // プレイヤーマネージャの初期設定
         obj2dManager()->init();
 
-        // アイテムをセット
-        // setItem(obj2dManager(), bg());
+        // 敵をセット
+        // setEnemy(obj2dManager(), bg());
 
         // プレイヤーを追加
         player_ = obj2dManager()->add(
@@ -89,7 +89,7 @@ void Game::update()
                 new ActorComponent,
                 nullptr
             ),
-            &walkPlayerBehavior, VECTOR2(300, 400));
+            &idlePlayerBehavior, VECTOR2(640, 700));
 
         // BGの初期設定
         bg()->init(player_);
@@ -107,10 +107,16 @@ void Game::update()
 
         judge();
 
+        if (TRG(0) & PAD_SELECT)
+        {
+            changeScene(Score::instance());
+            break;
+        }
         timer_++;
 
         break;
     }
+    debug::setString("stageNo:%d", Game::instance()->stageNo());
 }
 
 //--------------------------------------------------------------
@@ -119,10 +125,9 @@ void Game::update()
 void Game::draw()
 {
     // 画面クリア
-    GameLib::clear(VECTOR4(0, 0, 0, 1));
+    GameLib::clear(VECTOR4(0.2f, 0.2f, 0.2f, 1));
 
-    bg()->drawTerrain();  // 地形の描画
-    bg()->drawObject();   // オブジェクトの描画
+    bg()->drawBack();   // オブジェクトの描画
 
     // オブジェクトの描画
     obj2dManager()->draw(bg()->getScrollPos());
@@ -146,6 +151,7 @@ void Game::judge()
             if (src->behavior()->attackType() != dst->behavior()->getType())
                 continue;
 
+            // 当たり判定を行う
             if (src->collider()->hitcheck(dst))
             {
                 // 当たった場合の処理

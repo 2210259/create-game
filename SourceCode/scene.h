@@ -26,6 +26,7 @@ public:
     virtual void update() = 0;  // 更新処理
     virtual void draw() = 0;    // 描画処理
 
+    int state() { return state_; }; // ゲッター
     void changeScene(Scene* scene) { nextScene_ = scene; }   // シーン変更処理
     Scene* getScene() const { return nextScene_; }           // nextSceneのゲッター
 };

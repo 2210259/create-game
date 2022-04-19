@@ -1,7 +1,7 @@
 //******************************************************************************
 //
 //
-//      ƒ^ƒCƒgƒ‹‰æ–Ê
+//      scene_title.cpp
 //
 //
 //******************************************************************************
@@ -84,7 +84,7 @@ void Title::update() {
 
         fadeOutTimer_ += 0.01167f;
         if (fadeOutTimer_ >= 1.0f) {
-            changeScene(Select::instance());
+            changeScene(Game::instance());
             break;
         }
         break;
