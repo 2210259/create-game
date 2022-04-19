@@ -1,0 +1,13 @@
+#include "all.h"
+
+void Audio::init()
+{
+    //ì«Ç›çûÇ›
+
+}
+
+void Audio::deinit()
+{
+    //ÉNÉäÉA
+    GameLib::music::clear();
+}
