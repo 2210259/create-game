@@ -1,63 +1,55 @@
 #pragma once
+//----------------------------------------//
+//         　　Player.h    　    　       //
+//----------------------------------------//
 
-//******************************************************************************
-//
-//
-//      Player.h
-//
-//
-//******************************************************************************
-
-//==============================================================================
-//
-//      移動アルゴリズム
-//
-//==============================================================================
+//----------------------------------------//
+//         　　移動アルゴリズム           //
+//----------------------------------------//
 
 class BasePlayerBehavior : public ActorBehavior
 {
 private:
     void moveX(OBJ2D* obj) override;
     OBJ_TYPE getType() const override { return OBJ_TYPE::PLAYER; }
-    OBJ_TYPE attackType() const override { return OBJ_TYPE::ENEMY; }
-    void hit(OBJ2D*, OBJ2D*) override {}
-    bool isAlive(OBJ2D*) override;
+    OBJ_TYPE attackType() const override { return OBJ_TYPE::MAX; }
+    void hit(OBJ2D*, OBJ2D*) {};
 };
 
-class WalkPlayerBehavior : public BasePlayerBehavior
+class IdlePlayerBehavior : public BasePlayerBehavior
 {
 public:
-    WalkPlayerBehavior();
-private:
-    void moveY(OBJ2D* obj) override;
-    void jump(OBJ2D* obj) override;
-    void hashigo(OBJ2D* obj) override;
-    void attack(OBJ2D* obj) override;
-};
-EXTERN WalkPlayerBehavior walkPlayerBehavior;
+    IdlePlayerBehavior();
 
-class HashigoPlayerBehavior : public BasePlayerBehavior
+public:
+    // メンバ変数
+    VECTOR2 attackPosition{};
+private:
+    // void moveX(OBJ2D* obj) override;
+    void playerAnimetion(OBJ2D* obj) override;
+    void modechange(OBJ2D* obj) override;
+};
+EXTERN IdlePlayerBehavior idlePlayerBehavior;
+
+class AttackPlayerBehavior :public IdlePlayerBehavior
 {
 public:
-    HashigoPlayerBehavior();
+    AttackPlayerBehavior();
 private:
-    void moveY(OBJ2D* obj) override;
-    void jump(OBJ2D*) override {}
-    void hashigo(OBJ2D* obj) override;
+    OBJ_TYPE getType() const override { return OBJ_TYPE::PLAYER; }
+    OBJ_TYPE attackType() const override { return OBJ_TYPE::MAX; }
+    // void moveX(OBJ2D* obj) override;
+    void modechange(OBJ2D* obj) override;
+    void playerAnimetion(OBJ2D* obj) override;
+    void hit(OBJ2D* src, OBJ2D* dst) {};
 };
-EXTERN HashigoPlayerBehavior hashigoPlayerBehavior;
+EXTERN AttackPlayerBehavior attackPlayerBehavior;
 
-//==============================================================================
-//
-//      消去アルゴリズム
-//
-//==============================================================================
+//----------------------------------------//
+//         　　消去アルゴリズム           //
+//----------------------------------------//
 
-// 消去アルゴリズム
 class ErasePlayer : public Eraser
 {
     void erase(OBJ2D* obj);
 };
-
-// 消去アルゴリズムの実体
-//EXTERN ErasePlayer      erasePlayer;

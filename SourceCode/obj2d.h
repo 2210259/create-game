@@ -19,11 +19,11 @@ class OBJ2D;
 //==============================================================================
 
 enum class OBJ_TYPE {
-    PLAYER,
-    ITEM,
-    ENEMY,
-    WEAPON,
-    MAX,
+    PLAYER, // 0
+    ENEMY,  // 1
+    WEAPON, // 2
+
+    MAX,    // 3
 };
 
 // 移動アルゴリズムクラス（抽象クラス）
@@ -34,6 +34,7 @@ public:
     virtual OBJ_TYPE getType() const = 0;
     virtual OBJ_TYPE attackType() const = 0;
     virtual void hit(OBJ2D* src, OBJ2D* dst) = 0;
+    virtual void hit2(OBJ2D* src, OBJ2D* dst) {};
 };
 
 // 消去アルゴリズムクラス（抽象クラス）
@@ -51,9 +52,9 @@ public:
 //
 //==============================================================================
 
-//----------------------------------------------------------------------
-//  Component
-//----------------------------------------------------------------------
+//----------------------------------------
+//            Component
+//----------------------------------------
 class Component
 {
 private:
@@ -67,50 +68,53 @@ public:
     void setParent(OBJ2D* parent) { parent_ = parent; }
 };
 
-//----------------------------------------------------------------------
-//  Transform
-//----------------------------------------------------------------------
+//----------------------------------------
+//            Transform
+//----------------------------------------
 class Transform : public Component
 {
 private:
     VECTOR2 position_ = {};
+    VECTOR2 orgPos_;    // 最初に出現した位置を保持しておく
     VECTOR2 scale_ = {};
     float rotation_ = 0;
     VECTOR2 speed_ = {};
 public:
     Transform()
         :position_()
+        , orgPos_()
         , scale_(VECTOR2(1, 1))
         , rotation_(0.0f)
         , speed_() {}
 
-    // getter
+    // ゲッター
     const VECTOR2& position() const { return position_; }
+    const VECTOR2& orgPos() const { return orgPos_; }
     const VECTOR2& scale() const { return scale_; }
     const float rotation() const { return rotation_; }
     const VECTOR2& speed() const { return speed_; }
 
-    // setter
+    // セッター
     void setPosition(const VECTOR2& position) { position_ = position; }
     void setPositionX(float x) { position_.x = x; }
     void setPositionY(float y) { position_.y = y; }
     void addPositionX(float x) { position_.x += x; }
     void addPositionY(float y) { position_.y += y; }
+
+    void setOrgPos(const VECTOR2& pos) { orgPos_ = pos; }
     void setScale(const VECTOR2& s) { scale_ = s; }
     void setRotation(float r) { rotation_ = r; }
+
     void setSpeed(const VECTOR2& s) { speed_ = s; }
     void setSpeedX(float x) { speed_.x = x; }
     void setSpeedY(float y) { speed_.y = y; }
     void addSpeedX(float x) { speed_.x += x; }
     void addSpeedY(float y) { speed_.y += y; }
-
-    void update() { position_ += speed_; }
-    void rotate(float r) { rotation_ += r; }
 };
 
-//----------------------------------------------------------------------
-//  Renderer
-//----------------------------------------------------------------------
+//----------------------------------------
+//            Renderer
+//----------------------------------------
 class Renderer : public Component
 {
 private:
@@ -118,197 +122,180 @@ private:
     VECTOR4 color_ = {};
     GameLib::Anime anime_ = {};
     GameLib::AnimeData* animeData_ = nullptr;
+    int animetimer_ = 0;
 public:
     Renderer()
         :data_(nullptr)
         , color_(VECTOR4(1, 1, 1, 1))
         , anime_()
-        , animeData_(nullptr) {}
+        , animeData_(nullptr) 
+        , animetimer_(0)
+    {}
+
+    // ゲッター
     void draw(const VECTOR2& scrollPos);
     bool animeUpdate();
+    VECTOR4 color() { return color_; }
+    int animeTimer() { return animetimer_; }
 
     GameLib::AnimeData* animeData() const { return animeData_; }
 
+    // セッター
     void setData(GameLib::SpriteData* d) { data_ = d; }
     void setColor(const VECTOR4& c) { color_ = c; }
+    void setAnime(const GameLib::Anime& a) { anime_ = a; }
     void setAnimeData(GameLib::AnimeData* adata) { animeData_ = adata; }
+
+    //アニメーションタイマー加算
+    void countAnimeTime() { ++animetimer_; }
+
+    //アニメーションタイマーリセット
+    void animeTimeReset() { animetimer_ = 0; }
 };
 
-//----------------------------------------------------------------------
-//  Collider
-//----------------------------------------------------------------------
 class Collider : public Component
 {
 private:
     VECTOR2 size_ = {};
+
     GameLib::fRECT hitBox_;
     GameLib::fRECT attackBox_;
+
     bool judgeFlag_;
     bool isDrawHitRect_;
 public:
     Collider()
         :size_()
+        , judgeFlag_(false)
+        , isDrawHitRect_(false)
         , hitBox_()
         , attackBox_()
-        , judgeFlag_(false)
-        , isDrawHitRect_(false) {}
-    void draw(const VECTOR2& scrollPos) override;
-    void calcHitBox(const GameLib::fRECT& rc);
-    void calcAttackBox(const GameLib::fRECT& rc);
-    bool hitCheck(Collider* coll);
-    bool hitCheck(OBJ2D* obj);
+    {}
 
+    void draw(const VECTOR2&) override;
+    void calcHitBox(const GameLib::fRECT& rc); // ヒットボックス計算
+    void calcAttackBox(const GameLib::fRECT& rc);
+
+    bool hitcheck(Collider* coll);
+    bool hitcheck(OBJ2D* obj);
+
+    //ゲッター
     const VECTOR2& size() const { return size_; }
     bool judgeFlag() const { return judgeFlag_; }
+    GameLib::fRECT hitbox() const { return hitBox_; }
 
+    // セッター
     void setSize(const VECTOR2& s) { size_ = s; }
     void setJudgeFlag(bool b) { judgeFlag_ = b; }
     void setIsDrawHitRect(bool b) { isDrawHitRect_ = b; }
 };
 
-//----------------------------------------------------------------------
-//  ActorComponent
-//----------------------------------------------------------------------
+//----------------------------------------
+//            ActorComponent
+//----------------------------------------
 class ActorComponent : public Component
 {
 private:
-    int jumpTimer_;
-    int attackTimer_;
-    int hp_;
-    bool onGround_;
-    bool kabeFlag_;
-    bool gakeFlag_;
-    bool xFlip_;
-    bool hasSword_;
+    int  hp_;           // 体力
+    bool moveFlag_;     // 餌が敵の感知範囲に入ったかどうかのフラグ
+    bool xFlip_;        // X座標の向き
+    bool hitFlag_;      // 餌が敵に当たった時かどうかのフラグ
+    int  deadTimer_;    // 敵の消滅時間
+    
 public:
+    enum DIRECTON              // 向き
+    {
+        UP,                    // 上
+        DOWN,                  // 下
+        LEFT,                  // 左
+        RIGHT,                 // 右
+    } direction_;
+    
     ActorComponent()
-        :jumpTimer_(0)
-        , attackTimer_(0)
-        , hp_(1)
-        , onGround_(false)
-        , kabeFlag_(false)
-        , gakeFlag_(false)
+        : hp_(0)
+        , moveFlag_(false)
         , xFlip_(false)
-        , hasSword_(false) {}
-
-    // getter
-    int jumpTimer() const { return jumpTimer_; }
-    int attackTimer() const { return attackTimer_; }
+        , hitFlag_(false)
+        , deadTimer_(0)
+        ,direction_(RIGHT)
+    {}
+    // ゲッター
     int hp() const { return hp_; }
-    bool onGround() const { return onGround_; }
-    bool hasSword() const { return hasSword_; }
-    bool kabeFlag() const { return kabeFlag_; }
-    bool gakeFlag() const { return gakeFlag_; }
+    bool moveFlag() const { return moveFlag_; }
+    bool hitFlag() const { return hitFlag_; }
     bool xFlip() const { return xFlip_; }
+    int direction() const { return direction_; }
+    int deadTimer() const { return deadTimer_; }
 
-    // setter
-    void setJumpTimer(int j) { jumpTimer_ = j; }
-    void addJumpTimer(int a) { jumpTimer_ += a; }
-    void setAttackTimer(int a) { attackTimer_ = a; }
-    void subAttackTimer(int a) { attackTimer_ = std::max(attackTimer_ - a, 0); }
-    void setHp(int h) { hp_ = h; }
-    void addHp(int h) { hp_ += h; }
-    void subHp(int h) { hp_ -= h; hp_ = std::max(hp_, 0); }
-    void setOnGround(bool b) { onGround_ = b; }
-    void setHasSword(bool b) { hasSword_ = b; }
-    void setKabeFlag(bool b) { kabeFlag_ = b; }
-    void setGakeFlag(bool b) { gakeFlag_ = b; }
-    void setXFlip(bool b) { xFlip_ = b; }
+    // セッター
+    void setHP(int h) { hp_ = h; }
+    void setmoveFlag(bool f) { moveFlag_ = f; }
+    void sethitFlag(bool f) { hitFlag_ = f; }
+    void setDirection(ActorComponent::DIRECTON d) { direction_ = d; }
+    void setFlip(bool b) { xFlip_ = b; }
+    void setDeadTimer(int t) { deadTimer_ = t; }
 
+    // X座標の向きを反転
     void flip() { xFlip_ = !xFlip_; }
-    bool isAlive() const { return hp_ > 0; }
+
+    // HPを減らす
+    void damage() { --hp_; }
 };
 
-//----------------------------------------------------------------------
-//  ItemComponent
-//----------------------------------------------------------------------
-class ItemComponent : public Component
-{
-private:
-    VECTOR2 orgPos_;    // 最初に出現した位置を保持しておく
-    float angle_;       // サインカーブなどで揺らす場合などのための汎用の変数（自由に使ってよい）
-public:
-    ItemComponent()
-        :orgPos_()
-        , angle_(0) {}
-
-    float angle() const { return angle_; }
-    const VECTOR2& orgPos() const { return orgPos_; }
-
-    void setOrgPos(const VECTOR2& pos) { orgPos_ = pos; }
-    void setAngle(float a) { angle_ = a; }
-    void addAngle(float a) { angle_ += a; }
-};
-
-#if 5
-//******************************************************************************
-// HACK:05 WeaponComponentの作成
-//------------------------------------------------------------------------------
-/*
-確認）
-    下記でWeaponComponentの作成をしています。
-    メンバ関数の確認もしておくこと。
-*/
-//******************************************************************************
-#endif
-//HACK_05
-//----------------------------------------------------------------------
-//  WeaponComponent
-//----------------------------------------------------------------------
+//----------------------------------------
+//            WeaponComponent
+//----------------------------------------
 class WeaponComponent : public Component
 {
 private:
-    OBJ2D* owner_;  // この武器の持ち主
-    bool xFlip_;    // true … 左向き / false … 右向き
+    OBJ2D* owner_;      // 持ち主
+    bool xFlip_;        // true左　false右向き
+    bool weaponFlag_;   // 餌があるかどうかのフラグ
+    bool removeLFlag_;
+
 public:
     WeaponComponent()
         :owner_(nullptr)
-        , xFlip_(false) {}
+        , xFlip_(false)
+        , weaponFlag_(false)
+        , removeLFlag_(false)
+    {}
 
-    // getter
+    //ゲッター
     OBJ2D* owner() const { return owner_; }
     bool xFlip() const { return xFlip_; }
+    bool weaponFlag() const { return weaponFlag_; }
+    bool removeLFlag() const { return removeLFlag_; }
 
-    // setter
-    void setOwner(OBJ2D* o) { owner_ = o; }
+    //セッター
+    void setOwner(OBJ2D* o) { if (!o) owner_ = o; }
     void setXFlip(bool b) { xFlip_ = b; }
+    void setweaponFlag(bool f) { weaponFlag_ = f; }
+    void setRemoveLFlag(bool f) { removeLFlag_ = f; }
 
-    // 武器の持ち主のxFlip_を武器に設定する
-    void copyOwnerXFlip();
+    // void copyOwnerXFlip();
 };
-
-//----------------------------------------------------------------------
-//  OBJ2D
-//----------------------------------------------------------------------
+//----------------------------------------
+//            OBJ2D
+//----------------------------------------
 class BG;
 class OBJ2D
 {
 private:
     // 基本的なメンバ
-    int         state_;
-    int         timer_;
-    Behavior*   behavior_;
-    Eraser*     eraser_;
+    int       state_    = 0; //状態
+    int       timer_    = 0; //タイマー
+    int       enemyState_;   // 敵の状態
+    Behavior* behavior_ = nullptr;
+    Eraser*   eraser_ = nullptr;
 
-    BG* bg_;
+    BG* bg_ = nullptr;
 
     // 各コンポーネント
     Transform* transform_;
     Renderer* renderer_;
     Collider* collider_;
     ActorComponent* actorComponent_;
-    ItemComponent* itemComponent_;
-#if 6
-//******************************************************************************
-// HACK:06 WeaponComponentをOBJ2Dに追加
-//------------------------------------------------------------------------------
-/*
-確認）
-    OBJ2DにWeaponComponentを追加しています。
-    コンストラクタ、イニシャライザ、ゲッターなども用意が必要です。
-*/
-//******************************************************************************
-#endif
     WeaponComponent* weaponComponent_;
 
 public:
@@ -317,32 +304,36 @@ public:
         Collider* collider,
         BG* bg,
         ActorComponent* actorComponent,
-        ItemComponent* itemComponent, 
         WeaponComponent* weaponComponent
     );
     ~OBJ2D();
     void move();    // 移動
+
 
     // コンポーネントのゲッター
     Transform* transform() const { return transform_; }
     Renderer* renderer() const { return renderer_; }
     Collider* collider() const { return collider_; }
     ActorComponent* actorComponent() const { return actorComponent_; }
-    ItemComponent* itemComponent() const { return itemComponent_; }
     WeaponComponent* weaponComponent() const { return weaponComponent_; }
 
-    // getter
+    // ゲッター
     int state() const { return state_; }
     int timer() const { return timer_; }
+    int enemyState() const { return enemyState_; }
     Behavior* behavior() const { return behavior_; }
     BG* bg() const { return bg_; }
 
-    // setter
+    // セッター
     void setState(int s) { state_ = s; }
+    void setEnemyState(int s) { enemyState_ = s; }
     void setBehavior(Behavior* behavior) { behavior_ = behavior; }
     void setEraser(Eraser* eraser) { eraser_ = eraser; }
 
+    // インクリメント
     void nextState() { state_++; }
+    void nextEnemyState() { enemyState_++; }
+
     void remove() { setBehavior(nullptr); }
 };
 
@@ -369,3 +360,4 @@ public:
 };
 
 //******************************************************************************
+

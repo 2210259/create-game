@@ -58,10 +58,24 @@ void Game::update()
         return;
     }
 
+     debug::setString("isPaused_%d", isPaused_);
+
     // ポーズ処理
-    // if (TRG(0) & PAD_START)
-    //     isPaused_ = !isPaused_;         // 0コンのスタートボタンが押されたらポーズ状態が反転
-    // if (isPaused_) return;              // この時点でポーズ中ならリターン
+     if (TRG(0) & PAD_TRG1)    isPaused_ = !isPaused_;         // 0コンのスタートボタンが押されたらポーズ状態が反転
+
+     if (isPaused_)
+     {
+         if (TRG(0) & PAD_START)
+         {
+             changeScene(Title::instance());
+         }
+
+         if (TRG(0) & PAD_SELECT)
+         {
+             changeScene(Game::instance());
+         }
+         return;              // この時点でポーズ中ならリターン
+     }
 
     switch (state_)
     {
@@ -78,7 +92,7 @@ void Game::update()
         obj2dManager()->init();
 
         // 敵をセット
-        // setEnemy(obj2dManager(), bg());
+        setEnemy(obj2dManager(), bg());
 
         // プレイヤーを追加
         player_ = obj2dManager()->add(
@@ -117,6 +131,7 @@ void Game::update()
         break;
     }
     debug::setString("stageNo:%d", Game::instance()->stageNo());
+    debug::setString("GameTimer:%d", timer_);
 }
 
 //--------------------------------------------------------------
@@ -131,6 +146,31 @@ void Game::draw()
 
     // オブジェクトの描画
     obj2dManager()->draw(bg()->getScrollPos());
+
+    if (isPaused_)
+    {
+        GameLib::font::textOut(4, "PAUSE",
+            { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 4) },
+            VECTOR2(5.0f, 5.0f),
+            { 1.0f, 1.0f, 1.0f, 1.0f },
+            GameLib::TEXT_ALIGN::UPPER_MIDDLE
+        );
+
+        GameLib::font::textOut(4, "ENTER : Return To Title",
+            { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 2) },
+            VECTOR2(2.0f, 2.0f),
+            { 1.0f, 1.0f, 1.0f, 1.0f },
+            GameLib::TEXT_ALIGN::UPPER_MIDDLE
+        );
+
+        GameLib::font::textOut(4, "BACKSPACE : RESTART",
+            { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 2 + 100) },
+            VECTOR2(2.0f, 2.0f),
+            { 1.0f, 1.0f, 1.0f, 1.0f },
+            GameLib::TEXT_ALIGN::UPPER_MIDDLE
+        );
+
+    }
 }
 
 //--------------------------------------------------------------
@@ -142,12 +182,15 @@ void Game::judge()
     {
         if (!src->behavior()) continue;
         if (!src->collider()->judgeFlag()) continue;
+
         for (auto& dst : *obj2dManager()->getList())
         {
-            if (src == dst) continue;
+            if (!dst->behavior()) break;
+            if (src == dst) continue;   // 自分自身はとばす
             if (!dst->behavior()) continue;
             if (!dst->collider()->judgeFlag()) continue;
 
+            // srcの攻撃タイプとdstのタイプが一致しないものをとばす
             if (src->behavior()->attackType() != dst->behavior()->getType())
                 continue;
 

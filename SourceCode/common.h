@@ -1,18 +1,11 @@
 #pragma once
-
-//******************************************************************************
-//
-//
-//      common
-//
-//
-//******************************************************************************
-
-//------< インクルード >---------------------------------------------------------
 #include <DirectXMath.h>
 
-//------< 関数ポインタ >---------------------------------------------------------
-extern float (*ToRadian)(float); // 角度をラジアンに
-extern float (*ToDegree)(float); // ラジアンを角度に
+// 角度用
+static float(* const ToRadian)(float) = DirectX::XMConvertToRadians;  // 角度をラジアンに
+static float(* const ToDegree)(float) = DirectX::XMConvertToDegrees;  // ラジアンを角度に
+static constexpr float PI = DirectX::XM_PI;
 
-extern constexpr float PI = DirectX::XM_PI;
+// スプライトデータ設定用
+#define SPRITE_CENTER(texno,left,top,width,height)	{ (texno),(left),(top),(width),(height),(width)/2,(height)/2 }  // 画像の真ん中が中心
+#define SPRITE_BOTTOM(texno,left,top,width,height)	{ (texno),(left),(top),(width),(height),(width)/2,(height)   }  // 画像の足元が中心

@@ -45,7 +45,7 @@ Scene* Scene::execute()
 
         // デバッグ文字列の描画
         debug::display(1, 1, 1, 1, 1);
-        //debug::setString("GP2_12 SAMPLE");
+        //debug::setString("GP2_10 SAMPLE");
 
         // 画面フリップ
         GameLib::present(1, 0);
@@ -73,11 +73,11 @@ void SceneManager::execute(Scene* scene)
 {
     using namespace GameLib;
 
-    bool isFullScreen = false;	// フルスクリーンにするならtrueに変える
+    bool isFullScreen = true;	// フルスクリーンにするならtrueに変える
                                 //（Releaseモードのみ）
 
     // ゲームライブラリの初期化処理
-    GameLib::init(L"ゲームプログラミングⅡ", BG::WINDOW_W, BG::WINDOW_H, isFullScreen);
+    GameLib::init(L"前期ゲーム制作_1回目", BG::WINDOW_W, BG::WINDOW_H, isFullScreen);
 
 #ifndef _DEBUG
     ShowCursor(!isFullScreen);	// フルスクリーン時はカーソルを消す

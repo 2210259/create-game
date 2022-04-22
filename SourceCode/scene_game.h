@@ -38,7 +38,7 @@ public:
     bool enemyXFlip() { return enemyXFilip_; }
 
     // セッター
-    void setPlayerModeFlag(int f) { playerModeFlag_ = f; }
+    void setPlayerModeFlag(bool f) { playerModeFlag_ = f; }
     void setStageNo(int n) { stageNo_ = n; }
     void setEnemyXFilip(bool f) { enemyXFilip_ = f; }
 
