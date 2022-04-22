@@ -9,13 +9,15 @@
 //------< インクルード >----------------------------------------------------------
 #include "all.h"
 
-int APIENTRY WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
-
-    // SceneManagerを定義
+//--------------------------------------------------------------
+//  WinMain（エントリポイント）
+//--------------------------------------------------------------
+int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
+{
     SceneManager sceneManager;
-
-    // タイトルシーン開始 / /TODO:
-    sceneManager.execute(Game::instance());
+    sceneManager.execute(Title::instance());
 
     return 0;
 }
+
+//******************************************************************************

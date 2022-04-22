@@ -18,18 +18,25 @@ OBJ2D::OBJ2D(Renderer* renderer,
     Collider* collider,
     BG* bg,
     ActorComponent* actorComponent,
+    ItemComponent* itemComponent, 
     WeaponComponent* weaponComponent)
-    : renderer_(renderer)
+    :state_(0)
+    , timer_(0)
+    , behavior_(nullptr)
+    , eraser_(nullptr)
+    , transform_(new Transform)
+    , renderer_(renderer)
     , collider_(collider)
     , bg_(bg)
     , actorComponent_(actorComponent)
+    , itemComponent_(itemComponent)
     , weaponComponent_(weaponComponent)
 {
-    transform_ = new Transform;
     if (transform_)         transform_->setParent(this);
     if (renderer_)          renderer_->setParent(this);
     if (collider_)          collider_->setParent(this);
     if (actorComponent_)    actorComponent_->setParent(this);
+    if (itemComponent_)     itemComponent_->setParent(this);
     if (weaponComponent_)   weaponComponent_->setParent(this);
 }
 
@@ -39,10 +46,11 @@ OBJ2D::OBJ2D(Renderer* renderer,
 OBJ2D::~OBJ2D()
 {
     safe_delete(transform_);
-    safe_delete(renderer_);
-    safe_delete(collider_);
-    safe_delete(actorComponent_);
     safe_delete(weaponComponent_);
+    safe_delete(itemComponent_);
+    safe_delete(actorComponent_);
+    safe_delete(collider_);
+    safe_delete(renderer_);
 }
 
 //--------------------------------------------------------------
@@ -56,9 +64,9 @@ void OBJ2D::move()
     timer_++;
 }
 
-//--------------------------------------------------------------
-//  描画
-//--------------------------------------------------------------
+//----------------------------------------------------------------------
+//  Renderer
+//----------------------------------------------------------------------
 void Renderer::draw(const VECTOR2& scrollPos)
 {
     Transform* transform = parent()->transform();
@@ -108,65 +116,80 @@ bool Renderer::animeUpdate()
     return false;
 }
 
-void Collider::draw(const VECTOR2& scrollPos) {
-    // 食らいBOX
+//----------------------------------------------------------------------
+//  Collider
+//----------------------------------------------------------------------
+void Collider::draw(const VECTOR2& scrollPos)
+{
+    VECTOR2 size, pos;
+    VECTOR4 color;
+
+    // 攻撃Box
+    size = {
+        attackBox_.right - attackBox_.left,
+        attackBox_.bottom - attackBox_.top
+    };
+    if (size.x * size.y != 0.0f)
     {
-        const VECTOR2 pos{ hitBox_.left - scrollPos.x, hitBox_.top - scrollPos.y };
-        const VECTOR2 size{ hitBox_.right - hitBox_.left, hitBox_.bottom - hitBox_.top };
-        primitive::rect(pos, size, { 0, 0 }, 0, { 0, 0, 1, 0.5f });
+        pos = VECTOR2(attackBox_.left, attackBox_.top) - scrollPos;
+        color = { 1, 0, 0, 0.5f };
+        primitive::rect(pos, size, { 0, 0 }, 0, color);
     }
-    // primitive::rect(
-    //     VECTOR2(hitBox_.left, hitBox_.top) - scrollPos,
-    //     { hitBox_.right - hitBox_.left, hitBox_.bottom - hitBox_.top },
-    //     { 0, 0 }, 0.0f,
-    //     { 0.0f, 0.0f, 1.0f, 0.5f }
-    // );
 
-    // 攻撃BOX
+    // 食らいBox
+    size = {
+        hitBox_.right - hitBox_.left,
+        hitBox_.bottom - hitBox_.top
+    };
+    if (size.x * size.y != 0.0f)
     {
-        const VECTOR2 pos{ attackBox_.left - scrollPos.x, attackBox_.top - scrollPos.y };
-        const VECTOR2 size{ attackBox_.right - attackBox_.left, attackBox_.bottom - attackBox_.top };
-        primitive::rect(pos, size, { 0, 0 }, 0, { 1, 0, 0, 1 });
+        pos = VECTOR2(hitBox_.left, hitBox_.top) - scrollPos;
+        color = { 0, 0, 1, 0.5f };
+        primitive::rect(pos, size, { 0, 0 }, 0, color);
     }
-    // primitive::rect(
-    //     VECTOR2(attackBox_.left, attackBox_.top) - scrollPos,
-    //     { attackBox_.right - attackBox_.left, attackBox_.bottom - attackBox_.top },
-    //     { 0, 0}, 0.0f,
-    //     { 1.0f, 0.0f, 0.0f, 0.5f }
-    // );
-};
+}
 
-// Componentの親（OBJ2D）のTransform_のposition_の座標に、引数のrcの値を足したもの
-// をhitBox_及び、attackBox_に設定する。
-
-void Collider::calcHitBox(const GameLib::fRECT& rc) {
-    const VECTOR2* pos = &parent()->transform()->position();
-
+void Collider::calcHitBox(const GameLib::fRECT& rc)
+{
+    Transform* t = parent()->transform();
     hitBox_ = {
-        pos->x + rc.left,  pos->y + rc.top,
-        pos->x + rc.right, pos->y + rc.bottom,
+        t->position().x + rc.left,  t->position().y + rc.top,
+        t->position().x + rc.right, t->position().y + rc.bottom
     };
 }
-void Collider::calcAttackBox(const GameLib::fRECT& rc) {
-    const VECTOR2* pos = &parent()->transform()->position();
 
+void Collider::calcAttackBox(const GameLib::fRECT& rc)
+{
+    Transform* t = parent()->transform();
     attackBox_ = {
-        pos->x + rc.left,   pos->y + rc.top,
-        pos->x + rc.right,  pos->y + rc.bottom,
+        t->position().x + rc.left,  t->position().y + rc.top,
+        t->position().x + rc.right, t->position().y + rc.bottom
     };
 }
 
-bool Collider::hitcheck(Collider* coll) {
-    // this->attackBox_とcoll->hitBox_があたっているかどうか
-    if (this->attackBox_.right < coll->hitBox_.left) return false;
-    if (this->attackBox_.left > coll->hitBox_.right) return false;
-    if (this->attackBox_.bottom < coll->hitBox_.top) return false;
-    if (this->attackBox_.top > coll->hitBox_.bottom) return false;
+bool Collider::hitCheck(Collider* coll)
+{
+    if (attackBox_.right < coll->hitBox_.left) return false;
+    if (attackBox_.left > coll->hitBox_.right) return false;
+    if (attackBox_.bottom < coll->hitBox_.top) return false;
+    if (attackBox_.top > coll->hitBox_.bottom) return false;
+
     return true;
 }
 
-bool Collider::hitcheck(OBJ2D* obj) {
-    return hitcheck(obj->collider());
+bool Collider::hitCheck(OBJ2D* obj)
+{
+    return hitCheck(obj->collider());
+}
+
+//----------------------------------------------------------------------
+//  WeaponComponent
+//----------------------------------------------------------------------
+void WeaponComponent::copyOwnerXFlip()
+{
+    // 武器の持ち主のxFlip_をコピーしてくる。
+    if (owner_ && owner_->actorComponent())
+        xFlip_ = owner_->actorComponent()->xFlip();
 }
 
 //******************************************************************************
@@ -218,6 +241,10 @@ void OBJ2DManager::update()
         }
         else
         {
+            // プレイヤーが落ちて消えた場合、Gameクラスのplayerにnullptrを代入する
+            if (Game::instance()->player() == *iter)
+                Game::instance()->setPlayer(nullptr);
+
             safe_delete(*iter);
             iter = objList_.erase(iter);
         }
@@ -229,21 +256,17 @@ void OBJ2DManager::update()
 //--------------------------------------------------------------
 void OBJ2DManager::draw(const VECTOR2& scrollPos)
 {
-    constexpr float LIMIT = 256.0f; // これ以上スクリーンから出ているものはとばす
-    int cnt = 0;
+    const float LIMIT = 256.0f; // これ以上スクリーンから出ているものはとばす
+
     for (auto& obj : objList_)
     {
         const VECTOR2 pos = obj->transform()->position() - scrollPos;
         if (pos.x < -LIMIT || pos.x > window::getWidth() + LIMIT ||
-            pos.y < -LIMIT || pos.y > window::getHeight() + LIMIT)
-        {
-            cnt++;
-            continue;
-        }
+            pos.y < -LIMIT || pos.y > window::getHeight() + LIMIT) continue;
+
         obj->renderer()->draw(scrollPos);
         obj->collider()->draw(scrollPos);
     }
-    debug::setString("cnt:%d", cnt);
 }
 
 //--------------------------------------------------------------

@@ -1,248 +1,313 @@
 #include "all.h"
 using namespace GameLib;
 
-// 敵配置用データ
-struct ENEMY_SET1
-{
-    int         area;
-    int         enemyType;
-    VECTOR2     pos;
-} enemySet[] = {
-    {  1,  0, {  640, 100 } }, // 0
-    {  1,  0, {   10,  10 } }, // 1
-    // {  1,  0, {  0,   0 } }, // 2
-    // {  1,  0, {  0,   0 } }, // 3
-    // {  1,  0, {  0,   0 } }, // 4
-    // {  1,  0, {  0,   0 } }, // 5
-    // {  1,  0, {  0,   0 } }, // 6
-    { -1, -1, { -1,  -1 } },
-};
-
 void setEnemy(OBJ2DManager* obj2dManager, BG* bg)
 {
+    char st1_enemy[BG::CHIP_NUM_Y][BG::CHIP_NUM_X] = {
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1,0,-1,-1,-1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,1,1,1,1,1,1,1,-1,1,
+        -1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,
+        -1,-1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,
+        1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+    };
+
     BaseEnemyBehavior* enemyBehavior[] = {
         &enemy0Behavior,
         &enemy1Behavior,
-        &enemy2Behavior,
+        nullptr,
+        nullptr,
+        nullptr,
+        &enemy5Behavior,
     };
 
-    for (int i = 0; enemySet[i].enemyType >= 0; ++i)
+    for (int y = 0; y < BG::CHIP_NUM_Y; y++)
     {
-        // ステージとエリアが異なればコンティニュー
-        if (enemySet[i].area != Game::instance()->stageNo()) continue;
-        OBJ2D* enemy = new OBJ2D(
-            new Renderer,
-            new Collider,
-            bg,
-            new ActorComponent,
-            nullptr
-        );
-        obj2dManager->add(enemy,
-            enemyBehavior[enemySet[i].enemyType],
-            enemySet[i].pos
-        );
+        for (int x = 0; x < BG::CHIP_NUM_X; x++)
+        {
+            const char chip = st1_enemy[y][x];
+            if (chip < 0) continue;
+            assert(chip < ARRAYSIZE(enemyBehavior));
+            if (!enemyBehavior[chip]) continue;
+
+            const VECTOR2 pos = {
+                x * BG::CHIP_SIZE_F + BG::CHIP_SIZE_F * 0.5f,
+                y * BG::CHIP_SIZE_F + BG::CHIP_SIZE_F,
+            };
+            OBJ2D* enemy = new OBJ2D(
+                new Renderer,
+                new Collider,
+                bg,
+                new ActorComponent,
+                nullptr, 
+                nullptr
+            );
+            obj2dManager->add(enemy, enemyBehavior[chip], pos);
+        }
     }
 }
 
-//----------------------------------------//
-//        敵のアニメーション              //
-//----------------------------------------//
 namespace
-{
+{   // ※このデータは長いので、Visual Studioの機能で閉じられるようにnamespaceを分けている
     //------< Enemy0のアニメデータ >---------------------------------------------
-    // 左方向
+    //上方向
+    AnimeData animeEnemy0_Up[] = {
+        { &sprEnemy0_Up0, 10 },
+        { &sprEnemy0_Up1, 10 },
+        { &sprEnemy0_Up2, 10 },
+        { &sprEnemy0_Up1, 10 },
+        { nullptr, -1 },// 終了フラグ
+    };
+    //右方向
+    AnimeData animeEnemy0_Right[] = {
+        { &sprEnemy0_Right0, 10 },
+        { &sprEnemy0_Right1, 10 },
+        { &sprEnemy0_Right2, 10 },
+        { &sprEnemy0_Right1, 10 },
+        { nullptr, -1 },// 終了フラグ
+    };
+    //下方向
+    AnimeData animeEnemy0_Down[] = {
+        { &sprEnemy0_Down0, 10 },
+        { &sprEnemy0_Down1, 10 },
+        { &sprEnemy0_Down2, 10 },
+        { &sprEnemy0_Down1, 10 },
+        { nullptr, -1 },// 終了フラグ
+    };
+    //左方向
     AnimeData animeEnemy0_Left[] = {
         { &sprEnemy0_Left0, 10 },
+        { &sprEnemy0_Left1, 10 },
+        { &sprEnemy0_Left2, 10 },
         { &sprEnemy0_Left1, 10 },
         { nullptr, -1 },// 終了フラグ
     };
 
-    // 右方向
-    AnimeData animeEnemy0_Right[] = {
-        { &sprEnemy0_Right0, 10 },
-        { &sprEnemy0_Right1, 10 },
-        { nullptr, -1 },// 終了フラグ
-    };
-
-    // 死亡時
-    AnimeData animeEnemy0_Dead[] = {
-        { &sprEnemy0_Dead0, 20 },
-        { &sprEnemy0_Dead1, 10 },
-        { &sprEnemy0_Dead2, 10 },
-        { nullptr, -1 },// 終了フラグ
-    };
-
     //------< Enemy1のアニメデータ >---------------------------------------------
-    // 左方向
+    //上方向
+    AnimeData animeEnemy1_Up[] = {
+        { &sprEnemy1_Up0, 10 },
+        { &sprEnemy1_Up1, 10 },
+        { &sprEnemy1_Up2, 10 },
+        { &sprEnemy1_Up1, 10 },
+        { nullptr, -1 },// 終了フラグ
+    };
+    //右方向
+    AnimeData animeEnemy1_Right[] = {
+        { &sprEnemy1_Right0, 10 },
+        { &sprEnemy1_Right1, 10 },
+        { &sprEnemy1_Right2, 10 },
+        { &sprEnemy1_Right1, 10 },
+        { nullptr, -1 },// 終了フラグ
+    };
+    //下方向
+    AnimeData animeEnemy1_Down[] = {
+        { &sprEnemy1_Down0, 10 },
+        { &sprEnemy1_Down1, 10 },
+        { &sprEnemy1_Down2, 10 },
+        { &sprEnemy1_Down1, 10 },
+        { nullptr, -1 },// 終了フラグ
+    };
+    //左方向
     AnimeData animeEnemy1_Left[] = {
         { &sprEnemy1_Left0, 10 },
+        { &sprEnemy1_Left1, 10 },
+        { &sprEnemy1_Left2, 10 },
         { &sprEnemy1_Left1, 10 },
         { nullptr, -1 },// 終了フラグ
     };
 
-    // 右方向
-    AnimeData animeEnemy1_Right[] = {
-        { &sprEnemy1_Right0, 10 },
-        { &sprEnemy1_Right1, 10 },
+    //------< Enemy5のアニメデータ >---------------------------------------------
+    //上方向
+    AnimeData animeEnemy5_Up[] = {
+        { &sprEnemy5_Up0, 10 },
+        { &sprEnemy5_Up1, 10 },
+        { &sprEnemy5_Up2, 10 },
+        { &sprEnemy5_Up1, 10 },
         { nullptr, -1 },// 終了フラグ
     };
-
-    // 死亡時
-    AnimeData animeEnemy1_Dead[] = {
-        { &sprEnemy1_Dead0, 20 },
-        { &sprEnemy1_Dead1, 10 },
-        { &sprEnemy1_Dead2, 10 },
+    //右方向
+    AnimeData animeEnemy5_Right[] = {
+        { &sprEnemy5_Right0, 10 },
+        { &sprEnemy5_Right1, 10 },
+        { &sprEnemy5_Right2, 10 },
+        { &sprEnemy5_Right1, 10 },
         { nullptr, -1 },// 終了フラグ
     };
-
-    //------< Enemy2のアニメデータ >---------------------------------------------
-    // 左方向
-    AnimeData animeEnemy2_Left[] = {
-        { &sprEnemy2_Left0, 10 },
-        { &sprEnemy2_Left1, 10 },
+    //下方向
+    AnimeData animeEnemy5_Down[] = {
+        { &sprEnemy5_Down0, 10 },
+        { &sprEnemy5_Down1, 10 },
+        { &sprEnemy5_Down2, 10 },
+        { &sprEnemy5_Down1, 10 },
         { nullptr, -1 },// 終了フラグ
     };
-
-    // 右方向
-    AnimeData animeEnemy2_Right[] = {
-        { &sprEnemy2_Right0, 10 },
-        { &sprEnemy2_Right1, 10 },
-        { nullptr, -1 },// 終了フラグ
-    };
-
-    // 死亡時
-    AnimeData animeEnemy2_Dead[] = {
-        { &sprEnemy2_Dead0, 20 },
-        { &sprEnemy2_Dead1, 10 },
-        { &sprEnemy2_Dead2, 10 },
+    //左方向
+    AnimeData animeEnemy5_Left[] = {
+        { &sprEnemy5_Left0, 10 },
+        { &sprEnemy5_Left1, 10 },
+        { &sprEnemy5_Left2, 10 },
+        { &sprEnemy5_Left1, 10 },
         { nullptr, -1 },// 終了フラグ
     };
 }
 
-// 敵のY座標の速度（重力）
 void BaseEnemyBehavior::moveY(OBJ2D* obj)
 {
     Transform* transform = obj->transform();
-    //Game::instance()->setEnemyPos(transform->position());
+
     // 速度に加速度を加える
-    // transform->addSpeedY( getParam()->ACCEL_Y );
+    transform->addSpeedY( getParam()->ACCEL_Y );
 
-    // ActorBehavior::moveY(obj);
-}
-
-void BaseEnemyBehavior::enemyAnime(OBJ2D* obj)
-{
-    switch (obj->enemyState())
-    {
-    case 0:
-        //////// 初期設定 ////////
-        break;
-    }
-}
-
-// TODO:moveEnemy
-// 餌に敵が近づく
-void BaseEnemyBehavior::moveEnemy(OBJ2D* obj)
-{
-    Transform* transform = obj->transform();
-    Renderer* renderer = obj->renderer();
-    Collider* collider = obj->collider();
-
-    switch (obj->enemyState())
-    {
-    case 0:
-        //////// 初期設定 ////////
-        transform->setScale(getParam()->SCALE);
-        collider->setSize(getParam()->SIZE);
-        collider->setJudgeFlag(true);
-        renderer->setColor(VECTOR4(1.0f, 1.0f, 1.0f, 0.0f));
-        transform->setOrgPos(transform->position());
-        obj->actorComponent()->setDeadTimer(getParam()->DEAD_TIMER); // 死亡時タイマーの初期設定
-        // Sounds_ = false;
-
-        obj->nextEnemyState(); // enemyState++
-        break;
-
-    case 1:
-        //////// 待機中 ////////
-
-        break;
-    }
-
-    ActorBehavior::moveX(obj);
     ActorBehavior::moveY(obj);
 }
 
-// 敵が餌に食いついたときの処理
-void BaseEnemyBehavior::hit(OBJ2D* src, OBJ2D* dst)
+void BaseEnemyBehavior::moveX(OBJ2D* obj)
 {
+    float dist = 0.0f;
+    if (obj->actorComponent()->xFlip())
+    {
+        // 左向きの場合
+        obj->transform()->addSpeedX( -getParam()->ACCEL_X );
+        obj->renderer()->setAnimeData( getParam()->ANIME_LEFT );
+        dist = -obj->collider()->size().x;
+    }
+    else
+    {
+        // 右向きの場合
+        obj->transform()->addSpeedX( getParam()->ACCEL_X );
+        obj->renderer()->setAnimeData( getParam()->ANIME_RIGHT );
+        dist = obj->collider()->size().x;
+    }
 
+    ActorBehavior::moveX(obj);
+
+    if (obj->actorComponent()->onGround())
+    {
+        VECTOR2 pos = obj->transform()->position() + VECTOR2(dist, 1);  // 進行方向先端の１ドット下
+        if (obj->bg()->getTerrainAttr(pos) == BG::TR_ATTR::TR_NONE)
+            obj->actorComponent()->setGakeFlag(true);
+    }
 }
 
-// 餌が敵の感知範囲に入った時の処理
-void BaseEnemyBehavior::hit2(OBJ2D* src, OBJ2D* dst)
+bool BaseEnemyBehavior::isAlive(OBJ2D* obj) 
 {
+    if (obj->actorComponent()->isAlive() == false)
+    {
+        obj->remove();
+        return false;
+    }
+    return true;
+}
+
+void BaseEnemyBehavior::turn(OBJ2D* obj)
+{
+    if (obj->actorComponent()->kabeFlag())
+    {
+        // 壁フラグがtrueの場合
+        obj->transform()->setSpeedX( 0.0f );
+        obj->actorComponent()->flip();
+        obj->actorComponent()->setKabeFlag(false);
+        obj->actorComponent()->setGakeFlag(false);
+    }
+    else
+    {
+        // 壁フラグがfalseの場合
+        gakeTurn(obj);
+    }
+}
+
+void BaseEnemyBehavior::gakeTurn(OBJ2D* obj)
+{
+    if (obj->actorComponent()->gakeFlag())
+    {
+        obj->transform()->setSpeedX( 0.0f );
+        obj->actorComponent()->flip();
+        obj->actorComponent()->setGakeFlag( false );
+    }
 }
 
 Enemy0Behavior::Enemy0Behavior()
 {
-    param_.ANIME_LEFT = animeEnemy0_Left;
+    param_.ANIME_UP = animeEnemy0_Up;
     param_.ANIME_RIGHT = animeEnemy0_Right;
-    param_.ANIME_DEAD = animeEnemy0_Dead;
+    param_.ANIME_DOWN = animeEnemy0_Down;
+    param_.ANIME_LEFT = animeEnemy0_Left;
 
-    param_.SIZE = VECTOR2(600 / 2, 600 / 2);
+    param_.SIZE = VECTOR2(48 / 2, 128 - 16);
     param_.SCALE = VECTOR2(1, 1);
-    param_.ATTACK_BOX = { -300 / 4, -300 / 4, 300 / 4, 300 / 4 }; // 敵が餌に食いつく範囲
-    param_.ATTACK_BOX2 = { -300, -300, 300, 300 };                 // 感知範囲
-    param_.HIT_BOX = { -300 / 4, -300 / 4, 300 / 4, 300 / 4 }; // 敵がプレイヤーに回収される
+    param_.HIT_BOX = { -16, -100, 16, 0 };
 
     param_.ACCEL_X = 0.4f;
-    param_.ACCEL_Y = 0.4f;
+    param_.ACCEL_Y = 2.0f;
     param_.SPEED_X_MAX = 1.0f;
-    param_.SPEED_Y_MAX = 1.0f;
-    // param_.HP           = 10;
-    param_.HIT_TIMER = 90;
-    param_.DEAD_TIMER = 40;
+    param_.SPEED_Y_MAX = 12.0f;
+    param_.HP = 1;
 }
 
 Enemy1Behavior::Enemy1Behavior()
 {
-    param_.ANIME_LEFT = animeEnemy1_Left;
+    param_.ANIME_UP = animeEnemy1_Up;
     param_.ANIME_RIGHT = animeEnemy1_Right;
-    param_.ANIME_DEAD = animeEnemy1_Dead;
+    param_.ANIME_DOWN = animeEnemy1_Down;
+    param_.ANIME_LEFT = animeEnemy1_Left;
 
-    param_.SIZE = VECTOR2(740 / 2, 380 / 2);
+    param_.SIZE = VECTOR2(48 / 2, 128 - 16);
     param_.SCALE = VECTOR2(1, 1);
-    param_.ATTACK_BOX = { -370 / 4, -190 / 4, 370 / 4, 190 / 4 }; // 敵がプレイヤーに回収される
-    param_.ATTACK_BOX2 = { -370, -190, 370, 190 };                 // 感知範囲
-    param_.HIT_BOX = { -370 / 4, -190 / 4, 370 / 4, 190 / 4 }; // 敵が餌に食いつく範囲
+    param_.HIT_BOX = { -16, -100, 16, 0 };
 
     param_.ACCEL_X = 0.4f;
-    param_.ACCEL_Y = 0.4f;
+    param_.ACCEL_Y = 2.0f;
     param_.SPEED_X_MAX = 1.0f;
-    param_.SPEED_Y_MAX = 1.0f;
-    // param_.HP           = 10;
-    param_.HIT_TIMER = 75;
-    param_.DEAD_TIMER = 40;
+    param_.SPEED_Y_MAX = 12.0f;
+    param_.HP = 2;
 }
 
-Enemy2Behavior::Enemy2Behavior()
+Enemy5Behavior::Enemy5Behavior()
 {
-    param_.ANIME_LEFT = animeEnemy2_Left;
-    param_.ANIME_RIGHT = animeEnemy2_Right;
-    param_.ANIME_DEAD = animeEnemy2_Dead;
+    param_.ANIME_UP = animeEnemy5_Up;
+    param_.ANIME_RIGHT = animeEnemy5_Right;
+    param_.ANIME_DOWN = animeEnemy5_Down;
+    param_.ANIME_LEFT = animeEnemy5_Left;
 
-    param_.SIZE = VECTOR2(600 / 2, 600 / 2);
-    param_.SCALE = VECTOR2(1, 1);
-    param_.ATTACK_BOX = { -125 / 2, -325 / 2, 125 / 2, 325 / 2 }; // 敵が餌に食いつく範囲
-    param_.ATTACK_BOX2 = { -125, -325, 125, 325 };                 // 感知範囲
-    param_.HIT_BOX = { -125 / 2, -325 / 2, 125 / 2, 325 / 2 }; // 敵がプレイヤーに回収される範囲
+    param_.SIZE = VECTOR2(48 / 2, 128 - 16);
+    param_.SCALE = VECTOR2(5, 5);
+    param_.HIT_BOX = { -80, -500, 80, 0 };
 
-    param_.ACCEL_X = 0.4f;
-    param_.ACCEL_Y = 0.4f;
-    param_.SPEED_X_MAX = 1.0f;
-    param_.SPEED_Y_MAX = 1.0f;
-    // param_.HP           = 1;
-    param_.HIT_TIMER = 50;
-    param_.DEAD_TIMER = 50;
+    param_.ACCEL_X = 0;
+    param_.ACCEL_Y = 0;
+    param_.SPEED_X_MAX = 0;
+    param_.SPEED_Y_MAX = 0;
+    param_.HP = 10;
+}
+
+void Enemy5Behavior::moveX(OBJ2D* obj)
+{
+    obj->renderer()->setAnimeData( getParam()->ANIME_RIGHT );
 }

@@ -19,18 +19,16 @@
 #include "common.h"
 #include "obj2d.h"
 #include "sprite_data.h"
-#include "audio.h"
 
 #include "bg.h"
 #include "weapon.h"
 #include "actor.h"
-#include "player.h"
 #include "enemy.h"
+#include "player.h"
+#include "item.h"
 
 #include "scene.h"
-#include "scene_score.h"
-#include "scene_game.h"
-#include "scene_select.h"
-#include "scene_title.h"
+#include "game.h"
+#include "title.h"
 
 //******************************************************************************
