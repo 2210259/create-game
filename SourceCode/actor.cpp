@@ -3,13 +3,12 @@
 void ActorBehavior::move(OBJ2D* obj)
 {
     obj->renderer()->setAnimeData(nullptr);
-
     switch (obj->state())
     {
     case 0: {
         //////// 初期設定 ////////
         // アニメの初期設定
-        obj->renderer()->setAnimeData(getParam()->ANIME_RIGHT);
+        obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
 
         obj->transform()->setScale(getParam()->SCALE);
         const VECTOR2 size = {
@@ -18,6 +17,7 @@ void ActorBehavior::move(OBJ2D* obj)
         };
         obj->collider()->setSize(size);
         obj->collider()->setJudgeFlag(true);
+        obj->actorComponent()->setHP(getParam()->HP);
 
         obj->nextState();//state_++
         break;
@@ -37,13 +37,14 @@ void ActorBehavior::move(OBJ2D* obj)
     }
 
     obj->collider()->calcHitBox(getParam()->HIT_BOX);
+    obj->collider()->calcHitBox2(getParam()->HIT_BOX2);
+    obj->collider()->calcHitBox3(getParam()->HIT_BOX3);
     obj->collider()->calcAttackBox(getParam()->ATTACK_BOX);
     // obj->collider()->calcAttackBox2(getParam()->ATTACK_BOX2);
 
     // アニメーション更新
     if (obj->renderer()->animeData())
         obj->renderer()->animeUpdate();
-    GameLib::debug::setString("transform->position:%f", obj->transform()->position().x);
 }
 
 void ActorBehavior::moveY(OBJ2D* obj)

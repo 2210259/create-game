@@ -18,9 +18,18 @@ private:
     bool            isPaused_;
     OBJ2D*          player_;
     static Game     instance_;
-    bool playerModeFlag_;  // プレイヤーモードの切り替えフラグ
-    int stageNo_;          // ステージ番号
-    bool enemyXFilip_;     // 敵の向きを保存
+    bool playerModeFlag_;   // プレイヤーモードの切り替えフラグ
+    int stageNo_;           // ステージ番号
+    bool enemyXFlip_;       // 敵の向きを保存
+    int combo_;             // コンボ数
+    int maxCombo_;          // 最大コンボ
+    enum DECISION {
+        MISS,
+        GOOD,
+        GREAT,
+        PERFECT,
+        MAX
+    }decision_;
 
 public:
     void init() override;
@@ -35,12 +44,23 @@ public:
     BG* bg() { return bg_; }
     bool playerModeFlag() { return playerModeFlag_; }
     int stageNo() { return stageNo_; }
-    bool enemyXFlip() { return enemyXFilip_; }
+    bool enemyXFlip() { return enemyXFlip_; }
+    int timer() { return timer_; }
+    int combo() { return combo_; }
+    int maxCombo() { return maxCombo_; }
+    int decision() { return decision_; }
 
     // セッター
+    OBJ2D* player() const { return player_; }
     void setPlayerModeFlag(bool f) { playerModeFlag_ = f; }
     void setStageNo(int n) { stageNo_ = n; }
-    void setEnemyXFilip(bool f) { enemyXFilip_ = f; }
+    void setEnemyXFlip(bool f) { enemyXFlip_ = f; }
+    void setCombo(int c) { combo_ = c; }
+    void addCombo() { combo_++; }
+    void setMaxCombo(int c) { maxCombo_ = c; }
+    void setDecision(DECISION d) {decision_ = d; }
+
+    void deleteCombo() { combo_ = 0; }
 
 private:
     // コンストラクタ
@@ -51,7 +71,7 @@ private:
         , player_(nullptr)
         , playerModeFlag_(false)
         , stageNo_(0)
-        , enemyXFilip_(false)
+        , enemyXFlip_(false)
     {}
     Game(const Game&) = delete; // = delete コピーコンストラクタが存在しないことを明示
     // 当たり判定

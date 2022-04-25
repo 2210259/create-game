@@ -22,27 +22,29 @@ protected:
         // サイズ
         VECTOR2 SIZE;
         VECTOR2 SCALE;
+        FLOAT MARGIN; // 余白
         GameLib::fRECT HIT_BOX;
+        GameLib::fRECT HIT_BOX2;
+        GameLib::fRECT HIT_BOX3;
         GameLib::fRECT ATTACK_BOX;
-        GameLib::fRECT ATTACK_BOX2;
 
         // 速度関連のパラメータ
+        float SPEED;
         float ACCEL_X;
         float ACCEL_Y;
         float SPEED_X_MAX;
         float SPEED_Y_MAX;
 
         VECTOR4 RANGE_BOX;
-        int HP;
+        int HP;         // ヒットポイント
         int HIT_TIMER;
-        int DEAD_TIMER;
+        int DEAD_TIMER; // 死亡時タイマー
     }param_ = {};
 
 protected:
     const Param* getParam() const { return &param_; }
     virtual void moveY(OBJ2D* obj);
     virtual void moveX(OBJ2D* obj);
-    virtual void turn(OBJ2D* obj) {};
     virtual void modechange(OBJ2D* obj) {};
     virtual void moveEnemy(OBJ2D* obj) {};
     virtual void enemyAnime(OBJ2D* obj) {};

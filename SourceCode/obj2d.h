@@ -35,6 +35,7 @@ public:
     virtual OBJ_TYPE attackType() const = 0;
     virtual void hit(OBJ2D* src, OBJ2D* dst) = 0;
     virtual void hit2(OBJ2D* src, OBJ2D* dst) {};
+    virtual void hit3(OBJ2D* src, OBJ2D* dst) {};
 };
 
 // 消去アルゴリズムクラス（抽象クラス）
@@ -100,16 +101,19 @@ public:
     void setPositionY(float y) { position_.y = y; }
     void addPositionX(float x) { position_.x += x; }
     void addPositionY(float y) { position_.y += y; }
+    void addPosition(VECTOR2 p) { position_ += p; }
 
     void setOrgPos(const VECTOR2& pos) { orgPos_ = pos; }
     void setScale(const VECTOR2& s) { scale_ = s; }
     void setRotation(float r) { rotation_ = r; }
+    void rotate(float r) { rotation_ += r; }
 
     void setSpeed(const VECTOR2& s) { speed_ = s; }
     void setSpeedX(float x) { speed_.x = x; }
     void setSpeedY(float y) { speed_.y = y; }
     void addSpeedX(float x) { speed_.x += x; }
     void addSpeedY(float y) { speed_.y += y; }
+
 };
 
 //----------------------------------------
@@ -153,12 +157,17 @@ public:
     void animeTimeReset() { animetimer_ = 0; }
 };
 
+//----------------------------------------
+//            Collider
+//----------------------------------------
 class Collider : public Component
 {
 private:
     VECTOR2 size_ = {};
 
     GameLib::fRECT hitBox_;
+    GameLib::fRECT hitBox2_;
+    GameLib::fRECT hitBox3_;
     GameLib::fRECT attackBox_;
 
     bool judgeFlag_;
@@ -169,15 +178,25 @@ public:
         , judgeFlag_(false)
         , isDrawHitRect_(false)
         , hitBox_()
+        , hitBox2_()
+        , hitBox3_()
         , attackBox_()
     {}
 
     void draw(const VECTOR2&) override;
-    void calcHitBox(const GameLib::fRECT& rc); // ヒットボックス計算
+    void calcHitBox(const GameLib::fRECT& rc);
+    void calcHitBox2(const GameLib::fRECT& rc);
+    void calcHitBox3(const GameLib::fRECT& rc);
     void calcAttackBox(const GameLib::fRECT& rc);
 
-    bool hitcheck(Collider* coll);
-    bool hitcheck(OBJ2D* obj);
+    bool hitCheck(Collider* coll);
+    bool hitCheck(OBJ2D* obj);
+
+    bool hitCheck2(Collider* coll);
+    bool hitCheck2(OBJ2D* obj);
+
+    bool hitCheck3(Collider* coll);
+    bool hitCheck3(OBJ2D* obj);
 
     //ゲッター
     const VECTOR2& size() const { return size_; }
@@ -201,6 +220,7 @@ private:
     bool xFlip_;        // X座標の向き
     bool hitFlag_;      // 餌が敵に当たった時かどうかのフラグ
     int  deadTimer_;    // 敵の消滅時間
+    int  posType_;      // 敵の出現位置
     
 public:
     enum DIRECTON              // 向き
@@ -217,7 +237,8 @@ public:
         , xFlip_(false)
         , hitFlag_(false)
         , deadTimer_(0)
-        ,direction_(RIGHT)
+        , posType_(0)
+        , direction_(UP)
     {}
     // ゲッター
     int hp() const { return hp_; }
@@ -226,14 +247,16 @@ public:
     bool xFlip() const { return xFlip_; }
     int direction() const { return direction_; }
     int deadTimer() const { return deadTimer_; }
+    int posType() const { return posType_; }
 
     // セッター
     void setHP(int h) { hp_ = h; }
     void setmoveFlag(bool f) { moveFlag_ = f; }
     void sethitFlag(bool f) { hitFlag_ = f; }
-    void setDirection(ActorComponent::DIRECTON d) { direction_ = d; }
+    void setDirection(DIRECTON d) { direction_ = d; }
     void setFlip(bool b) { xFlip_ = b; }
     void setDeadTimer(int t) { deadTimer_ = t; }
+    void setPosType(int p) { posType_ = p; }
 
     // X座標の向きを反転
     void flip() { xFlip_ = !xFlip_; }
@@ -309,7 +332,6 @@ public:
     ~OBJ2D();
     void move();    // 移動
 
-
     // コンポーネントのゲッター
     Transform* transform() const { return transform_; }
     Renderer* renderer() const { return renderer_; }
@@ -332,7 +354,7 @@ public:
 
     // インクリメント
     void nextState() { state_++; }
-    void nextEnemyState() { enemyState_++; }
+    void addEnemyState() { enemyState_++; }
 
     void remove() { setBehavior(nullptr); }
 };
@@ -355,7 +377,7 @@ public:
     void update();  // 更新
     void draw(const VECTOR2&);    // 描画
 
-    OBJ2D* add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos);
+    OBJ2D* add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int posType);
     std::list<OBJ2D*>* getList() { return &objList_; }
 };
 

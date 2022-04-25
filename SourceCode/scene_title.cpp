@@ -47,6 +47,9 @@ void Title::update() {
         starScale_ = { 0.0f, 0.0f };
         starAngle_ = 0.0f;
 
+        //BGMを再生
+        GameLib::music::play(5, false);
+
         GameLib::setBlendMode(GameLib::Blender::BS_ALPHA);   // 通常のアルファ処理
                  
         state_++;                                            // 初期化処理の終了
@@ -68,6 +71,10 @@ void Title::update() {
         //////// 通常時の処理 ////////
 
         if (TRG(0) & PAD_START) {
+
+            //決定音
+            GameLib:sound::play(0, 0);
+
             ++state_;   // フェードアウトへ
         }
 
@@ -84,6 +91,8 @@ void Title::update() {
 
         fadeOutTimer_ += 0.01167f;
         if (fadeOutTimer_ >= 1.0f) {
+            //BGMを止める
+            GameLib::music::stop(5);
             changeScene(Game::instance());
             break;
         }

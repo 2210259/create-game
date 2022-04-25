@@ -56,9 +56,9 @@ void OBJ2D::move()
     timer_++;
 }
 
-//--------------------------------------------------------------
-//  描画
-//--------------------------------------------------------------
+//----------------------------------------//
+//            Renderer                    //
+//----------------------------------------//
 void Renderer::draw(const VECTOR2& scrollPos)
 {
     Transform* transform = parent()->transform();
@@ -71,9 +71,6 @@ void Renderer::draw(const VECTOR2& scrollPos)
 
 //--------------------------------------------------------------
 //  アニメーション更新
-//--------------------------------------------------------------
-//  戻り値：true  アニメが先頭に戻る瞬間
-//        :false それ以外
 //--------------------------------------------------------------
 bool Renderer::animeUpdate()
 {
@@ -108,37 +105,68 @@ bool Renderer::animeUpdate()
     return false;
 }
 
-void Collider::draw(const VECTOR2& scrollPos) {
-    // 食らいBOX
-    {
-        const VECTOR2 pos{ hitBox_.left - scrollPos.x, hitBox_.top - scrollPos.y };
-        const VECTOR2 size{ hitBox_.right - hitBox_.left, hitBox_.bottom - hitBox_.top };
-        primitive::rect(pos, size, { 0, 0 }, 0, { 0, 0, 1, 0.5f });
-    }
-    // primitive::rect(
-    //     VECTOR2(hitBox_.left, hitBox_.top) - scrollPos,
-    //     { hitBox_.right - hitBox_.left, hitBox_.bottom - hitBox_.top },
-    //     { 0, 0 }, 0.0f,
-    //     { 0.0f, 0.0f, 1.0f, 0.5f }
-    // );
+//----------------------------------------//
+//             Collider                   //
+//----------------------------------------//
+void Collider::draw(const VECTOR2& scrollPos) 
+{
+    VECTOR2 size, pos;
+    VECTOR4 color;
 
-    // 攻撃BOX
+    // hitBox
+    size = {
+        hitBox_.right - hitBox_.left,
+        hitBox_.bottom - hitBox_.top 
+    };
+    if(size.x * size.y != 0.0f)
     {
-        const VECTOR2 pos{ attackBox_.left - scrollPos.x, attackBox_.top - scrollPos.y };
-        const VECTOR2 size{ attackBox_.right - attackBox_.left, attackBox_.bottom - attackBox_.top };
-        primitive::rect(pos, size, { 0, 0 }, 0, { 1, 0, 0, 0.5f });
+        pos = VECTOR2(hitBox_.left, hitBox_.top) - scrollPos;
+        color = { 1, 1, 1, 0.5f };
+        primitive::rect(pos, size, { 0,0 }, 0, color);
     }
-    // primitive::rect(
-    //     VECTOR2(attackBox_.left, attackBox_.top) - scrollPos,
-    //     { attackBox_.right - attackBox_.left, attackBox_.bottom - attackBox_.top },
-    //     { 0, 0}, 0.0f,
-    //     { 1.0f, 0.0f, 0.0f, 0.5f }
-    // );
+
+    // hitBox2
+    size = {
+        hitBox2_.right - hitBox2_.left,
+        hitBox2_.bottom - hitBox2_.top
+    };
+    if (size.x * size.y != 0.0f)
+    {
+        pos = VECTOR2(hitBox2_.left, hitBox2_.top) - scrollPos;
+
+        color = { 0, 1, 1 ,0.5f };
+        primitive::rect(pos, size, { 0,0 }, 0, color);
+    }
+
+    // hitBox3
+    size = {
+        hitBox3_.right - hitBox3_.left,
+        hitBox3_.bottom - hitBox3_.top
+    };
+    if (size.x * size.y != 0.0f)
+    {
+        pos = VECTOR2(hitBox3_.left, hitBox3_.top) - scrollPos;
+
+        color = { 0, 0, 1, 0.5f };
+        primitive::rect(pos, size, { 0,0 }, 0, color);
+    }
+
+    // attackBox
+    size = {
+        attackBox_.right - attackBox_.left,
+        attackBox_.bottom - attackBox_.top
+    };
+    if (size.x * size.y != 0.0f)
+    {
+        pos = VECTOR2(attackBox_.left, attackBox_.top) - scrollPos;
+        color = { 1, 0, 0, 0.5f };
+        primitive::rect(pos, size, { 0,0 }, 0, color);
+    }
 };
 
-// Componentの親（OBJ2D）のTransform_のposition_の座標に、引数のrcの値を足したもの
-// をhitBox_及び、attackBox_に設定する。
-
+//----------------------------------------//
+//             食らい領域計算             //
+//----------------------------------------//
 void Collider::calcHitBox(const GameLib::fRECT& rc) {
     const VECTOR2* pos = &parent()->transform()->position();
 
@@ -147,6 +175,29 @@ void Collider::calcHitBox(const GameLib::fRECT& rc) {
         pos->x + rc.right, pos->y + rc.bottom,
     };
 }
+
+void Collider::calcHitBox2(const GameLib::fRECT& rc) {
+    const VECTOR2* pos = &parent()->transform()->position();
+
+    hitBox2_ = {
+        pos->x + rc.left,  pos->y + rc.top,
+        pos->x + rc.right, pos->y + rc.bottom,
+    };
+}
+
+void Collider::calcHitBox3(const GameLib::fRECT& rc) {
+    const VECTOR2* pos = &parent()->transform()->position();
+
+    hitBox3_ = {
+        pos->x + rc.left,  pos->y + rc.top,
+        pos->x + rc.right, pos->y + rc.bottom,
+    };
+}
+
+
+//----------------------------------------//
+//             攻撃範囲計算               //
+//----------------------------------------//
 void Collider::calcAttackBox(const GameLib::fRECT& rc) {
     const VECTOR2* pos = &parent()->transform()->position();
 
@@ -156,17 +207,45 @@ void Collider::calcAttackBox(const GameLib::fRECT& rc) {
     };
 }
 
-bool Collider::hitcheck(Collider* coll) {
-    // this->attackBox_とcoll->hitBox_があたっているかどうか
-    if (this->attackBox_.right < coll->hitBox_.left) return false;
-    if (this->attackBox_.left > coll->hitBox_.right) return false;
-    if (this->attackBox_.bottom < coll->hitBox_.top) return false;
-    if (this->attackBox_.top > coll->hitBox_.bottom) return false;
+//----------------------------------------//
+//             当たっているか             //
+//----------------------------------------//
+bool Collider::hitCheck(Collider* coll) {
+    if (attackBox_.right < coll->hitBox_.left) return false;
+    if (attackBox_.left > coll->hitBox_.right) return false;
+    if (attackBox_.bottom < coll->hitBox_.top) return false;
+    if (attackBox_.top > coll->hitBox_.bottom) return false;
     return true;
 }
 
-bool Collider::hitcheck(OBJ2D* obj) {
-    return hitcheck(obj->collider());
+bool Collider::hitCheck2(Collider* coll) {
+    if (attackBox_.right < coll->hitBox2_.left) return false;
+    if (attackBox_.left > coll->hitBox2_.right) return false;
+    if (attackBox_.bottom < coll->hitBox2_.top) return false;
+    if (attackBox_.top > coll->hitBox2_.bottom) return false;
+    return true;
+}
+
+bool Collider::hitCheck3(Collider* coll) {
+    if (attackBox_.right < coll->hitBox3_.left) return false;
+    if (attackBox_.left > coll->hitBox3_.right) return false;
+    if (attackBox_.bottom < coll->hitBox3_.top) return false;
+    if (attackBox_.top > coll->hitBox3_.bottom) return false;
+    return true;
+}
+
+bool Collider::hitCheck(OBJ2D* obj) {
+    return hitCheck(obj->collider());
+}
+
+bool Collider::hitCheck2(OBJ2D* obj)
+{
+    return hitCheck2(obj->collider());
+}
+
+bool Collider::hitCheck3(OBJ2D* obj)
+{
+    return hitCheck3(obj->collider());
 }
 
 //******************************************************************************
@@ -189,10 +268,13 @@ void OBJ2DManager::init()
 //--------------------------------------------------------------
 //  リストへ追加
 //--------------------------------------------------------------
-OBJ2D* OBJ2DManager::add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos)
+OBJ2D* OBJ2DManager::add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int posType)
 {
     obj->setBehavior(behavior);
     obj->transform()->setPosition(pos);
+    if (posType >= 0) {
+        obj->actorComponent()->setPosType(posType);
+    }
     objList_.emplace_back(obj);
     return obj;
 }
@@ -243,7 +325,6 @@ void OBJ2DManager::draw(const VECTOR2& scrollPos)
         obj->renderer()->draw(scrollPos);
         obj->collider()->draw(scrollPos);
     }
-    debug::setString("cnt:%d", cnt);
 }
 
 //--------------------------------------------------------------

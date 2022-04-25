@@ -39,6 +39,9 @@ void Score::update()
         ///////　初期設定　///////
         timer_ = 0;                 //タイマーの初期化  
 
+        //BGM再生
+        GameLib::music::play(4, false);
+
         GameLib::setBlendMode(GameLib::Blender::BS_ALPHA);  //通常のアルファ処理
 
         state_++;
@@ -47,6 +50,13 @@ void Score::update()
     case 1:
         if(TRG(0) & PAD_SELECT)
         {
+
+            //BGMを止める
+            GameLib::music::stop(4);
+
+            //決定音
+            GameLib::sound::play(0, 0);
+
             changeScene(Title::instance());
             break;
         }

@@ -53,8 +53,6 @@ void BaseWeaponBehavior::update(OBJ2D* obj)
 
     // if (Game::instance()->state() <= 1) return;
 
-    // TODO:debug
-    debug::setString("Game::instance()->playerModeFlag():%f", Game::instance()->playerModeFlag());
 
     // debug::setString("speed%f", transform->speed().x);
     // debug::setString("speedY%f", transform->speed().y);
@@ -84,13 +82,35 @@ WeaponBehavior::WeaponBehavior()
 //     obj->collider()->calcHitBox(getParam()->HIT_BOX);
 // }
 
-// 武器(→)敵に当たった時の処理
+// 武器(→)敵に当たった時の処理(Perfect)
 void WeaponBehavior::hit(OBJ2D* src, OBJ2D* dst)
 {
-    // 武器を消去 
-    src->remove();
+    // コンボを追加
+    Game::instance()->addCombo();
+
+    // 敵にダメージを与える
+    dst->actorComponent()->damage();
 }
 
+// 武器(→)敵に当たった時の処理(Great)
+void WeaponBehavior::hit2(OBJ2D* src, OBJ2D* dst)
+{
+    // コンボを追加
+    Game::instance()->addCombo();
+    
+    // 敵にダメージを与える
+    dst->actorComponent()->damage();
+}
+
+// 武器(→)敵に当たった時の処理(Good)
+void WeaponBehavior::hit3(OBJ2D* src, OBJ2D* dst)
+{
+    // コンボを追加
+    Game::instance()->addCombo();
+    
+    // 敵にダメージを与える
+    dst->actorComponent()->damage();
+}
 //----------------------------------------//
 //         　　　　　消去 　　　          //
 //----------------------------------------//

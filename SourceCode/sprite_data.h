@@ -55,7 +55,7 @@ extern GameLib::SpriteData sprPlayer_Attack_L2;
 //      “G0
 //================================
 // UŒ‚
-extern GameLib::SpriteData sprEnemy0_Attack0;
+extern GameLib::SpriteData sprEnemy0_Idle0;
 
 // €–S
 extern GameLib::SpriteData sprEnemy0_Dead0;
@@ -67,7 +67,7 @@ extern GameLib::SpriteData sprEnemy0_Dead2;
 //================================
 
 // UŒ‚
-extern GameLib::SpriteData sprEnemy1_Attack0;
+extern GameLib::SpriteData sprEnemy1_Idle0;
 
 // €–S
 extern GameLib::SpriteData sprEnemy1_Dead0;
@@ -79,7 +79,7 @@ extern GameLib::SpriteData sprEnemy1_Dead2;
 //================================
 
 // UŒ‚
-extern GameLib::SpriteData sprEnemy2_Attack0;
+extern GameLib::SpriteData sprEnemy2_Idle0;
 
 // €–S
 extern GameLib::SpriteData sprEnemy2_Dead0;

@@ -40,7 +40,8 @@ void Game::deinit()
     // テクスチャの解放
     texture::releaseAll();
 
-    // 音楽のクリア
+    // TODO:音楽流れなかったらコメントアウト
+    // 音楽のクリア 
     music::clear();
 }
 
@@ -61,19 +62,35 @@ void Game::update()
      debug::setString("isPaused_%d", isPaused_);
 
     // ポーズ処理
-     if (TRG(0) & PAD_TRG1)    isPaused_ = !isPaused_;         // 0コンのスタートボタンが押されたらポーズ状態が反転
+     if (TRG(0) & PAD_TRG1)
+     {
+         //音楽を再開
+         GameLib::music::resume(0);
 
+         // 0コンのスタートボタンが押されたらポーズ状態が反転
+         isPaused_ = !isPaused_;        
+     }
      if (isPaused_)
      {
          if (TRG(0) & PAD_START)
          {
+            //決定音
+            GameLib::sound::play(0,0);
+
              changeScene(Title::instance());
          }
 
          if (TRG(0) & PAD_SELECT)
          {
+            //決定音
+             GameLib::sound::play(0, 0);
+
              changeScene(Game::instance());
          }
+
+         //音楽を止める
+         GameLib::music::pause(0);
+
          return;              // この時点でポーズ中ならリターン
      }
 
@@ -82,6 +99,9 @@ void Game::update()
     case 0:
         //////// 初期設定 ////////
         timer_ = 0;
+
+        //BGMの再生
+        GameLib::music::play(0, false);
 
         GameLib::setBlendMode(Blender::BS_ALPHA);   // 通常のアルファ処理
 
@@ -103,7 +123,7 @@ void Game::update()
                 new ActorComponent,
                 nullptr
             ),
-            &idlePlayerBehavior, VECTOR2(640, 700));
+            &idlePlayerBehavior, VECTOR2(640, 700), -1);
 
         // BGの初期設定
         bg()->init(player_);
@@ -119,10 +139,14 @@ void Game::update()
 
         bg()->update();   // BGの更新
 
+        // 敵をセット
+        setEnemy(obj2dManager(), bg());
+
         judge();
 
         if (TRG(0) & PAD_SELECT)
         {
+            GameLib::music::stop(0);
             changeScene(Score::instance());
             break;
         }
@@ -130,6 +154,9 @@ void Game::update()
 
         break;
     }
+    debug::setString("Combo:%d", combo());
+    debug::setString("maxCombo:%d", maxCombo());
+   
     debug::setString("stageNo:%d", Game::instance()->stageNo());
     debug::setString("GameTimer:%d", timer_);
 }
@@ -147,6 +174,7 @@ void Game::draw()
     // オブジェクトの描画
     obj2dManager()->draw(bg()->getScrollPos());
 
+    // ポーズ画面
     if (isPaused_)
     {
         GameLib::font::textOut(4, "PAUSE",
@@ -169,7 +197,6 @@ void Game::draw()
             { 1.0f, 1.0f, 1.0f, 1.0f },
             GameLib::TEXT_ALIGN::UPPER_MIDDLE
         );
-
     }
 }
 
@@ -194,11 +221,19 @@ void Game::judge()
             if (src->behavior()->attackType() != dst->behavior()->getType())
                 continue;
 
-            // 当たり判定を行う
-            if (src->collider()->hitcheck(dst))
+            // あたり判定を行う
+            if (src->collider()->hitCheck(dst))
             {
-                // 当たった場合の処理
+                // あたった場合の処理
                 src->behavior()->hit(src, dst);
+            }
+            else if (src->collider()->hitCheck2(dst))
+            {
+                src->behavior()->hit2(src, dst);
+            }
+            else if (src->collider()->hitCheck3(dst))
+            {
+                src->behavior()->hit3(src, dst);
             }
         }
     }

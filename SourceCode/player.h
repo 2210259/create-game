@@ -24,8 +24,9 @@ public:
 public:
     // ƒƒ“ƒo•Ï”
     VECTOR2 attackPosition{};
+
 private:
-    // void moveX(OBJ2D* obj) override;
+    // void move(OBJ2D* obj) override;
     void playerAnimetion(OBJ2D* obj) override;
     void modechange(OBJ2D* obj) override;
 };

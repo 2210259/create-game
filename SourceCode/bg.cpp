@@ -67,45 +67,48 @@ void BG::scrollMap()
     Collider* collision = player_->collider();
 
     // スクロール処理
-    // 右方向のスクロール処理
-    if (scroll.x < transform->position().x + collision->size().x - CLIENT_W + SCROLL_MERGIN_X)
-        scroll.x = transform->position().x + collision->size().x - CLIENT_W + SCROLL_MERGIN_X;
-    
-    // 左方向のスクロール処理
-    if (scroll.x > transform->position().x - collision->size().x - SCROLL_MERGIN_X)
-        scroll.x = transform->position().x - collision->size().x - SCROLL_MERGIN_X;
-    
-    // 下方向のスクロール処理
-    if (scroll.y < transform->position().y - CLIENT_H + SCROLL_MERGIN_Y)
-        scroll.y = transform->position().y - CLIENT_H + SCROLL_MERGIN_Y;
-    
-    // 上方向のスクロール処理
-    if (scroll.y > transform->position().y - collision->size().y - SCROLL_MERGIN_Y)
-        scroll.y = transform->position().y - collision->size().y - SCROLL_MERGIN_Y;
-    
-    // エリア制限（右）
-    if (scroll.x > BG::WIDTH - CLIENT_W)
-        scroll.x = BG::WIDTH - CLIENT_W;
-
-    // エリア制限（左）
-    if (scroll.x < 0)
-        scroll.x = 0;
-
-    // エリア制限（下）
-    if (scroll.y > BG::HEIGHT - CLIENT_H)
-        scroll.y = BG::HEIGHT - CLIENT_H;
-
-    // エリア制限（上）
-    if (scroll.y < 0)
-        scroll.y = 0;
+    // if (player_) {
+    //     // 右方向のスクロール処理
+    //     if (scroll.x < transform->position().x + collision->size().x - CLIENT_W + SCROLL_MERGIN_X)
+    //         scroll.x = transform->position().x + collision->size().x - CLIENT_W + SCROLL_MERGIN_X;
+    // 
+    //     // 左方向のスクロール処理
+    //     if (scroll.x > transform->position().x - collision->size().x - SCROLL_MERGIN_X)
+    //         scroll.x = transform->position().x - collision->size().x - SCROLL_MERGIN_X;
+    // 
+    //     // 下方向のスクロール処理
+    //     if (scroll.y < transform->position().y - CLIENT_H + SCROLL_MERGIN_Y)
+    //         scroll.y = transform->position().y - CLIENT_H + SCROLL_MERGIN_Y;
+    // 
+    //     // 上方向のスクロール処理
+    //     if (scroll.y > transform->position().y - collision->size().y - SCROLL_MERGIN_Y)
+    //         scroll.y = transform->position().y - collision->size().y - SCROLL_MERGIN_Y;
+    // 
+    //     // エリア制限（右）
+    //     if (scroll.x > BG::WIDTH - CLIENT_W)
+    //         scroll.x = BG::WIDTH - CLIENT_W;
+    // 
+    //     // エリア制限（左）
+    //     if (scroll.x < 0)
+    //         scroll.x = 0;
+    // 
+    //     // エリア制限（下）
+    //     if (scroll.y > BG::HEIGHT - CLIENT_H)
+    //         scroll.y = BG::HEIGHT - CLIENT_H;
+    // 
+    //     // エリア制限（上）
+    //     if (scroll.y < 0)
+    //         scroll.y = 0;
+    // }
 
     using namespace input;
     if (TRG(0) & PAD_TRG2)
     {
         isDebugDraw = !isDebugDraw;
     }
-    debug::setString("transform->position().x:%f", transform->position().x);
-    debug::setString("transform->position().x:%f", transform->position().y);
+    // TODO:debug
+    // debug::setString("transform->position().x:%f", transform->position().x);
+    // debug::setString("transform->position().y:%f", transform->position().y);
 }
 
 //----------------------------------------//
