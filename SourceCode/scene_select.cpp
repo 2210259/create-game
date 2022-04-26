@@ -76,7 +76,7 @@ void Select::update() {
         if (TRG(0) & PAD_START) {
 
             //決定音
-            GameLib::sound::play(0, 0);
+             GameLib::music::play(7, false);
 
             ++state_;   // フェードアウトへ
         }

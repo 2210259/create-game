@@ -18,6 +18,7 @@ void ActorBehavior::move(OBJ2D* obj)
         obj->collider()->setSize(size);
         obj->collider()->setJudgeFlag(true);
         obj->actorComponent()->setHP(getParam()->HP);
+        obj->actorComponent()->setMaxHP(getParam()->HP);
 
         obj->nextState();//state_++
         break;

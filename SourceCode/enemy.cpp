@@ -7,14 +7,20 @@ struct ENEMY_SET1
     int         area;       // 出現ステージ
     int         enemyType;  // 敵の種類
     int         posType;    // 出現位置(0:上 1:左 2:右)
-    int         timer;      // 出現時間
+    int         timer;      // 出現時間(※出現時間が0秒だとバグるかも)
 } enemySet[] = {
-    {  0,  0,  0,    0},  // 0
-    {  0,  1,  1,    0},  // 1
-    {  0,  0,  0,   60},  // 2
-    {  0,  1,  0,  150},  // 3
-    {  0,  1,  2,  150},  // 3
-    {  0,  0,  0,  240},  // 4
+    {  0,  1,  1,   60},  // 0
+    {  0,  0,  0,  120},  // 1
+    {  0,  0,  0,  180},  // 2
+    {  0,  1,  0,  240},  // 3
+    {  0,  1,  2,  300},  // 4
+    {  0,  0,  0,  360},  // 5
+    {  0,  1,  1,  420},  // 6
+    {  0,  0,  0,  480},  // 7
+    {  0,  0,  2,  540},  // 8
+    {  0,  1,  0,  600},  // 9
+    {  0,  1,  2,  660},  // 10
+    {  0,  1,  1,  720},  // 11
 
     // {  1,  0, {  0,   0 },  0 }, // 2
     // {  1,  0, {  0,   0 },  0 }, // 3
@@ -165,7 +171,8 @@ void BaseEnemyBehavior::moveEnemy(OBJ2D* obj)
         renderer->setColor(VECTOR4(1.0f, 1.0f, 1.0f, 1.0f));
         transform->setOrgPos(transform->position());
         obj->actorComponent()->setDeadTimer(getParam()->DEAD_TIMER); // 死亡時タイマーの初期設定
-        // Sounds_ = false;
+        obj->actorComponent()->setScore(getParam()->SCORE); // スコアの設定
+        obj->collider()->setJudgeFlag(true);
 
         obj->addEnemyState(); // enemyState++
         break;
@@ -178,8 +185,11 @@ void BaseEnemyBehavior::moveEnemy(OBJ2D* obj)
             float dist = sqrtf(vecP.x * vecP.x + vecP.y * vecP.y);
 
             // スピードを計算
-            obj->transform()->setSpeed(4 * vecP / dist);
-        }
+            if (!(dist < 1.0f && dist > -1.0f))
+                obj->transform()->setSpeed((getParam()->SPEED * 4) * vecP / dist);
+            else
+                obj->transform()->setSpeed(VECTOR2(0.0f, 0.0f));
+    }
         break;
     case 2:
         //////// 敵が消える ////////
@@ -197,7 +207,11 @@ void BaseEnemyBehavior::moveEnemy(OBJ2D* obj)
 // 敵がプレイヤーに攻撃したとき処理
 void BaseEnemyBehavior::hit(OBJ2D* src, OBJ2D* dst)
 {
-    if (src->enemyState() > 1) return;
+    // falseの場合処理をしない
+    if (src->collider()->judgeFlag() == false) return;
+
+    // ジャッジフラグをなくす
+    src->collider()->setJudgeFlag(false);
 
     // プレイヤーにダメージを与える
     dst->actorComponent()->damage();
@@ -205,12 +219,8 @@ void BaseEnemyBehavior::hit(OBJ2D* src, OBJ2D* dst)
     // コンボをなくす
     Game::instance()->deleteCombo();
     
-    // 当たり判定をなくす
-    // param_.ATTACK_BOX = {}; // 敵がプレイヤーに攻撃する範囲
-    // param_.HIT_BOX = {};    // 敵が武器に攻撃される範囲
-
-    // moveEnemyのstateを一つ進める
-    src->addEnemyState();
+    // 敵を消滅
+    src->remove();
 }
 
 // 敵がプレイヤーに攻撃したとき処理
@@ -218,13 +228,9 @@ void BaseEnemyBehavior::hit(OBJ2D* src, OBJ2D* dst)
 // {
 //     // プレイヤーにダメージを与える
 //     dst->actorComponent()->damage();
-// 
-//     // 当たり判定をなくす
-//     param_.ATTACK_BOX = {}; // 敵がプレイヤーに攻撃する範囲
-//     param_.HIT_BOX = {};    // 敵が武器に攻撃される範囲
-// 
-//     // moveEnemyのstateを一つ進める
-//     src->addEnemyState();
+//     
+//     // 敵を消滅
+//     src->remove();
 // }
 
 Enemy0Behavior::Enemy0Behavior()
@@ -241,11 +247,9 @@ Enemy0Behavior::Enemy0Behavior()
 
     // param_.HIT_BOX2 = { -300 / 4, -300 / 4, 300 / 4, 300 / 4 }; // 敵が武器に攻撃される範囲
 
-    param_.ACCEL_X = 0.4f;
-    param_.ACCEL_Y = 0.4f;
-    param_.SPEED_X_MAX = 1.0f;
-    param_.SPEED_Y_MAX = 1.0f;
+    param_.SPEED = 1.0f;
     param_.HP = 1;    // ヒットポイント
+    param_.SCORE = 300;
     param_.HIT_TIMER = 90;
     param_.DEAD_TIMER = 40;
 }
@@ -265,12 +269,13 @@ Enemy1Behavior::Enemy1Behavior()
     param_.SCALE        = VECTOR2(1, 1);
     param_.ATTACK_BOX   = { -128 / 2, -128 / 2, 128 / 2, 128 / 2 }; // 敵がプレイヤーに攻撃する範囲
     param_.HIT_BOX      = { -128 / 6, -128 / 6, 128 / 6, 128 / 6 }; // 敵が武器に攻撃される範囲
-    param_.HIT_BOX2     = { -128 / 4, -128 / 3, 128 / 3, 128 / 3 }; // 敵が武器に攻撃される範囲
+    param_.HIT_BOX2     = { -128 / 3, -128 / 3, 128 / 3, 128 / 3 }; // 敵が武器に攻撃される範囲
     param_.HIT_BOX3     = { -128 / 2, -128 / 2, 128 / 2, 128 / 2 }; // 敵が武器に攻撃される範囲
 
-    param_.SPEED_X_MAX = 1.0f;
-    param_.HP          = 1;    // ヒットポイント
-    param_.DEAD_TIMER  = 40;
+    param_.SPEED        = 1.5f;
+    param_.HP           = 1;    // ヒットポイント
+    param_.SCORE        = 500;
+    param_.DEAD_TIMER   = 40;
 }
 
 void Enemy1Behavior::enemyAnime(OBJ2D* obj)
@@ -302,10 +307,7 @@ Enemy2Behavior::Enemy2Behavior()
     param_.HIT_BOX2     = { -128 / 3, -128 / 3, 128 / 3, 128 / 3 }; // 敵が武器に攻撃される範囲
     param_.HIT_BOX3     = { -128 / 2, -128 / 2, 128 / 2, 128 / 2 }; // 敵が武器に攻撃される範囲
 
-    param_.ACCEL_X = 0.4f;
-    param_.ACCEL_Y = 0.4f;
-    param_.SPEED_X_MAX = 1.0f;
-    param_.SPEED_Y_MAX = 1.0f;
+    param_.SPEED = 1.0f;
     param_.HP          = 1;    // ヒットポイント
     param_.HIT_TIMER = 50;
     param_.DEAD_TIMER = 50;

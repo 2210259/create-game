@@ -8,6 +8,8 @@
 
 //------< インクルード >---------------------------------------------------------
 #include "all.h"
+#include <sstream>
+#include <iomanip>
 
 //------< using >---------------------------------------------------------------
 using namespace GameLib;
@@ -42,7 +44,7 @@ void Game::deinit()
 
     // TODO:音楽流れなかったらコメントアウト
     // 音楽のクリア 
-    music::clear();
+    // music::clear();
 }
 
 //--------------------------------------------------------------
@@ -75,7 +77,7 @@ void Game::update()
          if (TRG(0) & PAD_START)
          {
             //決定音
-            GameLib::sound::play(0,0);
+             GameLib::music::play(7, false);
 
              changeScene(Title::instance());
          }
@@ -83,7 +85,7 @@ void Game::update()
          if (TRG(0) & PAD_SELECT)
          {
             //決定音
-             GameLib::sound::play(0, 0);
+             GameLib::music::play(7, false);
 
              changeScene(Game::instance());
          }
@@ -98,10 +100,21 @@ void Game::update()
     {
     case 0:
         //////// 初期設定 ////////
-        timer_ = 0;
+        
+        timer_ = 0;     // ゲームタイマー
+        combo_ = 0;     // コンボ数
+        maxCombo_ = 0;  // 最大コンボ数
 
-        //BGMの再生
-        GameLib::music::play(0, false);
+        // HPバーの設定
+        hpPos01     = { 950,  20 };        // HPバーの位置
+        hpSize01    = { 300,  60 };        // HPバーの大きさ
+        hpColor01   = { 0, 0, 0, 1.0f };   // HPバーの色
+        hpPos02     = { 955,  25 };        // HPバーの位置
+        hpSize02    = { 290,  50 };        // HPバーの大きさ
+        hpColor02   = { 1, 0, 0, 0.5f };   // HPバーの色
+
+        // BGMの再生
+        music::play(0, false);
 
         GameLib::setBlendMode(Blender::BS_ALPHA);   // 通常のアルファ処理
 
@@ -128,6 +141,7 @@ void Game::update()
         // BGの初期設定
         bg()->init(player_);
 
+
         state_++;    // 初期設定処理の終了
         /*fallthrough*/
 
@@ -142,7 +156,14 @@ void Game::update()
         // 敵をセット
         setEnemy(obj2dManager(), bg());
 
+        // 当たり判定
         judge();
+
+        // 最大コンボの更新
+        calcMaxCombo();
+
+        // ノーツ判定の更新
+        decisionJudge();
 
         if (TRG(0) & PAD_SELECT)
         {
@@ -173,6 +194,21 @@ void Game::draw()
 
     // オブジェクトの描画
     obj2dManager()->draw(bg()->getScrollPos());
+
+    // HPバーの描画
+    primitive::rect(hpPos01, hpSize01, { 0, 0 }, 0, hpColor01);
+    if (player()->actorComponent()->hp() >= 0) {
+        primitive::rect(hpPos02,
+            { hpSize02.x / player()->actorComponent()->maxHP() * player()->actorComponent()->hp(), hpSize02.y },
+            { 0, 0 }, 0, hpColor02);
+    }
+
+    // スコア,コンボ数の描画
+    scoreDraw();
+    comboDraw();
+
+    // ノーツ判定の描画
+    decisionDraw();
 
     // ポーズ画面
     if (isPaused_)
@@ -212,7 +248,8 @@ void Game::judge()
 
         for (auto& dst : *obj2dManager()->getList())
         {
-            if (!dst->behavior()) break;
+            if (!src->behavior()) break;
+
             if (src == dst) continue;   // 自分自身はとばす
             if (!dst->behavior()) continue;
             if (!dst->collider()->judgeFlag()) continue;
@@ -236,6 +273,128 @@ void Game::judge()
                 src->behavior()->hit3(src, dst);
             }
         }
+    }
+}
+
+void Game::calcMaxCombo()
+{
+    // 最大コンボの更新
+    if (combo() > maxCombo()) {
+        setMaxCombo(combo());
+    }
+}
+
+// コンボの描画設定
+void Game::comboDraw()
+{
+    std::ostringstream ss1;
+
+    ss1 << "COMBO" << std::setw(4) << combo_;
+    
+    // コンボ数をテキスト表示
+    font::textOut(6,
+        ss1.str(),
+        { 1250, 120 },
+        { 1.0f, 1.0f },
+        { 1.0f, 1.0f, 1.0f, 1.0f },
+        TEXT_ALIGN::MIDDLE_RIGHT
+    );
+}
+
+// スコアの描画設定
+void Game::scoreDraw()
+{
+    std::ostringstream ss1;
+
+    ss1 << "SCORE" << std::setw(8) << std::setfill('0') << score_;
+
+    // スコア数をテキスト表示
+    font::textOut(6,
+        ss1.str(),
+        { 10, 10 },
+        { 1.0f, 1.0f },
+        { 1.0f, 1.0f, 1.0f, 1.0f },
+        TEXT_ALIGN::UPPER_LEFT
+    );
+}
+
+// ノーツの判定判別
+void Game::decisionJudge()
+{
+    switch (decision_)
+    {
+    case Game::MISS:
+        break;
+    case Game::GOOD:
+        goodTimer = 60;
+        greatTimer, perfectTimer = 0;       
+        decision_ = MAX;
+        break;
+    case Game::GREAT:
+        greatTimer = 60;
+        goodTimer, perfectTimer = 0;
+        decision_ = MAX;
+        break;
+    case Game::PERFECT:
+        perfectTimer = 60;
+        goodTimer, greatTimer = 0;
+        decision_ = MAX;
+        break;
+    default:
+        break;
+    }
+    if (goodTimer > 0)
+        goodTimer--;
+    if (greatTimer > 0)
+        greatTimer--;
+    if (perfectTimer > 0)
+        perfectTimer--;
+}
+
+void Game::decisionDraw()
+{
+    std::ostringstream ss1;
+
+    // GOODを描画
+    if (goodTimer > 0) {
+        ss1 << "GOOD";
+
+        // コンボ数をテキスト表示
+        font::textOut(6,
+            ss1.str(),
+            { 1250, 180 },
+            { 1.0f, 1.0f },
+            { 1.0f, 1.0f, 1.0f, 1.0f },
+            TEXT_ALIGN::MIDDLE_RIGHT
+        );
+    }
+    // GREATを描画
+    if (greatTimer > 0)
+    {
+        ss1 << "GREAT";
+
+        // コンボ数をテキスト表示
+        font::textOut(6,
+            ss1.str(),
+            { 1250, 180 },
+            { 1.0f, 1.0f },
+            { 0.0f, 1.0f, 1.0f, 1.0f },
+            TEXT_ALIGN::MIDDLE_RIGHT
+        );
+    }
+    // PERFECTを描画
+    if (perfectTimer > 0)
+    {
+        ss1 << "PERFECT";
+
+        // コンボ数をテキスト表示
+        font::textOut(6,
+            ss1.str(),
+            { 1250, 180 },
+            { 1.0f, 1.0f },
+            { 1.0f, 1.0f, 0.0f, 1.0f },
+            TEXT_ALIGN::MIDDLE_RIGHT
+        );
     }
 }
 

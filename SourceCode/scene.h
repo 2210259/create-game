@@ -49,6 +49,7 @@ class SceneManager
 {
 public:
     void execute(Scene*);  // Àsˆ—
+    Audio audio;
 };
 
 //******************************************************************************

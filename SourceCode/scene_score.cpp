@@ -55,7 +55,7 @@ void Score::update()
             GameLib::music::stop(4);
 
             //Œˆ’è‰¹
-            GameLib::sound::play(0, 0);
+             GameLib::music::play(7, false);
 
             changeScene(Title::instance());
             break;

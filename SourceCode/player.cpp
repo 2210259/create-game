@@ -162,27 +162,24 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
     // Attackモードに変える
     if(Game::instance()->playerModeFlag() == true)
     {
+        //もし上を向いていたら
+        if(obj->actorComponent()->direction_ == obj->actorComponent()->UP) 
+        {
+            //当たり判定の位置を設定
+            attackPosition = { 640, 480 };
+        }
         // もし左を向いてたら
         if (obj->actorComponent()->direction_ == obj->actorComponent()->LEFT)
         {
             //当たり判定の位置を設定
-            attackPosition = { 480, 540 };
+            attackPosition = { 460, 645 };
         }
-
         // もし右を向いていたら
         if(obj->actorComponent()->direction_ == obj->actorComponent()->RIGHT)
         {
             //当たり判定の位置を設定
-            attackPosition = { 800 , 540 };
+            attackPosition = { 820 , 645 };
         }
-
-        //もし上を向いていたら
-        if(obj->actorComponent()->direction_ == obj->actorComponent()->UP)
-        {
-            //当たり判定の位置を設定
-            attackPosition = { 640 , 540 };
-        }
-        
         // 武器をセット
         OBJ2D* weapon = Game::instance()->obj2dManager()->add(
             new OBJ2D(

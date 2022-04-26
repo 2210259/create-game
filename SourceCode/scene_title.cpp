@@ -23,6 +23,7 @@ void Title::init() {
     // 読み込むテクスチャ
     LoadTexture loadTextureTitle[static_cast<size_t>(TEXNO::NUM)] = {
         { static_cast<int>(TEXNO::STAR),  L"./Data/Images/star.png", 1U },
+        { static_cast<int>(TEXNO::PLAYER),  L"./Data/Images/player.png", 1U },
     };
 
     // テクスチャのロード
@@ -73,7 +74,7 @@ void Title::update() {
         if (TRG(0) & PAD_START) {
 
             //決定音
-            GameLib:sound::play(0, 0);
+            GameLib::music::play(7, false);
 
             ++state_;   // フェードアウトへ
         }
@@ -126,11 +127,16 @@ void Title::draw() {
     DepthStencil::instance().set(DepthStencil::MODE::APPLY_MASK);
 
     // タイトルの描画
-    GameLib::font::textOut(4, "Title",
-        { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 3) },
+    GameLib::font::textOut(4, "NoName",
+        { GameLib::window::getWidth() / 4 * 3, (GameLib::window::getHeight() / 4) },
         VECTOR2(5.0f, 5.0f),
         { 1.0f, 1.0f, 1.0f, 1.0f },
-        GameLib::TEXT_ALIGN::UPPER_MIDDLE
+        GameLib::TEXT_ALIGN::UPPER_RIGHT
+    );
+
+    // プレイヤーの描画
+    sprPlayer_.draw(
+        playerPos_, playerSize_
     );
 
     // Push Enter Key の描画

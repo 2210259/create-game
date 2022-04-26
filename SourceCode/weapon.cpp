@@ -68,8 +68,8 @@ WeaponBehavior::WeaponBehavior()
 
     //TODO 武器パラメータ設定
     param_.SCALE = { 1, 1 };
-    param_.ATTACK_BOX = { -25, -25, 25, 25 };
-    param_.HIT_BOX    = { -25, -25, 25, 25 };
+    param_.ATTACK_BOX = { -15, -15, 15, 15 };
+    // param_.HIT_BOX    = { -15, -15, 15, 15 };
 }
 
 // void WeaponBehavior::calcAttackBox(OBJ2D* obj)
@@ -85,31 +85,67 @@ WeaponBehavior::WeaponBehavior()
 // 武器(→)敵に当たった時の処理(Perfect)
 void WeaponBehavior::hit(OBJ2D* src, OBJ2D* dst)
 {
+    // falseの場合処理をしない
+    if (src->collider()->judgeFlag() == false) return;
+
+    // ジャッジフラグをなくす
+    src->collider()->setJudgeFlag(false);
+
     // コンボを追加
     Game::instance()->addCombo();
 
-    // 敵にダメージを与える
-    dst->actorComponent()->damage();
+    // スコアの加算(2倍)
+    Game::instance()->addScore(dst->actorComponent()->score() * 2);
+
+    // ノーツ判定を送る
+    Game::instance()->setDecision(Game::instance()->PERFECT);
+
+    // 敵を消滅
+    dst->remove();
 }
 
 // 武器(→)敵に当たった時の処理(Great)
 void WeaponBehavior::hit2(OBJ2D* src, OBJ2D* dst)
 {
+    // falseの場合処理をしない
+    if (src->collider()->judgeFlag() == false) return;
+
+    // ジャッジフラグをなくす
+    src->collider()->setJudgeFlag(false);
+
     // コンボを追加
     Game::instance()->addCombo();
     
-    // 敵にダメージを与える
-    dst->actorComponent()->damage();
+    // スコアの加算(1.5倍)
+    Game::instance()->addScore(dst->actorComponent()->score() / 2);
+
+    // ノーツ判定を送る
+    Game::instance()->setDecision(Game::instance()->GREAT);
+
+    // 敵を消滅
+    dst->remove();
 }
 
 // 武器(→)敵に当たった時の処理(Good)
 void WeaponBehavior::hit3(OBJ2D* src, OBJ2D* dst)
 {
+    // falseの場合処理をしない
+    if (src->collider()->judgeFlag() == false) return;
+
+    // ジャッジフラグをなくす
+    src->collider()->setJudgeFlag(false);
+
     // コンボを追加
     Game::instance()->addCombo();
-    
-    // 敵にダメージを与える
-    dst->actorComponent()->damage();
+
+    // スコアの加算(1.0倍)
+    Game::instance()->addScore(dst->actorComponent()->score());
+
+    // ノーツ判定を送る
+    Game::instance()->setDecision(Game::instance()->GOOD);
+
+    // 敵を消滅
+    dst->remove();
 }
 //----------------------------------------//
 //         　　　　　消去 　　　          //

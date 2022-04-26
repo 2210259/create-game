@@ -216,6 +216,8 @@ class ActorComponent : public Component
 {
 private:
     int  hp_;           // 体力
+    int  maxHP_;        // 最大体力
+    int  score_;        // スコア数
     bool moveFlag_;     // 餌が敵の感知範囲に入ったかどうかのフラグ
     bool xFlip_;        // X座標の向き
     bool hitFlag_;      // 餌が敵に当たった時かどうかのフラグ
@@ -233,6 +235,7 @@ public:
     
     ActorComponent()
         : hp_(0)
+        , maxHP_(0)
         , moveFlag_(false)
         , xFlip_(false)
         , hitFlag_(false)
@@ -242,21 +245,25 @@ public:
     {}
     // ゲッター
     int hp() const { return hp_; }
+    int maxHP() const { return maxHP_; }
     bool moveFlag() const { return moveFlag_; }
     bool hitFlag() const { return hitFlag_; }
     bool xFlip() const { return xFlip_; }
     int direction() const { return direction_; }
     int deadTimer() const { return deadTimer_; }
     int posType() const { return posType_; }
+    int score() { return score_; }
 
     // セッター
     void setHP(int h) { hp_ = h; }
+    void setMaxHP(int h) { maxHP_ = h; }
     void setmoveFlag(bool f) { moveFlag_ = f; }
-    void sethitFlag(bool f) { hitFlag_ = f; }
+    void setHitFlag(bool f) { hitFlag_ = f; }
     void setDirection(DIRECTON d) { direction_ = d; }
     void setFlip(bool b) { xFlip_ = b; }
     void setDeadTimer(int t) { deadTimer_ = t; }
     void setPosType(int p) { posType_ = p; }
+    void setScore(int s) { score_ = s; }
 
     // X座標の向きを反転
     void flip() { xFlip_ = !xFlip_; }

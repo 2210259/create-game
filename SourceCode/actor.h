@@ -37,7 +37,8 @@ protected:
 
         VECTOR4 RANGE_BOX;
         int HP;         // ヒットポイント
-        int HIT_TIMER;
+        int SCORE;      // スコア
+        int HIT_TIMER;  
         int DEAD_TIMER; // 死亡時タイマー
     }param_ = {};
 

@@ -77,17 +77,28 @@ void SceneManager::execute(Scene* scene)
                                 //（Releaseモードのみ）
 
     // ゲームライブラリの初期化処理
-    GameLib::init(L"前期ゲーム制作_1回目", BG::WINDOW_W, BG::WINDOW_H, isFullScreen);
+    GameLib::init(L"NONAME", BG::WINDOW_W, BG::WINDOW_H, isFullScreen);
 
 #ifndef _DEBUG
     ShowCursor(!isFullScreen);	// フルスクリーン時はカーソルを消す
 #endif
+    //テクスチャの読み込み
+    texture::load(loadTexture);
+
+    //音楽読み込み
+    audio.init();
 
     // メインループ
     while (scene)
     {
         scene = scene->execute();
     }
+
+    //テクスチャの解放
+    texture::releaseAll();
+
+    //音楽クリア
+    audio.deinit();
 
     // ゲームライブラリの終了処理
     GameLib::uninit();
