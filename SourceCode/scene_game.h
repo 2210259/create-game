@@ -40,6 +40,10 @@ private:
     int greatTimer;
     int perfectTimer;
 
+    VECTOR2 scorePos;   // スコアの位置
+    VECTOR2 scoreSize;  // スコアの大きさ
+    VECTOR4 scoreColor; // スコアの色
+
 public:
     enum DECISION {
         MISS,
@@ -125,6 +129,9 @@ private:
 
     // ノーツ判定の描画
     void decisionDraw();
+
+    // 操作方法UI
+    void operationDraw();
 };
 
 //******************************************************************************

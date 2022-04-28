@@ -21,9 +21,8 @@ void Title::init() {
     Scene::init();	    // 基底クラスのinitを呼ぶ
 
     // 読み込むテクスチャ
-    LoadTexture loadTextureTitle[static_cast<size_t>(TEXNO::NUM)] = {
-        { static_cast<int>(TEXNO::STAR),  L"./Data/Images/star.png", 1U },
-        { static_cast<int>(TEXNO::PLAYER),  L"./Data/Images/player.png", 1U },
+    LoadTexture loadTextureTitle[static_cast<size_t>(TEXNOM::NUM)] = {
+        { static_cast<int>(TEXNOM::STAR),  L"./Data/Images/star.png", 1U },
     };
 
     // テクスチャのロード
@@ -129,15 +128,16 @@ void Title::draw() {
     // タイトルの描画
     GameLib::font::textOut(4, "NoName",
         { GameLib::window::getWidth() / 4 * 3, (GameLib::window::getHeight() / 4) },
-        VECTOR2(5.0f, 5.0f),
+        VECTOR2(2.0f, 2.0f),
         { 1.0f, 1.0f, 1.0f, 1.0f },
         GameLib::TEXT_ALIGN::UPPER_RIGHT
     );
 
     // プレイヤーの描画
-    sprPlayer_.draw(
-        playerPos_, playerSize_
-    );
+    texture::begin(TEXNO::PLAYER);
+    texture::draw(TEXNO::PLAYER, playerPos_, playerScale_,
+        playerTexPos_,playerTexSize_);
+    texture::end(TEXNO::PLAYER);
 
     // Push Enter Key の描画
     if (timer_ >> 5 & 0x01) {

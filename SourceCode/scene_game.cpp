@@ -136,11 +136,10 @@ void Game::update()
                 new ActorComponent,
                 nullptr
             ),
-            &idlePlayerBehavior, VECTOR2(640, 700), -1);
+            &idlePlayerBehavior, VECTOR2(640, 700), -1, {});
 
         // BGの初期設定
         bg()->init(player_);
-
 
         state_++;    // 初期設定処理の終了
         /*fallthrough*/
@@ -171,8 +170,13 @@ void Game::update()
             changeScene(Score::instance());
             break;
         }
-        timer_++;
 
+        if (timer_ > 900) {
+            GameLib::music::stop(0);
+            changeScene(Score::instance());
+            break;
+        }
+        timer_++;
         break;
     }
     debug::setString("Combo:%d", combo());
@@ -188,7 +192,7 @@ void Game::update()
 void Game::draw()
 {
     // 画面クリア
-    GameLib::clear(VECTOR4(0.2f, 0.2f, 0.2f, 1));
+    GameLib::clear(VECTOR4(0.5f, 0.5f, 0.5f, 1));
 
     bg()->drawBack();   // オブジェクトの描画
 
@@ -209,6 +213,9 @@ void Game::draw()
 
     // ノーツ判定の描画
     decisionDraw();
+
+    // 操作説明の描画
+    operationDraw();
 
     // ポーズ画面
     if (isPaused_)
@@ -233,6 +240,32 @@ void Game::draw()
             { 1.0f, 1.0f, 1.0f, 1.0f },
             GameLib::TEXT_ALIGN::UPPER_MIDDLE
         );
+    }
+
+    //左の攻撃範囲表示
+    primitive::rect(445, 610, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
+    //右の攻撃範囲表示
+    primitive::rect(805, 610, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
+    //上の攻撃範囲表示
+    primitive::rect(625, 430, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
+
+    //プレイヤーが左を向いていたら
+    if (player()->actorComponent()->direction() == player()->actorComponent()->LEFT)
+    {
+        //左の攻撃範囲表示
+        primitive::rect(445, 610, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
+    }
+    //プレイヤーが左を向いていたら
+    if (player()->actorComponent()->direction() == player()->actorComponent()->RIGHT)
+    {
+        //右の攻撃範囲表示
+        primitive::rect(805, 610, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
+    }
+     //プレイヤーが左を向いていたら
+    if (player()->actorComponent()->direction() == player()->actorComponent()->UP)
+    {
+        //上の攻撃範囲表示
+        primitive::rect(625, 430, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
     }
 }
 
@@ -304,18 +337,18 @@ void Game::comboDraw()
 // スコアの描画設定
 void Game::scoreDraw()
 {
-    std::ostringstream ss1;
-
-    ss1 << "SCORE" << std::setw(8) << std::setfill('0') << score_;
-
-    // スコア数をテキスト表示
-    font::textOut(6,
-        ss1.str(),
-        { 10, 10 },
-        { 1.0f, 1.0f },
-        { 1.0f, 1.0f, 1.0f, 1.0f },
-        TEXT_ALIGN::UPPER_LEFT
-    );
+    // std::ostringstream ss1;
+    // 
+    // ss1 << "SCORE" << std::setw(8) << std::setfill('0') << score_;
+    // 
+    // // スコア数をテキスト表示
+    // font::textOut(6,
+    //     ss1.str(),
+    //     { 10, 10 },
+    //     { 1.0f, 1.0f },
+    //     { 1.0f, 1.0f, 1.0f, 1.0f },
+    //     TEXT_ALIGN::UPPER_LEFT
+    // );
 }
 
 // ノーツの判定判別
@@ -349,6 +382,7 @@ void Game::decisionJudge()
         greatTimer--;
     if (perfectTimer > 0)
         perfectTimer--;
+    debug::setString("decision_NUM:%d", decision_);
 }
 
 void Game::decisionDraw()
@@ -358,44 +392,66 @@ void Game::decisionDraw()
     // GOODを描画
     if (goodTimer > 0) {
         ss1 << "GOOD";
-
-        // コンボ数をテキスト表示
-        font::textOut(6,
-            ss1.str(),
-            { 1250, 180 },
-            { 1.0f, 1.0f },
-            { 1.0f, 1.0f, 1.0f, 1.0f },
-            TEXT_ALIGN::MIDDLE_RIGHT
-        );
     }
     // GREATを描画
     if (greatTimer > 0)
     {
         ss1 << "GREAT";
-
-        // コンボ数をテキスト表示
-        font::textOut(6,
-            ss1.str(),
-            { 1250, 180 },
-            { 1.0f, 1.0f },
-            { 0.0f, 1.0f, 1.0f, 1.0f },
-            TEXT_ALIGN::MIDDLE_RIGHT
-        );
     }
     // PERFECTを描画
     if (perfectTimer > 0)
     {
         ss1 << "PERFECT";
-
-        // コンボ数をテキスト表示
-        font::textOut(6,
-            ss1.str(),
-            { 1250, 180 },
-            { 1.0f, 1.0f },
-            { 1.0f, 1.0f, 0.0f, 1.0f },
-            TEXT_ALIGN::MIDDLE_RIGHT
-        );
     }
+    // コンボ数をテキスト表示
+    font::textOut(6,
+        ss1.str(),
+        { 1250, 180 },
+        { 1.0f, 1.0f },
+        { 1.0f, 1.0f, 0.0f, 1.0f },
+        TEXT_ALIGN::MIDDLE_RIGHT
+    );
+    debug::setString("goodTimer:%d", goodTimer);
+    debug::setString("greatTimer:%d", greatTimer);
+    debug::setString("perfectTimer:%d", perfectTimer);
+}
+
+// TODO: 試遊会用
+// 操作説明（仮）
+void Game::operationDraw() {
+    // std::ostringstream ss1, ss2, ss3;
+    // 
+    // ss1 << "[W]+Enter->UpAttack";
+    // 
+    // // コンボ数をテキスト表示
+    // font::textOut(6,
+    //     ss1.str(),
+    //     { 10, 70 },
+    //     { 0.6f, 0.6f },
+    //     { 1.0f, 1.0f, 1.0f, 1.0f },
+    //     TEXT_ALIGN::LOWER_LEFT
+    // );
+    // ss2 << "[A]+Enter->LeftAttack";
+    // 
+    // // コンボ数をテキスト表示
+    // font::textOut(6,
+    //     ss2.str(),
+    //     { 10, 90 },
+    //     { 0.6f, 0.6f },
+    //     { 1.0f, 1.0f, 1.0f, 1.0f },
+    //     TEXT_ALIGN::LOWER_LEFT
+    // );
+    // 
+    // ss3 << "[D]+Enter->RightAttack";
+    // 
+    // // コンボ数をテキスト表示
+    // font::textOut(6,
+    //     ss3.str(),
+    //     { 10, 110 },
+    //     { 0.6f, 0.6f },
+    //     { 1.0f, 1.0f, 1.0f, 1.0f },
+    //     TEXT_ALIGN::LOWER_LEFT
+    // );
 }
 
 //******************************************************************************

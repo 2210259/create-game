@@ -19,6 +19,7 @@ private:
     // void hit2(OBJ2D* src, OBJ2D* dst) override;
 };
 
+//手裏剣
 class Enemy0Behavior : public BaseEnemyBehavior
 {
 public:
@@ -29,6 +30,7 @@ private:
 
 EXTERN Enemy0Behavior enemy0Behavior;
 
+//クナイ
 class Enemy1Behavior : public BaseEnemyBehavior
 {
 public:
@@ -39,6 +41,7 @@ private:
 
 EXTERN Enemy1Behavior enemy1Behavior;
 
+//長押し　上
 class Enemy2Behavior : public BaseEnemyBehavior
 {
 public:
@@ -46,3 +49,21 @@ public:
 };
 
 EXTERN Enemy2Behavior enemy2Behavior;
+
+//長押し　横
+class Enemy3Behavior : public BaseEnemyBehavior
+{
+public:
+    Enemy3Behavior();
+};
+
+EXTERN Enemy3Behavior enemy3Behavior;
+
+//連打(仮)
+class Enemy4Behavior : public BaseEnemyBehavior
+{
+public:
+    Enemy4Behavior();
+};
+
+EXTERN Enemy4Behavior enemy4Behavior;

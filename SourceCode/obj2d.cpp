@@ -105,6 +105,7 @@ bool Renderer::animeUpdate()
     return false;
 }
 
+// TODO:当たり判定の描画
 //----------------------------------------//
 //             Collider                   //
 //----------------------------------------//
@@ -268,13 +269,31 @@ void OBJ2DManager::init()
 //--------------------------------------------------------------
 //  リストへ追加
 //--------------------------------------------------------------
-OBJ2D* OBJ2DManager::add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int posType)
+OBJ2D* OBJ2DManager::add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int posType, VECTOR2 size)
 {
     obj->setBehavior(behavior);
     obj->transform()->setPosition(pos);
-    if (posType >= 0) {
+    
+     //ノーツの出現位置の設定
+    if (posType >= 0){
         obj->actorComponent()->setPosType(posType);
     }
+
+    //長押し(上)ノーツの時
+    if (size.y > 0) {
+        //横幅は固定なので50(仮)を入れる
+        size.x = 50;
+        //サイズの設定
+        obj->collider()->setSize(size);
+    }
+    //長押し(横)ノーツの時
+    if (size.x > 0) {
+        //縦幅は固定なので50(仮)を入れる
+        size.y = 50;
+        //サイズの設定
+        obj->collider()->setSize(size);
+    }
+
     objList_.emplace_back(obj);
     return obj;
 }

@@ -166,19 +166,19 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
         if(obj->actorComponent()->direction_ == obj->actorComponent()->UP) 
         {
             //当たり判定の位置を設定
-            attackPosition = { 640, 480 };
+            attackPosition = { 640, 445 };
         }
         // もし左を向いてたら
         if (obj->actorComponent()->direction_ == obj->actorComponent()->LEFT)
         {
             //当たり判定の位置を設定
-            attackPosition = { 460, 645 };
+            attackPosition = { 460, 625 };
         }
         // もし右を向いていたら
         if(obj->actorComponent()->direction_ == obj->actorComponent()->RIGHT)
         {
             //当たり判定の位置を設定
-            attackPosition = { 820 , 645 };
+            attackPosition = { 820 , 625 };
         }
         // 武器をセット
         OBJ2D* weapon = Game::instance()->obj2dManager()->add(
@@ -189,7 +189,7 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
                 nullptr,
                 new WeaponComponent
             ),
-            &weaponbehavior, attackPosition, -1);
+            &weaponbehavior, attackPosition, -1, {});
         weapon->weaponComponent()->setOwner(obj);
         
         // モードを変える
@@ -308,7 +308,7 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
     Transform* transform = obj->transform();
 
     // 攻撃アニメーション
-    if (renderer->animeTimer() < 9)
+    if (renderer->animeTimer() < 15)
     {
         //左
         if (obj->actorComponent()->direction_ == obj->actorComponent()->LEFT)
@@ -341,7 +341,7 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
         //アニメーション遷移タイマー加算
         renderer->countAnimeTime();
     }
-    if (renderer->animeTimer() >= 9) {
+    if (renderer->animeTimer() >= 15) {
         Game::instance()->setPlayerModeFlag(false);
     }
 

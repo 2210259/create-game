@@ -384,7 +384,7 @@ public:
     void update();  // çXêV
     void draw(const VECTOR2&);    // ï`âÊ
 
-    OBJ2D* add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int posType);
+    OBJ2D* add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int posType, VECTOR2 size);
     std::list<OBJ2D*>* getList() { return &objList_; }
 };
 

@@ -16,8 +16,13 @@ using namespace GameLib;
 // 2DâÊëúÉçÅ[ÉhÉfÅ[É^
 LoadTexture loadTexture[] = {
     { TEXNO::PLAYER,        L"./Data/Images/player.png",        1U },// ÉvÉåÉCÉÑÅ[
-    { TEXNO::ENEMY0,        L"./Data/Images/no-tsu01.png",      1U },// ìG
-    { TEXNO::ENEMY1,        L"./Data/Images/no-tsu02.png",      1U },// ìG
+    { TEXNO::ENEMY0,        L"./Data/Images/no-tsu01.png",      1U },// ÉmÅ[Éc
+    { TEXNO::ENEMY1,        L"./Data/Images/no-tsu02.png",      1U },// ÉmÅ[Éc
+    { TEXNO::ENEMY2,        L"./Data/Images/no-tsu03.png",      1U },// ÉmÅ[Éc
+    { TEXNO::ENEMY3,        L"./Data/Images/no-tsu04.png",      1U },// ÉmÅ[Éc
+    { TEXNO::ENEMY4,        L"./Data/Images/no-tsu05.png",      1U },// ÉmÅ[Éc
+    { TEXNO::ENEMY5,        L"./Data/Images/no-tsu06.png",      1U },// ÉmÅ[Éc
+
     { -1, nullptr }	// èIóπÉtÉâÉO
 };
 
@@ -83,7 +88,7 @@ SpriteData sprEnemy1_Idle0 = SPRITE_CENTER(TEXNO::ENEMY1, 128 * 0, 128 * 0, 128,
 //================================
 
 // çUåÇ
-SpriteData sprEnemy2_Idle0 = SPRITE_CENTER(TEXNO::ENEMY2, 128 * 0, 128 * 0, 128, 128);
+SpriteData sprEnemy2_Idle0 = SPRITE_CENTER(TEXNO::ENEMY2, 128 * 0, 512 * 0, 128, 512);
 // SpriteData sprEnemy2_Idle1 = SPRITE_CENTER(TEXNO::ENEMY0, 128 * 1, 128 * 0, 128, 128);
 
 // éÄñSéû
@@ -91,6 +96,35 @@ SpriteData sprEnemy2_Idle0 = SPRITE_CENTER(TEXNO::ENEMY2, 128 * 0, 128 * 0, 128,
 //SpriteData sprEnemy2_Dead1 = SPRITE_CENTER(TEXNO::ENEMY2, 250 * 1, 650 * 4, 250, 650);
 //SpriteData sprEnemy2_Dead2 = SPRITE_CENTER(TEXNO::ENEMY2, 250 * 2, 650 * 4, 250, 650);
 //SpriteData sprEnemy2_Dead3 = SPRITE_CENTER(TEXNO::ENEMY2, 250 * 3, 650 * 4, 250, 650);
+
+//================================
+//      ìG3
+//================================
+
+// çUåÇ
+SpriteData sprEnemy3_Idle0 = SPRITE_CENTER(TEXNO::ENEMY3, 128 * 0, 128 * 0, 128, 128);
+// SpriteData sprEnemy3_Idle1 = SPRITE_CENTER(TEXNO::ENEMY3, 128 * 1, 128 * 0, 128, 128);
+
+// éÄñSéû
+//SpriteData sprEnemy3_Dead0 = SPRITE_CENTER(TEXNO::ENEMY3, 250 * 0, 650 * 4, 250, 650);
+//SpriteData sprEnemy3_Dead1 = SPRITE_CENTER(TEXNO::ENEMY3, 250 * 1, 650 * 4, 250, 650);
+//SpriteData sprEnemy3_Dead2 = SPRITE_CENTER(TEXNO::ENEMY3, 250 * 2, 650 * 4, 250, 650);
+//SpriteData sprEnemy3_Dead3 = SPRITE_CENTER(TEXNO::ENEMY3, 250 * 3, 650 * 4, 250, 650);
+
+//================================
+//      ìG4
+//================================
+
+// çUåÇ
+SpriteData sprEnemy4_Idle0 = SPRITE_CENTER(TEXNO::ENEMY4, 128 * 0, 128 * 0, 128, 128);
+// SpriteData sprEnemy4_Idle1 = SPRITE_CENTER(TEXNO::ENEMY0, 128 * 1, 128 * 0, 128, 128);
+
+// éÄñSéû
+//SpriteData sprEnemy4_Dead0 = SPRITE_CENTER(TEXNO::ENEMY4, 250 * 0, 650 * 4, 250, 650);
+//SpriteData sprEnemy4_Dead1 = SPRITE_CENTER(TEXNO::ENEMY4, 250 * 1, 650 * 4, 250, 650);
+//SpriteData sprEnemy4_Dead2 = SPRITE_CENTER(TEXNO::ENEMY4, 250 * 2, 650 * 4, 250, 650);
+//SpriteData sprEnemy4_Dead3 = SPRITE_CENTER(TEXNO::ENEMY4, 250 * 3, 650 * 4, 250, 650);
+
 
 //------------------------------------------------------------------------------
 #undef SPRITE_CENTER

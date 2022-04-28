@@ -19,6 +19,9 @@ enum TEXNO
     ENEMY0,       //“G1
     ENEMY1,       //“G2
     ENEMY2,       //“G3
+    ENEMY3,       //“G4
+    ENEMY4,       //“G5
+    ENEMY5,       //“G6
 
     NUM
 };
@@ -86,5 +89,31 @@ extern GameLib::SpriteData sprEnemy2_Dead0;
 extern GameLib::SpriteData sprEnemy2_Dead1;
 extern GameLib::SpriteData sprEnemy2_Dead2;
 extern GameLib::SpriteData sprEnemy2_Dead3;
+
+//================================
+//      “G3
+//================================
+
+// UŒ‚
+extern GameLib::SpriteData sprEnemy3_Idle0;
+
+// €–S
+// extern GameLib::SpriteData sprEnemy3_Dead0;
+// extern GameLib::SpriteData sprEnemy3_Dead1;
+// extern GameLib::SpriteData sprEnemy3_Dead2;
+// extern GameLib::SpriteData sprEnemy3_Dead3;
+
+//================================
+//      “G4
+//================================
+
+// UŒ‚
+extern GameLib::SpriteData sprEnemy4_Idle0;
+ 
+// €–S
+// extern GameLib::SpriteData sprEnemy4_Dead0;
+// extern GameLib::SpriteData sprEnemy4_Dead1;
+// extern GameLib::SpriteData sprEnemy4_Dead2;
+// extern GameLib::SpriteData sprEnemy4_Dead3;
 
 //******************************************************************************

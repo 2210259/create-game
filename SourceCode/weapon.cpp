@@ -66,7 +66,6 @@ WeaponBehavior::WeaponBehavior()
     // param_.SPR_WEAPON = &sprWeapon;
     param_.ERASER = &weaponEraser;
 
-    //TODO •Šíƒpƒ‰ƒ[ƒ^İ’è
     param_.SCALE = { 1, 1 };
     param_.ATTACK_BOX = { -15, -15, 15, 15 };
     // param_.HIT_BOX    = { -15, -15, 15, 15 };
