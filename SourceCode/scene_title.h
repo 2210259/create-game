@@ -35,12 +35,14 @@ public:
     // 使用するテクスチャのラベル
     enum class TEXNOM {
         STAR,
+        START,
         NUM,
     };
 
     // 使用するスプライトデータ
     GameLib::SpriteData sprStar_    = SPRITE_CENTER(static_cast<INT>(TEXNOM::STAR), 0, 0, 500, 500);
     //GameLib::SpriteData sprPlayer_  = SPRITE_BOTTOM(static_cast<INT>(TEXNO::PLAYER), 0, 0, 150, 150);
+    GameLib::SpriteData sprStart_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::START), 0, 0, 600, 300);
 
     // フェードアウト用タイマー
     float fadeOutTimer_ = 0.0f;
@@ -49,10 +51,10 @@ public:
     VECTOR2 starScale_ = { 0.0f, 0.0f };
     float starAngle_ = 0.0f;
 
-    VECTOR2 playerPos_     = { BG::WINDOW_W / 4, BG::WINDOW_H / 10 * 9 };
-    VECTOR2 playerScale_   = { 4.0f, 4.0f };
-    VECTOR2 playerTexPos_  = {  150,   150 };
-    VECTOR2 playerTexSize_ = { 1, 1 };
+    VECTOR2 playerPos_     = { 320, 600 };
+    VECTOR2 playerScale_   = { 1, 1 };
+    VECTOR2 playerTexPos_  = { 0, 0 };
+    VECTOR2 playerTexSize_ = { 150, 150 };
 
     // VECTOR2 playerTexSize_;
 };

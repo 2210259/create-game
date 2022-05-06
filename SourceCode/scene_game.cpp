@@ -72,26 +72,64 @@ void Game::update()
          // 0コンのスタートボタンが押されたらポーズ状態が反転
          isPaused_ = !isPaused_;        
      }
+
+     //ポーズ中
      if (isPaused_)
      {
-         if (TRG(0) & PAD_START)
+         // Aキーが押された時
+         if (TRG(0) & PAD_RIGHT)
          {
-            //決定音
-             GameLib::music::play(7, false);
-
-             changeScene(Title::instance());
+             if (pause_num_ > 0)
+             {
+                 pause_num_--;
+             }
          }
 
-         if (TRG(0) & PAD_SELECT)
+         //　Dキーが押された時
+         if (TRG(0) & PAD_LEFT)
          {
-            //決定音
-             GameLib::music::play(7, false);
-
-             changeScene(Game::instance());
+             if (pause_num_ < 1)
+             {
+                 pause_num_++;
+             }
          }
 
          //音楽を止める
          GameLib::music::pause(0);
+
+         //文字のα値を０～１の間で往復させる処理
+         switch (pause_alpha_num_)
+         {
+         case 0:
+             pause_alpha_ -= 0.03f;
+             if (pause_alpha_ <= 0)   pause_alpha_num_++;
+             break;
+
+         case 1:
+             pause_alpha_ += 0.03f;
+             if (pause_alpha_ >= 1)   pause_alpha_num_--;
+             break;
+         }
+
+         //０(再挑戦)を選んでいるとき
+         if (pause_num_)
+         {
+             if (TRG(0) & PAD_START)
+             {
+                 music::play(7);
+                 changeScene(Game::instance());
+             }
+         }
+
+         //１(たいとるへ)を選んでいるとき
+         if (pause_num_ == false)
+         {
+             if (TRG(0) & PAD_START)
+             {
+                 music::play(7);
+                 changeScene(Title::instance());
+             }
+         }
 
          return;              // この時点でポーズ中ならリターン
      }
@@ -101,17 +139,32 @@ void Game::update()
     case 0:
         //////// 初期設定 ////////
         
-        timer_ = 0;     // ゲームタイマー
-        combo_ = 0;     // コンボ数
-        maxCombo_ = 0;  // 最大コンボ数
+        timer_       = 0;    // ゲームタイマー
+        combo2Timer_ = 0;
+        scoreTimer_  = 0;    // スコアタイマー
+        notesTimer_  = 0;    // ノーツタイマー
+        score_       = 0;    // スコア
+        combo_       = 0;    // コンボ数
+        combo2_      = 0;    // コンボ数(連打)
+        maxCombo_    = 0;    // 最大コンボ数
 
         // HPバーの設定
-        hpPos01     = { 950,  20 };        // HPバーの位置
-        hpSize01    = { 300,  60 };        // HPバーの大きさ
-        hpColor01   = { 0, 0, 0, 1.0f };   // HPバーの色
-        hpPos02     = { 955,  25 };        // HPバーの位置
-        hpSize02    = { 290,  50 };        // HPバーの大きさ
-        hpColor02   = { 1, 0, 0, 0.5f };   // HPバーの色
+        hpPos01      = { 950,  20 };         // HPバーの位置
+        hpSize01     = { 300,  60 };         // HPバーの大きさ
+        hpColor01    = { 0, 0, 0, 1.0f };    // HPバーの色
+        hpPos02      = { 955,  25 };         // HPバーの位置
+        hpSize02     = { 290,  50 };         // HPバーの大きさ
+        hpColor02    = { 1, 0, 0, 0.8f };    // HPバーの色
+        comboSize    = { 1, 1 };             // コンボの大きさ
+        combo2Pos    = { 1250, 240 };        // コンボ2の位置
+        combo2Size   = { 1, 1 };             // コンボ2の大きさ             
+        combo2Color  = { 1, 1, 1, 0 };       // コンボ2の色
+        scorePos     = { 10, 80 };           // スコアの位置
+        scoreSize    = { 1, 1 };             // スコアの大きさ             
+        scoreColor   = { 1, 1, 1, 0 };       // スコアの色
+        notesPos     = { 1250, 200 };        // ノーツの位置
+        notesSize    = { 1, 1 };             // ノーツの大きさ             
+        notesColor   = { 1, 1, 1, 0 };       // ノーツの色
 
         // BGMの再生
         music::play(0, false);
@@ -158,20 +211,17 @@ void Game::update()
         // 当たり判定
         judge();
 
-        // 最大コンボの更新
-        calcMaxCombo();
+        // スコアの計算
+        calcScore();
+
+        // コンボの計算
+        calcCombo();
 
         // ノーツ判定の更新
         decisionJudge();
 
-        if (TRG(0) & PAD_SELECT)
-        {
-            GameLib::music::stop(0);
-            changeScene(Score::instance());
-            break;
-        }
-
-        if (timer_ > 900) {
+        // TODO:ゲームの終了時間の調整
+        if (timer_ > 100) {
             GameLib::music::stop(0);
             changeScene(Score::instance());
             break;
@@ -179,11 +229,11 @@ void Game::update()
         timer_++;
         break;
     }
-    debug::setString("Combo:%d", combo());
-    debug::setString("maxCombo:%d", maxCombo());
-   
-    debug::setString("stageNo:%d", Game::instance()->stageNo());
-    debug::setString("GameTimer:%d", timer_);
+    // debug::setString("Combo:%d", combo());
+    // debug::setString("maxCombo:%d", maxCombo());
+    // 
+    // debug::setString("stageNo:%d", Game::instance()->stageNo());
+    // debug::setString("GameTimer:%d", timer_);
 }
 
 //--------------------------------------------------------------
@@ -208,6 +258,7 @@ void Game::draw()
     }
 
     // スコア,コンボ数の描画
+    // TODO:スコアの表示
     scoreDraw();
     comboDraw();
 
@@ -227,19 +278,46 @@ void Game::draw()
             GameLib::TEXT_ALIGN::UPPER_MIDDLE
         );
 
-        GameLib::font::textOut(4, "ENTER : Return To Title",
-            { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 2) },
-            VECTOR2(2.0f, 2.0f),
-            { 1.0f, 1.0f, 1.0f, 1.0f },
-            GameLib::TEXT_ALIGN::UPPER_MIDDLE
-        );
+        //再挑戦を選んでいるとき
+        if (pause_num_)
+        {
+            //"再挑戦"の文字の描画
+            sprRestart_.draw(
+                { GameLib::window::getWidth() / 4, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { 1.0f,1.0f },
+                ToRadian(0),
+                { 1,1,1,pause_alpha_ }
+            );
 
-        GameLib::font::textOut(4, "BACKSPACE : RESTART",
-            { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 2 + 100) },
-            VECTOR2(2.0f, 2.0f),
-            { 1.0f, 1.0f, 1.0f, 1.0f },
-            GameLib::TEXT_ALIGN::UPPER_MIDDLE
-        );
+            //"たいとるへ"の文字の描画
+            sprTotitle_.draw(
+                { GameLib::window::getWidth() / 2 + GameLib::window::getWidth() / 4, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { 1.0f,1.0f },
+                ToRadian(0),
+                { 1,1,1,1 }
+            );
+        }
+
+        //たいとるへを選んでいるとき
+        if (pause_num_ == false)
+        {
+            //"再挑戦"の文字の描画
+            sprRestart_.draw(
+                { GameLib::window::getWidth() / 4, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { 1.0f,1.0f },
+                ToRadian(0),
+                { 1,1,1,1 }
+            );
+
+            //"たいとるへ"の文字の描画
+            sprTotitle_.draw(
+                { GameLib::window::getWidth() / 2 + GameLib::window::getWidth() / 4, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { 1.0f,1.0f },
+                ToRadian(0),
+                { 1,1,1,pause_alpha_ }
+            );
+        }
+
     }
 
     //左の攻撃範囲表示
@@ -305,25 +383,78 @@ void Game::judge()
             {
                 src->behavior()->hit3(src, dst);
             }
+            else if (src->collider()->hitCheck5(dst))
+            {
+                src->behavior()->hit5(src, dst);
+            }
+            else if (src->collider()->hitCheck6(dst))
+            {
+                src->behavior()->hit6(src, dst);
+            }
+            else if (src->collider()->hitCheck7(dst))
+            {
+                src->behavior()->hit7(src, dst);
+            }
+            // 長押し判定
+            if (src->collider()->hitCheck4(dst))
+            {
+                src->behavior()->hit4(src, dst);
+            }
         }
     }
 }
 
-void Game::calcMaxCombo()
+void Game::calcCombo()
 {
     // 最大コンボの更新
     if (combo() > maxCombo()) {
         setMaxCombo(combo());
     }
+
+    // スコア表示をもとに戻す
+    if (combo2Timer_ >= maxAppearTime_) {
+        combo2Pos   = { 1250, 240 };        // コンボの位置
+        combo2Size  = { 1, 1 };             // コンボの大きさ
+        combo2Color = { 1, 1, 1, 0 };       // コンボの色
+    }
+    // タイマーを減らす
+    if (combo2Timer_ > 0) combo2Timer_--;
+
+    // パラメータを変更
+    
+    // コンボ1の設定
+    if (comboSize.x > 1.0f) 
+        comboSize -= { 0.05f, 0.05f };
+
+    // コンボ2の設定
+    if (combo2Timer_ > 30) {
+        combo2Color.w += 0.5f;
+    }
+    else {
+        combo2Color.w -= 0.04f;
+    }
+    if (combo2Timer_ > 115)
+        combo2Size += { 0.1f, 0.1f };
+    else
+        combo2Size -= { 0.1f, 0.1f };
+
+    // 一定の値を超えないように設定
+    combo2Size.x = clamp(combo2Size.x, 1.0f, 1.5f);
+    combo2Size.y = clamp(combo2Size.y, 1.0f, 1.5f);
+    if (combo2Pos.y < 240)        combo2Pos.y = 240;
+    combo2Size.x = clamp(combo2Size.x, 1.0f, 1.3f);
+    combo2Size.y = clamp(combo2Size.y, 1.0f, 1.3f);
+    combo2Color.w = clamp(combo2Color.w, 0.0f, 1.0f);
 }
 
 // コンボの描画設定
 void Game::comboDraw()
 {
-    std::ostringstream ss1;
+    std::ostringstream ss1, ss2, ss3;
 
-    ss1 << "COMBO" << std::setw(4) << combo_;
-    
+    ss1 << "COMBO" << std::setw(4) << " ";
+    ss2 << std::setw(9) << combo_;
+    ss3 << combo2_;
     // コンボ数をテキスト表示
     font::textOut(6,
         ss1.str(),
@@ -332,88 +463,151 @@ void Game::comboDraw()
         { 1.0f, 1.0f, 1.0f, 1.0f },
         TEXT_ALIGN::MIDDLE_RIGHT
     );
+
+    font::textOut(6,
+        ss2.str(),
+        { 1250, 120 },
+        comboSize,
+        { 1.0f, 1.0f, 1.0f, 1.0f },
+        TEXT_ALIGN::MIDDLE_RIGHT
+    );
+    
+    if (combo2_ > 0 && combo2Timer_ > 0) {
+        font::textOut(6,
+            ss3.str(),
+            combo2Pos,
+            combo2Size,
+            combo2Color,
+            TEXT_ALIGN::MIDDLE_RIGHT
+        );
+    }
+}
+
+void Game::calcScore()
+{
+    // スコア表示をもとに戻す
+    if (scoreTimer_ >= maxAppearTime_) {
+        scorePos    = { 10, 80 };           // スコアの位置
+        scoreColor  = { 1.0f, 1.0f, 0.5f, 0 };       // スコアの色
+    }
+    // タイマーを減らす
+    if (scoreTimer_ > 0) scoreTimer_--;
+
+    // パラメータを変更
+    if (scoreTimer_ > 100) {
+        scorePos.y -= 1.0f;
+        scoreColor.w += 0.2f;
+    }
+    else{
+        scorePos.y -= 1.0f;
+        scoreColor.w -= 0.02f;
+    }
+    // 一定の値を超えないように設定
+    if (scorePos.y < 10)        scorePos.y = 10;
+    scoreColor.w = clamp(scoreColor.w, 0.0f, 1.0f);
 }
 
 // スコアの描画設定
 void Game::scoreDraw()
 {
-    // std::ostringstream ss1;
-    // 
-    // ss1 << "SCORE" << std::setw(8) << std::setfill('0') << score_;
-    // 
-    // // スコア数をテキスト表示
-    // font::textOut(6,
-    //     ss1.str(),
-    //     { 10, 10 },
-    //     { 1.0f, 1.0f },
-    //     { 1.0f, 1.0f, 1.0f, 1.0f },
-    //     TEXT_ALIGN::UPPER_LEFT
-    // );
+    std::ostringstream ss1, ss2;
+    
+    ss1 << "SCORE " << std::setw(8) << std::setfill('0') << score_;
+    ss2 << std::setw(14) << appearScore_;
+    
+    // スコア数をテキスト表示
+    font::textOut(6,
+        ss1.str(),
+        { 10, 10 },
+        { 1.0f, 1.0f },
+        { 1.0f, 1.0f, 1.0f, 1.0f },
+        TEXT_ALIGN::UPPER_LEFT
+    );
+
+    if (scoreTimer_) {
+        // スコア数をテキスト表示
+        font::textOut(6,
+            ss2.str(),
+            scorePos,
+            scoreSize,
+            scoreColor,
+            TEXT_ALIGN::UPPER_LEFT
+        );
+    }
 }
 
-// ノーツの判定判別
+// ノーツ判定の判別
 void Game::decisionJudge()
 {
     switch (decision_)
     {
     case Game::MISS:
+        notesText.str("MISS");
+        notesTimer_ = maxAppearTime_;
+        notesPos    = { 1250, 200 };
+        notesSize   = { 0.2f, 0.2f };
+        notesColor  = { 0.0f, 0.0f, 1.0f, 0.0f };
+        decision_   = NONE;
         break;
     case Game::GOOD:
-        goodTimer = 60;
-        greatTimer, perfectTimer = 0;       
-        decision_ = MAX;
+        notesText.str("GOOD");
+        notesTimer_ = maxAppearTime_;
+        notesPos    = { 1250, 200 };
+        notesSize   = { 0.2f, 0.2f };
+        notesColor  = { 1.0f, 1.0f, 1.0f, 0.0f };
+        decision_   = NONE;
         break;
     case Game::GREAT:
-        greatTimer = 60;
-        goodTimer, perfectTimer = 0;
-        decision_ = MAX;
+        notesText.str("GREAT");
+        notesTimer_ = maxAppearTime_;
+        notesPos    = { 1250, 200 };
+        notesSize   = { 0.2f, 0.2f };
+        notesColor  = { 0.2f, 1.0f, 1.0f, 0.0f };
+        decision_   = NONE;
         break;
     case Game::PERFECT:
-        perfectTimer = 60;
-        goodTimer, greatTimer = 0;
-        decision_ = MAX;
+        notesText.str("PERFECT");
+        notesTimer_ = maxAppearTime_;
+        notesPos    = { 1250, 200 };
+        notesSize   = { 0.2f, 0.2f };
+        notesColor  = { 1.0f, 1.0f, 0.0f, 0.0f };
+        decision_   = NONE;
         break;
     default:
         break;
     }
-    if (goodTimer > 0)
-        goodTimer--;
-    if (greatTimer > 0)
-        greatTimer--;
-    if (perfectTimer > 0)
-        perfectTimer--;
-    debug::setString("decision_NUM:%d", decision_);
+    // タイマーを減らす
+    if (notesTimer_ > 0) notesTimer_--;
+    
+    // パラメータを変更
+    if (notesTimer_ > 30) {
+        notesPos.y -= 2.0f;
+        notesSize += {0.2f, 0.2f};
+        notesColor.w += 0.2f;
+    }
+    else {
+        notesColor.w -= 0.04f;
+    }
+    // 一定の値を超えないように設定
+    if (notesPos.y < 180)       notesPos.y   = 180;
+    if (notesSize.x > 1.0f)     notesSize    = { 1.0f,1.0f };
+    notesColor.w = clamp(notesColor.w, 0.0f, 1.0f);
+    debug::setString("notesTimer:%d", notesTimer_);
+    debug::setString("notesColor.w:%f", notesColor.w);
 }
 
 void Game::decisionDraw()
 {
-    std::ostringstream ss1;
-
-    // GOODを描画
-    if (goodTimer > 0) {
-        ss1 << "GOOD";
+    if (notesTimer_ > 0) {
+        // コンボ数をテキスト表示
+        font::textOut(6,
+            notesText.str(),
+            notesPos,
+            notesSize,
+            notesColor,
+            TEXT_ALIGN::MIDDLE_RIGHT
+        );
     }
-    // GREATを描画
-    if (greatTimer > 0)
-    {
-        ss1 << "GREAT";
-    }
-    // PERFECTを描画
-    if (perfectTimer > 0)
-    {
-        ss1 << "PERFECT";
-    }
-    // コンボ数をテキスト表示
-    font::textOut(6,
-        ss1.str(),
-        { 1250, 180 },
-        { 1.0f, 1.0f },
-        { 1.0f, 1.0f, 0.0f, 1.0f },
-        TEXT_ALIGN::MIDDLE_RIGHT
-    );
-    debug::setString("goodTimer:%d", goodTimer);
-    debug::setString("greatTimer:%d", greatTimer);
-    debug::setString("perfectTimer:%d", perfectTimer);
 }
 
 // TODO: 試遊会用

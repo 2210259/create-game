@@ -18,7 +18,8 @@ OBJ2D::OBJ2D(Renderer* renderer,
     Collider* collider,
     BG* bg,
     ActorComponent* actorComponent,
-    WeaponComponent* weaponComponent)
+    WeaponComponent* weaponComponent
+    )
     : renderer_(renderer)
     , collider_(collider)
     , bg_(bg)
@@ -122,7 +123,7 @@ void Collider::draw(const VECTOR2& scrollPos)
     if(size.x * size.y != 0.0f)
     {
         pos = VECTOR2(hitBox_.left, hitBox_.top) - scrollPos;
-        color = { 1, 1, 1, 0.5f };
+        color = { 0, 0, 1, 0.6f };
         primitive::rect(pos, size, { 0,0 }, 0, color);
     }
 
@@ -135,7 +136,7 @@ void Collider::draw(const VECTOR2& scrollPos)
     {
         pos = VECTOR2(hitBox2_.left, hitBox2_.top) - scrollPos;
 
-        color = { 0, 1, 1 ,0.5f };
+        color = { 0, 0, 0.7f, 0.5f };
         primitive::rect(pos, size, { 0,0 }, 0, color);
     }
 
@@ -148,7 +149,58 @@ void Collider::draw(const VECTOR2& scrollPos)
     {
         pos = VECTOR2(hitBox3_.left, hitBox3_.top) - scrollPos;
 
-        color = { 0, 0, 1, 0.5f };
+        color = { 0, 0, 0.4f, 0.3f };
+        primitive::rect(pos, size, { 0,0 }, 0, color);
+    }
+
+    // hitBox4
+    size = {
+        hitBox4_.right - hitBox4_.left,
+        hitBox4_.bottom - hitBox4_.top
+    };
+    if (size.x * size.y != 0.0f)
+    {
+        pos = VECTOR2(hitBox4_.left, hitBox4_.top) - scrollPos;
+
+        color = { 1.0f, 0, 0, 0.6f };
+        // primitive::rect(pos, size, { 0,0 }, 0, color);
+    }
+
+    // hitBox5
+    size = {
+        hitBox5_.right - hitBox5_.left,
+        hitBox5_.bottom - hitBox5_.top
+    };
+    if (size.x * size.y != 0.0f)
+    {
+        pos = VECTOR2(hitBox5_.left, hitBox5_.top) - scrollPos;
+        color = { 0, 0, 1, 0.6f };
+        primitive::rect(pos, size, { 0,0 }, 0, color);
+    }
+
+    // hitBox6
+    size = {
+        hitBox6_.right - hitBox6_.left,
+        hitBox6_.bottom - hitBox6_.top
+    };
+    if (size.x * size.y != 0.0f)
+    {
+        pos = VECTOR2(hitBox6_.left, hitBox6_.top) - scrollPos;
+
+        color = { 0, 0, 0.7f, 0.5f };
+        primitive::rect(pos, size, { 0,0 }, 0, color);
+    }
+
+    // hitBox7
+    size = {
+        hitBox7_.right - hitBox7_.left,
+        hitBox7_.bottom - hitBox7_.top
+    };
+    if (size.x * size.y != 0.0f)
+    {
+        pos = VECTOR2(hitBox7_.left, hitBox7_.top) - scrollPos;
+
+        color = { 0, 0, 0.4f, 0.3f };
         primitive::rect(pos, size, { 0,0 }, 0, color);
     }
 
@@ -195,6 +247,41 @@ void Collider::calcHitBox3(const GameLib::fRECT& rc) {
     };
 }
 
+void Collider::calcHitBox4(const GameLib::fRECT& rc) {
+    const VECTOR2* pos = &parent()->transform()->position();
+
+    hitBox4_ = {
+        pos->x + rc.left,  pos->y + rc.top,
+        pos->x + rc.right, pos->y + rc.bottom,
+    };
+}
+
+void Collider::calcHitBox5(const GameLib::fRECT& rc) {
+    const VECTOR2* pos = &parent()->transform()->position();
+
+    hitBox5_ = {
+        pos->x + rc.left,  pos->y + rc.top,
+        pos->x + rc.right, pos->y + rc.bottom,
+    };
+}
+
+void Collider::calcHitBox6(const GameLib::fRECT& rc) {
+    const VECTOR2* pos = &parent()->transform()->position();
+
+    hitBox6_ = {
+        pos->x + rc.left,  pos->y + rc.top,
+        pos->x + rc.right, pos->y + rc.bottom,
+    };
+}
+
+void Collider::calcHitBox7(const GameLib::fRECT& rc) {
+    const VECTOR2* pos = &parent()->transform()->position();
+
+    hitBox7_ = {
+        pos->x + rc.left,  pos->y + rc.top,
+        pos->x + rc.right, pos->y + rc.bottom,
+    };
+}
 
 //----------------------------------------//
 //             攻撃範囲計算               //
@@ -235,6 +322,39 @@ bool Collider::hitCheck3(Collider* coll) {
     return true;
 }
 
+bool Collider::hitCheck4(Collider* coll) {
+    if (attackBox_.right < coll->hitBox4_.left) return false;
+    if (attackBox_.left > coll->hitBox4_.right) return false;
+    if (attackBox_.bottom < coll->hitBox4_.top) return false;
+    if (attackBox_.top > coll->hitBox4_.bottom) return false;
+    return true;
+}
+
+bool Collider::hitCheck5(Collider* coll) {
+    if (attackBox_.right < coll->hitBox5_.left) return false;
+    if (attackBox_.left > coll->hitBox5_.right) return false;
+    if (attackBox_.bottom < coll->hitBox5_.top) return false;
+    if (attackBox_.top > coll->hitBox5_.bottom) return false;
+    return true;
+}
+
+bool Collider::hitCheck6(Collider* coll) {
+    if (attackBox_.right < coll->hitBox6_.left) return false;
+    if (attackBox_.left > coll->hitBox6_.right) return false;
+    if (attackBox_.bottom < coll->hitBox6_.top) return false;
+    if (attackBox_.top > coll->hitBox6_.bottom) return false;
+    return true;
+}
+
+bool Collider::hitCheck7(Collider* coll) {
+    if (attackBox_.right < coll->hitBox7_.left) return false;
+    if (attackBox_.left > coll->hitBox7_.right) return false;
+    if (attackBox_.bottom < coll->hitBox7_.top) return false;
+    if (attackBox_.top > coll->hitBox7_.bottom) return false;
+    return true;
+}
+
+
 bool Collider::hitCheck(OBJ2D* obj) {
     return hitCheck(obj->collider());
 }
@@ -247,6 +367,26 @@ bool Collider::hitCheck2(OBJ2D* obj)
 bool Collider::hitCheck3(OBJ2D* obj)
 {
     return hitCheck3(obj->collider());
+}
+
+bool Collider::hitCheck4(OBJ2D* obj)
+{
+    return hitCheck4(obj->collider());
+}
+
+bool Collider::hitCheck5(OBJ2D* obj)
+{
+    return hitCheck5(obj->collider());
+}
+
+bool Collider::hitCheck6(OBJ2D* obj)
+{
+    return hitCheck6(obj->collider());
+}
+
+bool Collider::hitCheck7(OBJ2D* obj)
+{
+    return hitCheck7(obj->collider());
 }
 
 //******************************************************************************
@@ -269,7 +409,7 @@ void OBJ2DManager::init()
 //--------------------------------------------------------------
 //  リストへ追加
 //--------------------------------------------------------------
-OBJ2D* OBJ2DManager::add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int posType, VECTOR2 size)
+OBJ2D* OBJ2DManager::add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int posType, VECTOR2 scale)
 {
     obj->setBehavior(behavior);
     obj->transform()->setPosition(pos);
@@ -280,18 +420,19 @@ OBJ2D* OBJ2DManager::add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int
     }
 
     //長押し(上)ノーツの時
-    if (size.y > 0) {
-        //横幅は固定なので50(仮)を入れる
-        size.x = 50;
-        //サイズの設定
-        obj->collider()->setSize(size);
+    if (scale.y > 0 && scale.y != 1.0f ) {
+        //横幅は固定なので1を入れる
+        scale.x = 1.0f;
+
+        //大きさの設定
+        obj->transform()->setScale(scale);
     }
     //長押し(横)ノーツの時
-    if (size.x > 0) {
-        //縦幅は固定なので50(仮)を入れる
-        size.y = 50;
-        //サイズの設定
-        obj->collider()->setSize(size);
+    else if (scale.x > 0 && scale.x != 1.0f) {
+        //縦幅は固定なので1を入れる
+        scale.y = 1.0f;
+        //大きさの設定
+        obj->transform()->setScale(scale);
     }
 
     objList_.emplace_back(obj);

@@ -36,6 +36,10 @@ public:
     virtual void hit(OBJ2D* src, OBJ2D* dst) = 0;
     virtual void hit2(OBJ2D* src, OBJ2D* dst) {};
     virtual void hit3(OBJ2D* src, OBJ2D* dst) {};
+    virtual void hit4(OBJ2D* src, OBJ2D* dst) {};
+    virtual void hit5(OBJ2D* src, OBJ2D* dst) {};
+    virtual void hit6(OBJ2D* src, OBJ2D* dst) {};
+    virtual void hit7(OBJ2D* src, OBJ2D* dst) {};
 };
 
 // 消去アルゴリズムクラス（抽象クラス）
@@ -149,6 +153,7 @@ public:
     void setColor(const VECTOR4& c) { color_ = c; }
     void setAnime(const GameLib::Anime& a) { anime_ = a; }
     void setAnimeData(GameLib::AnimeData* adata) { animeData_ = adata; }
+    void setAnimeTimer(int a) { animetimer_ = a; }
 
     //アニメーションタイマー加算
     void countAnimeTime() { ++animetimer_; }
@@ -168,18 +173,35 @@ private:
     GameLib::fRECT hitBox_;
     GameLib::fRECT hitBox2_;
     GameLib::fRECT hitBox3_;
+    GameLib::fRECT hitBox4_;
+    GameLib::fRECT hitBox5_;
+    GameLib::fRECT hitBox6_;
+    GameLib::fRECT hitBox7_;
+
     GameLib::fRECT attackBox_;
 
     bool judgeFlag_;
+    bool judgeBoxFlag_;
+    bool judgeBoxFlag2_;
+    bool judgeBoxFlag3_;
+    bool judgeBoxFlag4_;
     bool isDrawHitRect_;
 public:
     Collider()
         :size_()
         , judgeFlag_(false)
+        , judgeBoxFlag_(false)
+        , judgeBoxFlag2_(false)
+        , judgeBoxFlag3_(false)
+        , judgeBoxFlag4_(false)
         , isDrawHitRect_(false)
         , hitBox_()
         , hitBox2_()
         , hitBox3_()
+        , hitBox4_()
+        , hitBox5_()
+        , hitBox6_()
+        , hitBox7_()
         , attackBox_()
     {}
 
@@ -187,6 +209,11 @@ public:
     void calcHitBox(const GameLib::fRECT& rc);
     void calcHitBox2(const GameLib::fRECT& rc);
     void calcHitBox3(const GameLib::fRECT& rc);
+    void calcHitBox4(const GameLib::fRECT& rc);
+    void calcHitBox5(const GameLib::fRECT& rc);
+    void calcHitBox6(const GameLib::fRECT& rc);
+    void calcHitBox7(const GameLib::fRECT& rc);
+
     void calcAttackBox(const GameLib::fRECT& rc);
 
     bool hitCheck(Collider* coll);
@@ -198,14 +225,34 @@ public:
     bool hitCheck3(Collider* coll);
     bool hitCheck3(OBJ2D* obj);
 
+    bool hitCheck4(Collider* coll);
+    bool hitCheck4(OBJ2D* obj);
+
+    bool hitCheck5(Collider* coll);
+    bool hitCheck5(OBJ2D* obj);
+
+    bool hitCheck6(Collider* coll);
+    bool hitCheck6(OBJ2D* obj);
+
+    bool hitCheck7(Collider* coll);
+    bool hitCheck7(OBJ2D* obj);
+
     //ゲッター
     const VECTOR2& size() const { return size_; }
     bool judgeFlag() const { return judgeFlag_; }
+    bool judgeBoxFlag() const { return judgeBoxFlag_; }
+    bool judgeBoxFlag2() const { return judgeBoxFlag2_; }
+    bool judgeBoxFlag3() const { return judgeBoxFlag3_; }
+    bool judgeBoxFlag4() const { return judgeBoxFlag4_; }
     GameLib::fRECT hitbox() const { return hitBox_; }
 
     // セッター
     void setSize(const VECTOR2& s) { size_ = s; }
-    void setJudgeFlag(bool b) { judgeFlag_ = b; }
+    void setJudgeFlag(bool f) { judgeFlag_ = f; }
+    void setJudgeBoxFlag(bool f) { judgeBoxFlag_ = f; }
+    void setJudgeBoxFlag2(bool f) { judgeBoxFlag2_ = f; }
+    void setJudgeBoxFlag3(bool f) { judgeBoxFlag3_ = f; }
+    void setJudgeBoxFlag4(bool f) { judgeBoxFlag4_ = f; }
     void setIsDrawHitRect(bool b) { isDrawHitRect_ = b; }
 };
 
@@ -223,6 +270,7 @@ private:
     bool hitFlag_;      // 餌が敵に当たった時かどうかのフラグ
     int  deadTimer_;    // 敵の消滅時間
     int  posType_;      // 敵の出現位置
+    bool deleteCombo2Flag_; // コンボ2を消滅するフラグ
     
 public:
     enum DIRECTON              // 向き
@@ -236,11 +284,13 @@ public:
     ActorComponent()
         : hp_(0)
         , maxHP_(0)
+        , score_(0)
         , moveFlag_(false)
         , xFlip_(false)
         , hitFlag_(false)
         , deadTimer_(0)
         , posType_(0)
+        , deleteCombo2Flag_(false)
         , direction_(UP)
     {}
     // ゲッター
@@ -253,6 +303,7 @@ public:
     int deadTimer() const { return deadTimer_; }
     int posType() const { return posType_; }
     int score() { return score_; }
+    bool deleteCombo2Flag() const { return deleteCombo2Flag_; }
 
     // セッター
     void setHP(int h) { hp_ = h; }
@@ -264,6 +315,7 @@ public:
     void setDeadTimer(int t) { deadTimer_ = t; }
     void setPosType(int p) { posType_ = p; }
     void setScore(int s) { score_ = s; }
+    void setDeleteCombo2Flag(bool f) { deleteCombo2Flag_ = f; }
 
     // X座標の向きを反転
     void flip() { xFlip_ = !xFlip_; }

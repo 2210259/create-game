@@ -22,6 +22,7 @@ public:
         timer_ = 0;
         nextScene_ = nullptr;
     };
+
     virtual void deinit() {};   // I—¹ˆ—
     virtual void update() = 0;  // XVˆ—
     virtual void draw() = 0;    // •`‰æˆ—

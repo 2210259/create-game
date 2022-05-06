@@ -21,15 +21,6 @@ public:
     static const int CLIENT_W = 1280;                   // クライアント領域の幅
     static const int CLIENT_H = 720;                    // クライアント領域の高さ
 
-    // static const int CHIP_SIZE = 64;                    // %演算子を使用するためint型を使用する
-    // static const int LOOP_X = CLIENT_W / CHIP_SIZE + (CLIENT_W % CHIP_SIZE ? 2 : 1);
-    // static const int LOOP_Y = CLIENT_H / CHIP_SIZE + (CLIENT_H % CHIP_SIZE ? 2 : 1);
-
-    // static const int CHIP_NUM_X = 20;                   // マップの横方向のチップ数
-    // static const int CHIP_NUM_Y = 12;                   // マップの縦方向のチップ数
-    // static const int CHIP_NUM_PER_LINE = 6;             // マップチップの1列が8個
-    // static const int CHIP_LINE_NUM = 2;                 // マップチップが４行
-
     // static constexpr float CHIP_SIZE_F = static_cast<float>(CHIP_SIZE);
     static constexpr float WIDTH  = WINDOW_W;  // マップの幅
     static constexpr float HEIGHT = WINDOW_H; // マップの高さ

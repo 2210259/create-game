@@ -31,18 +31,36 @@ private:
     int stageNo_;           // ステージ番号
     bool enemyXFlip_;       // 敵の向きを保存
     int combo_;             // コンボ数
+    int combo2_;            // コンボ数（連打）
+    int combo2Timer_;       // コンボの出現時間
     int maxCombo_;          // 最大コンボ
     int score_;             // スコア数
+    int appearScore_;       // スコアの出現
+    int scoreTimer_;        // スコアの出現時間
     int maxScore_;          // 最大スコア
+    static const int maxAppearTime_ = 120; // 最大表示時間
 
-    // ノーツ判定の表示時間(仮)
-    int goodTimer;
-    int greatTimer;
-    int perfectTimer;
+    // ノーツ判定の表示時間
+    int notesTimer_;
+    std::ostringstream notesText;
 
-    VECTOR2 scorePos;   // スコアの位置
-    VECTOR2 scoreSize;  // スコアの大きさ
-    VECTOR4 scoreColor; // スコアの色
+    VECTOR2 comboSize;   // コンボの大きさ
+    VECTOR2 combo2Pos;   // コンボ2の位置
+    VECTOR2 combo2Size;  // コンボ2の大きさ
+    VECTOR4 combo2Color; // コンボ2の色
+
+    VECTOR2 scorePos;    // スコアの位置
+    VECTOR2 scoreSize;   // スコアの大きさ
+    VECTOR4 scoreColor;  // スコアの色
+
+    VECTOR2 notesPos;    // ノーツ判定の位置
+    VECTOR2 notesSize;   // ノーツ判定の大きさ
+    VECTOR4 notesColor;  // ノーツ判定の色
+
+    int pause_num_;      //ポーズ中の選択用
+    float pause_alpha_;  //ポーズ中に表示するテキストのα値
+    int pause_alpha_num_;//α値を０～１まで往復させるための値
+
 
 public:
     enum DECISION {
@@ -50,8 +68,9 @@ public:
         GOOD,
         GREAT,
         PERFECT,
-        MAX
+        NONE
     }decision_;
+
     void init() override;
     void deinit() override;
     void update() override;
@@ -67,10 +86,13 @@ public:
     bool enemyXFlip() { return enemyXFlip_; }
     int timer() { return timer_; }
     int combo() { return combo_; }
+    int combo2() { return combo2_; }
     int maxCombo() { return maxCombo_; }
     int score() { return score_; }
+    int appearScore() { return appearScore_; }
     int maxScore() { return maxScore_; }
     int decision() { return decision_; }
+    int maxAppearTime() { return maxAppearTime_; }
 
     // セッター
     OBJ2D* player() const { return player_; }
@@ -78,13 +100,20 @@ public:
     void setStageNo(int n) { stageNo_ = n; }
     void setEnemyXFlip(bool f) { enemyXFlip_ = f; }
     void setCombo(int c) { combo_ = c; }
+    void setCombo2(int c) { combo2_ = c; }
     void addCombo() { combo_++; }
+    void addCombo2() { combo2_++; }
+    void setComboSize(VECTOR2 s) { comboSize = s; }
+    void setCombo2Timer(int t) { combo2Timer_ = t; }
     void setMaxCombo(int c) { maxCombo_ = c; }
     void setScore(int s) { score_ = s; }
+    void setScoreTimer(int t) { scoreTimer_ = t; }
+    void setAppearScore(int s) { appearScore_ = s; }
     void addScore(int s) { score_ += s; }
-    void setMaxScore(int c) { maxScore_ = c; }
+    void setMaxScore(int s) { maxScore_ = s; }
     void setDecision(DECISION d) {decision_ = d; }
     void deleteCombo() { combo_ = 0; }
+    void deleteCombo2() { combo2_ = 0; }
 
 private:
     // コンストラクタ
@@ -97,29 +126,38 @@ private:
         , stageNo_(0)
         , enemyXFlip_(false)
         , combo_(0)
+        , combo2_(0)
+        , combo2Timer_(0)
         , maxCombo_(0)
         , score_(0)
+        , scoreTimer_(0)
+        , appearScore_(500)
         , maxScore_(0)
-        , decision_(MISS)
-        , goodTimer(0)
-        , greatTimer(0)
-        , perfectTimer(0)
+        , decision_(NONE)
+        , notesTimer_(0)
         , hpPos01(0, 0)
         , hpSize01(0, 0)
         , hpColor01(0, 0, 0, 0)
         , hpPos02(0, 0)
         , hpSize02(0, 0)
         , hpColor02(0, 0, 0, 0)
+        , pause_num_(0)
+        , pause_alpha_(1.0f)
+        , pause_alpha_num_(0)
+
     {}
     Game(const Game&) = delete; // = delete コピーコンストラクタが存在しないことを明示
     // 当たり判定
     void judge();
     
-    // 最大コンボの計算
-    void calcMaxCombo();
+    // コンボの計算
+    void calcCombo();
     
     // コンボの描画
     void comboDraw();
+
+    // スコアの計算
+    void calcScore();
 
     // スコアの描画
     void scoreDraw();
@@ -132,6 +170,11 @@ private:
 
     // 操作方法UI
     void operationDraw();
+
+public:
+    //使用するスプライトデータ
+    GameLib::SpriteData sprRestart_ = SPRITE_CENTER(static_cast<INT>(TEXNO::RESTART), 0, 0, 600, 300);
+    GameLib::SpriteData sprTotitle_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TOTITLE), 0, 0, 600, 300);
 };
 
 //******************************************************************************

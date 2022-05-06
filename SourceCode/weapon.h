@@ -40,7 +40,10 @@ private:
     void hit(OBJ2D* src, OBJ2D* dst) override;
     void hit2(OBJ2D* src, OBJ2D* dst) override;
     void hit3(OBJ2D* src, OBJ2D* dst) override;
-
+    void hit4(OBJ2D* src, OBJ2D* dst) override;
+    void hit5(OBJ2D* src, OBJ2D* dst) override;
+    void hit6(OBJ2D* src, OBJ2D* dst) override;
+    void hit7(OBJ2D* src, OBJ2D* dst) override;
 };
 EXTERN WeaponBehavior weaponbehavior;
 

@@ -150,8 +150,7 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
     Transform* transform = obj->transform();
     using namespace input;
 
-    debug::setString("IdleMode");
-    // if (Game::instance()->state() <= 1) return;
+    // if (Title::instance()->state() > 0) return;
 
     // Enterが押されたら
     if (TRG(0) & PAD_START) {
@@ -195,7 +194,8 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
         // モードを変える
         obj->setBehavior(&attackPlayerBehavior);
     }
-    debug::setString("HP:%d", Game::instance()->player()->actorComponent()->hp());
+    debug::setString("IdleMode");
+    // debug::setString("HP:%d", Game::instance()->player()->actorComponent()->hp());
 }
 
 void IdlePlayerBehavior::playerAnimetion(OBJ2D* obj) 
@@ -230,7 +230,7 @@ void IdlePlayerBehavior::playerAnimetion(OBJ2D* obj)
     // if (obj->actorComponent()->direction() == obj->actorComponent()->RIGHT)
     //     renderer->setAnimeData(getParam()->ANIME_RIGHT);
 
-    debug::setString("direction:%d", obj->actorComponent()->direction());
+    // debug::setString("direction:%d", obj->actorComponent()->direction());
 }
 
 //----------------------------------------//
@@ -306,6 +306,7 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
 {
     Renderer* renderer = obj->renderer();
     Transform* transform = obj->transform();
+    using namespace input;
 
     // 攻撃アニメーション
     if (renderer->animeTimer() < 15)
@@ -317,7 +318,7 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
             renderer->setAnimeData(getParam()->ANIME_ATTACK_L);
             param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
                 param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
-            debug::setString("LEFT");
+            // debug::setString("LEFT");
         }
         //右
         else if (obj->actorComponent()->direction_ == obj->actorComponent()->RIGHT)
@@ -326,7 +327,7 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
             renderer->setAnimeData(getParam()->ANIME_ATTACK_R);
             param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
                 param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
-            debug::setString("RIGHT");
+            // debug::setString("RIGHT");
         }
         //上
         else if (obj->actorComponent()->direction_ == obj->actorComponent()->UP)
@@ -335,17 +336,22 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
             renderer->setAnimeData(getParam()->ANIME_ATTACK_U);
             param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
                 param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
-            debug::setString("UP");
+            // debug::setString("UP");
         }
 
         //アニメーション遷移タイマー加算
         renderer->countAnimeTime();
     }
-    if (renderer->animeTimer() >= 15) {
+    else if (renderer->animeTimer() >= 15 && STATE(0) & PAD_START)
+    {
+        renderer->setAnimeTimer(0);
+    }
+    else if (renderer->animeTimer() >= 15)
+    {
         Game::instance()->setPlayerModeFlag(false);
     }
 
-    debug::setString("animeTimer:%d", renderer->animeTimer());
+    // debug::setString("animeTimer:%d", renderer->animeTimer());
 }
 
 void AttackPlayerBehavior::modechange(OBJ2D* obj)
@@ -363,7 +369,7 @@ void AttackPlayerBehavior::modechange(OBJ2D* obj)
         obj->setBehavior(&idlePlayerBehavior);
     }
     debug::setString("AttackMode");
-    debug::setString("HP:%d",Game::instance()->player()->actorComponent()->hp());
+    // debug::setString("HP:%d",Game::instance()->player()->actorComponent()->hp());
 }
 
 // 多分使わない

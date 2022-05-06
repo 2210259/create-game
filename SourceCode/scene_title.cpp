@@ -23,6 +23,7 @@ void Title::init() {
     // 読み込むテクスチャ
     LoadTexture loadTextureTitle[static_cast<size_t>(TEXNOM::NUM)] = {
         { static_cast<int>(TEXNOM::STAR),  L"./Data/Images/star.png", 1U },
+        { static_cast<int>(TEXNOM::START),  L"./Data/Images/start.png", 1U },
     };
 
     // テクスチャのロード
@@ -31,6 +32,7 @@ void Title::init() {
 
 // 終了処理
 void Title::deinit() {
+    
     // テクスチャを全て解放
     texture::releaseAll();
 }
@@ -46,6 +48,11 @@ void Title::update() {
 
         starScale_ = { 0.0f, 0.0f };
         starAngle_ = 0.0f;
+
+        playerPos_      = { 320, 600 };
+        playerScale_    = { 1.0f, 1.0f };
+        playerTexPos_   = { 0, 0 };
+        playerTexSize_  = { 150, 150 };
 
         //BGMを再生
         GameLib::music::play(5, false);
@@ -101,6 +108,11 @@ void Title::update() {
 
     debug::setString("timer_:%d", timer_);
     debug::setString("state_:%d", state_);
+    debug::setString("playerPos_.x:%f", playerPos_.x);
+    debug::setString("playerPos_.y:%f", playerPos_.y);
+    debug::setString("playerScale_.x:%f", playerScale_.x);
+    debug::setString("playerScale_.y:%f", playerScale_.y);
+
     timer_++;
 }
 
@@ -133,21 +145,26 @@ void Title::draw() {
         GameLib::TEXT_ALIGN::UPPER_RIGHT
     );
 
+    //"開始"の文字の描画
+    sprStart_.draw(
+        { GameLib::window::getWidth() - sprStart_.width / 2, GameLib::window::getHeight() - sprStart_.height / 2 }
+    );
+
     // プレイヤーの描画
-    texture::begin(TEXNO::PLAYER);
-    texture::draw(TEXNO::PLAYER, playerPos_, playerScale_,
-        playerTexPos_,playerTexSize_);
-    texture::end(TEXNO::PLAYER);
+    // texture::begin(TEXNO::PLAYER);
+    // texture::draw(TEXNO::PLAYER, playerPos_, playerScale_,
+    //     playerTexPos_, playerTexSize_);
+    // texture::end(TEXNO::PLAYER);
 
     // Push Enter Key の描画
-    if (timer_ >> 5 & 0x01) {
-        GameLib::font::textOut(4, "Push Enter Key",
-            { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 6) * 5 },
-            VECTOR2(1.5f, 1.5f),
-            { 1.0f, 1.0f, 1.0f, 1.0f },
-            GameLib::TEXT_ALIGN::LOWER_MIDDLE
-        );
-    }
+    //if (timer_ >> 5 & 0x01) {
+    //    GameLib::font::textOut(4, "Push Enter Key",
+    //        { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 6) * 5 },
+    //        VECTOR2(1.5f, 1.5f),
+    //        { 1.0f, 1.0f, 1.0f, 1.0f },
+    //        GameLib::TEXT_ALIGN::LOWER_MIDDLE
+    //    );
+    //}
 
     // フェードアウト
     // if (fadeOutTimer_ > 0.0f) {

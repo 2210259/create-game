@@ -22,6 +22,9 @@ enum TEXNO
     ENEMY3,       //“G4
     ENEMY4,       //“G5
     ENEMY5,       //“G6
+    RESTART,      //"Ä’§í"‚Ì•¶š
+    TOTITLE,      //"‚½‚¢‚Æ‚é‚Ö"‚Ì•¶š
+
 
     NUM
 };
@@ -55,7 +58,7 @@ extern GameLib::SpriteData sprPlayer_Attack_L1;
 extern GameLib::SpriteData sprPlayer_Attack_L2;
 
 //================================
-//      “G0
+//     è— Œ•
 //================================
 // UŒ‚
 extern GameLib::SpriteData sprEnemy0_Idle0;
@@ -66,7 +69,7 @@ extern GameLib::SpriteData sprEnemy0_Dead1;
 extern GameLib::SpriteData sprEnemy0_Dead2;
 
 //================================
-//      “G1
+//      ƒNƒiƒC
 //================================
 
 // UŒ‚
@@ -78,7 +81,7 @@ extern GameLib::SpriteData sprEnemy1_Dead1;
 extern GameLib::SpriteData sprEnemy1_Dead2;
 
 //================================
-//      “G2
+//      ’·‰Ÿ‚µƒm[ƒc(ã)
 //================================
 
 // UŒ‚
@@ -91,7 +94,7 @@ extern GameLib::SpriteData sprEnemy2_Dead2;
 extern GameLib::SpriteData sprEnemy2_Dead3;
 
 //================================
-//      “G3
+//      ’·‰Ÿ‚µƒm[ƒc(‰¡)
 //================================
 
 // UŒ‚
@@ -104,7 +107,7 @@ extern GameLib::SpriteData sprEnemy3_Idle0;
 // extern GameLib::SpriteData sprEnemy3_Dead3;
 
 //================================
-//      “G4
+//      ˜A‘Åƒm[ƒc(ã)
 //================================
 
 // UŒ‚
@@ -115,5 +118,25 @@ extern GameLib::SpriteData sprEnemy4_Idle0;
 // extern GameLib::SpriteData sprEnemy4_Dead1;
 // extern GameLib::SpriteData sprEnemy4_Dead2;
 // extern GameLib::SpriteData sprEnemy4_Dead3;
+
+//================================
+//      ˜A‘Åƒm[ƒc(‰¡)
+//================================
+
+// UŒ‚
+extern GameLib::SpriteData sprEnemy5_Idle0;
+
+// €–S
+// extern GameLib::SpriteData sprEnemy4_Dead0;
+// extern GameLib::SpriteData sprEnemy4_Dead1;
+// extern GameLib::SpriteData sprEnemy4_Dead2;
+// extern GameLib::SpriteData sprEnemy4_Dead3;
+
+//================================
+//          •¶š
+//================================
+
+extern GameLib::SpriteData sprRestart;
+extern GameLib::SpriteData sprTotitle;
 
 //******************************************************************************

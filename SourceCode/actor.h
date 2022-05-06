@@ -19,13 +19,20 @@ protected:
         GameLib::AnimeData* ANIME_LEFT;
         GameLib::AnimeData* ANIME_DEAD;
 
-        // サイズ
+        // 大きさ
         VECTOR2 SIZE;
         VECTOR2 SCALE;
         FLOAT MARGIN; // 余白
-        GameLib::fRECT HIT_BOX;
+        GameLib::fRECT HIT_BOX;     
+
         GameLib::fRECT HIT_BOX2;
         GameLib::fRECT HIT_BOX3;
+        GameLib::fRECT HIT_BOX4;
+        GameLib::fRECT HIT_BOX5;
+        GameLib::fRECT HIT_BOX6;
+        GameLib::fRECT HIT_BOX7;
+
+
         GameLib::fRECT ATTACK_BOX;
 
         // 速度関連のパラメータ
@@ -40,6 +47,7 @@ protected:
         int SCORE;      // スコア
         int HIT_TIMER;  
         int DEAD_TIMER; // 死亡時タイマー
+        bool FLAG_DELETE_COMBO2;   
     }param_ = {};
 
 protected:
@@ -48,7 +56,7 @@ protected:
     virtual void moveX(OBJ2D* obj);
     virtual void modechange(OBJ2D* obj) {};
     virtual void moveEnemy(OBJ2D* obj) {};
-    virtual void enemyAnime(OBJ2D* obj) {};
+    virtual void enemyParam(OBJ2D* obj) {};
     virtual void playerAnimetion(OBJ2D* obj) {};
 private:
     void move(OBJ2D* obj) override;
