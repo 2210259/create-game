@@ -32,8 +32,8 @@ protected:
         GameLib::fRECT HIT_BOX6;
         GameLib::fRECT HIT_BOX7;
 
-
         GameLib::fRECT ATTACK_BOX;
+        GameLib::fRECT ATTACK_BOX2;
 
         // 速度関連のパラメータ
         float SPEED;

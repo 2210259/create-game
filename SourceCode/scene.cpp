@@ -44,7 +44,7 @@ Scene* Scene::execute()
         DepthStencil::instance().set(DepthStencil::MODE::NONE);
 
         // デバッグ文字列の描画
-        debug::display(1, 1, 1, 1, 1);
+        debug::display(0.5f, 1, 1, 1.5f, 1.5f);
         //debug::setString("GP2_10 SAMPLE");
 
         // 画面フリップ

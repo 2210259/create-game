@@ -24,6 +24,7 @@ void BaseWeaponBehavior::move(OBJ2D* obj)
 
         collider->calcAttackBox(getParam()->ATTACK_BOX);
         // collider->calcHitBox(getParam()->HIT_BOX);
+        weaponComponent->setPosType(Game::instance()->player()->actorComponent()->direction());
 
         // 左右の向き、速度を設定（プレイヤーにもxFlip_の設定が必要）
         // weaponComponent->copyOwnerXFlip();   // 武器の持ち主のxFlip_を武器に設定する
@@ -84,15 +85,17 @@ WeaponBehavior::WeaponBehavior()
 // 武器(→)敵に当たった時の処理(Perfect)
 void WeaponBehavior::hit(OBJ2D* src, OBJ2D* dst)
 {
+    if (src->weaponComponent()->posType() != dst->actorComponent()->posType()) return;
+
     // falseの場合処理をしない
-    if (src->collider()->judgeBoxFlag() == false) return;
+    if (dst->collider()->judgeBoxFlag() == false) return;
     // 通常ノーツと長押しノーツ
     if (dst->behavior() != &enemy3Behavior) {
         // コンボを追加
         Game::instance()->addCombo();
 
         // コンボのサイズを設定
-        Game::instance()->setComboSize(VECTOR2(1.5f, 1.5f));
+        Game::instance()->setComboSize(VECTOR2(2, 2));
 
         // スコアの加算(2倍)
         Game::instance()->addScore(dst->actorComponent()->score() * 2);
@@ -104,7 +107,10 @@ void WeaponBehavior::hit(OBJ2D* src, OBJ2D* dst)
         Game::instance()->setAppearScore(dst->actorComponent()->score() * 2);
 
         // ノーツ判定を送る
-        Game::instance()->setDecision(Game::instance()->PERFECT);        
+        Game::instance()->setDecision(Game::instance()->PERFECT);   
+        
+        // パーフェクトカウントを足す
+        Game::instance()->addPerfectNum();
     }
     // 連打ノーツ
     else if (TRG(0) & PAD_START) {
@@ -126,6 +132,9 @@ void WeaponBehavior::hit(OBJ2D* src, OBJ2D* dst)
         // ノーツ判定を送る
         Game::instance()->setDecision(Game::instance()->PERFECT);
 
+        // パーフェクトカウントを足す
+        Game::instance()->addPerfectNum();
+
         if (dst->actorComponent()->deleteCombo2Flag()) {
             Game::instance()->deleteCombo2();
             dst->actorComponent()->setDeleteCombo2Flag(false);
@@ -141,20 +150,22 @@ void WeaponBehavior::hit(OBJ2D* src, OBJ2D* dst)
 
     // ジャッジフラグをなくす(連打ノーツ以外)
     if (dst->behavior() != &enemy3Behavior)
-        src->collider()->setJudgeBoxFlag(false);
+        dst->collider()->setJudgeBoxFlag(false);
 }
 
 // 武器(→)敵に当たった時の処理(Great)
 void WeaponBehavior::hit2(OBJ2D* src, OBJ2D* dst)
 {
+    if (src->weaponComponent()->posType() != dst->actorComponent()->posType()) return;
+
     // falseの場合処理をしない
-    if (src->collider()->judgeBoxFlag() == false) return;
+    if (dst->collider()->judgeBoxFlag() == false) return;
         
     // コンボを追加
     Game::instance()->addCombo();
     
     // コンボのサイズを設定
-    Game::instance()->setComboSize(VECTOR2(1.5f, 1.5f));
+    Game::instance()->setComboSize(VECTOR2(2, 2));
 
     // スコアの加算(1.5倍)
     Game::instance()->addScore(dst->actorComponent()->score() * 3 / 2);
@@ -168,26 +179,31 @@ void WeaponBehavior::hit2(OBJ2D* src, OBJ2D* dst)
     // ノーツ判定を送る
     Game::instance()->setDecision(Game::instance()->GREAT);
     
+    // グレイトカウントを足す 
+    Game::instance()->addGreatNum();
+
     if (dst->behavior() == &enemy0Behavior ||
         dst->behavior() == &enemy1Behavior) {
         // 敵を消滅
         dst->remove();
     }
     // ジャッジフラグをなくす
-    src->collider()->setJudgeBoxFlag(false);
+    dst->collider()->setJudgeBoxFlag(false);
 }
 
 // 武器(→)敵に当たった時の処理(Good)
 void WeaponBehavior::hit3(OBJ2D* src, OBJ2D* dst)
 {
+    if (src->weaponComponent()->posType() != dst->actorComponent()->posType()) return;
+
     // falseの場合処理をしない
-    if (src->collider()->judgeBoxFlag() == false) return;
+    if (dst->collider()->judgeBoxFlag() == false) return;
     
     // コンボを追加
     Game::instance()->addCombo();
     
     // コンボのサイズを設定
-    Game::instance()->setComboSize(VECTOR2(1.5f, 1.5f));
+    Game::instance()->setComboSize(VECTOR2(2, 2));
 
     // スコアの加算(1.0倍)
     Game::instance()->addScore(dst->actorComponent()->score());
@@ -201,6 +217,9 @@ void WeaponBehavior::hit3(OBJ2D* src, OBJ2D* dst)
     // ノーツ判定を送る
     Game::instance()->setDecision(Game::instance()->GOOD);
     
+    // グッドカウントを足す
+    Game::instance()->addGoodNum();
+
     if (dst->behavior() == &enemy0Behavior ||
         dst->behavior() == &enemy1Behavior) {
         // 敵を消滅
@@ -208,36 +227,42 @@ void WeaponBehavior::hit3(OBJ2D* src, OBJ2D* dst)
     }
     
     // ジャッジフラグをなくす
-    src->collider()->setJudgeBoxFlag(false);
+    dst->collider()->setJudgeBoxFlag(false);
 }
 
 // 武器(→)敵に当たった時の処理(長押しノーツ判定)
 void WeaponBehavior::hit4(OBJ2D* src, OBJ2D* dst)
 {
+    // 処理をしないようにフラグを設定した時
+    if (dst->collider()->judgeBoxFlag3() == true) {
+        // ノーツの色を変える
+        dst->renderer()->setColor(VECTOR4(0.0f, 0.0f, 0.0f, 1));
+    }
+
     // falseの場合処理をしない
-    if (src->collider()->judgeBoxFlag() == true) return;  // 最初に攻撃されていない
-    if (src->collider()->judgeBoxFlag3() == true) return; // 長押しされてない
+    if (dst->collider()->judgeBoxFlag() == true) return;  // 最初に攻撃されていない
+    if (dst->collider()->judgeBoxFlag3() == true) return; // 長押しされてない
     
     if (STATE(0) & PAD_START) // 長押し出来てたら
     {
-        src->collider()->setJudgeBoxFlag2(true);
+        dst->collider()->setJudgeBoxFlag2(true);
     }
-    else if(src->collider()->judgeBoxFlag4() == false) // 長押ししてない 且つ hit5,6,7の当たり判定に入っていないとき
+    else if(dst->collider()->judgeBoxFlag4() == false) // 長押ししてない 且つ hit5,6,7の当たり判定に入っていないとき
     {
         // コンボをなくす
         Game::instance()->deleteCombo();
 
         // コンボのサイズを設定
-        Game::instance()->setComboSize(VECTOR2(1.5f, 1.5f));
+        Game::instance()->setComboSize(VECTOR2(2, 2));
 
         // ノーツ判定を送る
         Game::instance()->setDecision(Game::instance()->MISS);
-
-        // ノーツの色を変える
-        dst->renderer()->setColor(VECTOR4(0.0f, 0.0f, 0.0f, 1));
         
+        // ミスカウント 
+        Game::instance()->addMissNum();
+
         // 処理をしないようにフラグを設定
-        src->collider()->setJudgeBoxFlag3(true);
+        dst->collider()->setJudgeBoxFlag3(true);
     }
 }
 
@@ -245,11 +270,11 @@ void WeaponBehavior::hit4(OBJ2D* src, OBJ2D* dst)
 void WeaponBehavior::hit5(OBJ2D* src, OBJ2D* dst)
 {
     // hit4の長押しされていない時の処理をしないようにフラグを設定
-    src->collider()->setJudgeBoxFlag4(true);
+    dst->collider()->setJudgeBoxFlag4(true);
 
     // falseの場合処理をしない
-    if (src->collider()->judgeBoxFlag2() == false) return; // 長押しされてない
-    if (src->collider()->judgeBoxFlag3() == true) return;  // 長押しされてない
+    if (dst->collider()->judgeBoxFlag2() == false) return; // 長押しされてない
+    if (dst->collider()->judgeBoxFlag3() == true) return;  // 長押しされてない
     
     // 離された瞬間に判定
     if (TRG_RELEASE(0) & PAD_START) {
@@ -258,7 +283,7 @@ void WeaponBehavior::hit5(OBJ2D* src, OBJ2D* dst)
         Game::instance()->addCombo();
 
         // コンボのサイズを設定
-        Game::instance()->setComboSize(VECTOR2(1.5f, 1.5f));
+        Game::instance()->setComboSize(VECTOR2(2, 2));
 
         // スコアの加算(2倍)
         Game::instance()->addScore(dst->actorComponent()->score() * 2);
@@ -271,6 +296,9 @@ void WeaponBehavior::hit5(OBJ2D* src, OBJ2D* dst)
 
         // ノーツ判定を送る
         Game::instance()->setDecision(Game::instance()->PERFECT);
+        
+        // パーフェクトカウントを足す
+        Game::instance()->addPerfectNum();
 
         // 敵を消滅
         dst->remove();
@@ -281,11 +309,11 @@ void WeaponBehavior::hit5(OBJ2D* src, OBJ2D* dst)
 void WeaponBehavior::hit6(OBJ2D* src, OBJ2D* dst)
 {
     // hit4の長押しされていない時の処理をしないようにフラグを設定
-    src->collider()->setJudgeBoxFlag4(true);
+    dst->collider()->setJudgeBoxFlag4(true);
 
     // falseの場合処理をしない
-    if (src->collider()->judgeBoxFlag2() == false) return;
-    if (src->collider()->judgeBoxFlag3() == true) return;
+    if (dst->collider()->judgeBoxFlag2() == false) return;
+    if (dst->collider()->judgeBoxFlag3() == true) return;
 
     // 離された瞬間に判定
     if (TRG_RELEASE(0) & PAD_START) {
@@ -294,7 +322,7 @@ void WeaponBehavior::hit6(OBJ2D* src, OBJ2D* dst)
         Game::instance()->addCombo();
 
         // コンボのサイズを設定
-        Game::instance()->setComboSize(VECTOR2(1.5f, 1.5f));
+        Game::instance()->setComboSize(VECTOR2(2, 2));
 
         // スコアの加算(1.5倍)
         Game::instance()->addScore(dst->actorComponent()->score() * 3 / 2);
@@ -308,6 +336,9 @@ void WeaponBehavior::hit6(OBJ2D* src, OBJ2D* dst)
         // ノーツ判定を送る
         Game::instance()->setDecision(Game::instance()->GREAT);
 
+        // グレイトカウントを足す
+        Game::instance()->addGreatNum();
+
         // 敵を消滅
         dst->remove();
     }
@@ -317,11 +348,11 @@ void WeaponBehavior::hit6(OBJ2D* src, OBJ2D* dst)
 void WeaponBehavior::hit7(OBJ2D* src, OBJ2D* dst)
 {
     // hit4の長押しされていない時の処理をしないようにフラグを設定
-    src->collider()->setJudgeBoxFlag4(true);
+    dst->collider()->setJudgeBoxFlag4(true);
 
     // falseの場合処理をしない
-    if (src->collider()->judgeBoxFlag2() == false) return;
-    if (src->collider()->judgeBoxFlag3() == true) return;
+    if (dst->collider()->judgeBoxFlag2() == false) return;
+    if (dst->collider()->judgeBoxFlag3() == true) return;
 
     // 離された瞬間に判定
     if (TRG_RELEASE(0) & PAD_START) {
@@ -330,7 +361,7 @@ void WeaponBehavior::hit7(OBJ2D* src, OBJ2D* dst)
         Game::instance()->addCombo();
 
         // コンボのサイズを設定
-        Game::instance()->setComboSize(VECTOR2(1.5f, 1.5f));
+        Game::instance()->setComboSize(VECTOR2(2, 2));
 
         // スコアの加算(1.0倍)
         Game::instance()->addScore(dst->actorComponent()->score());
@@ -343,6 +374,9 @@ void WeaponBehavior::hit7(OBJ2D* src, OBJ2D* dst)
 
         // ノーツ判定を送る
         Game::instance()->setDecision(Game::instance()->GOOD);
+
+        // グッドカウントを進める
+        Game::instance()->addGoodNum();
 
         // 敵を消滅
         dst->remove();

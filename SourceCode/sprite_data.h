@@ -24,7 +24,7 @@ enum TEXNO
     ENEMY5,       //“G6
     RESTART,      //"Ä’§í"‚Ì•¶Žš
     TOTITLE,      //"‚½‚¢‚Æ‚é‚Ö"‚Ì•¶Žš
-
+    MAP_BACK,     // ”wŒi
 
     NUM
 };

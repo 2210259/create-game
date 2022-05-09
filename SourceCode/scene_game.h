@@ -33,11 +33,21 @@ private:
     int combo_;             // コンボ数
     int combo2_;            // コンボ数（連打）
     int combo2Timer_;       // コンボの出現時間
-    int maxCombo_;          // 最大コンボ
+    int maxCombo_;          // 最大コンボ数
     int score_;             // スコア数
     int appearScore_;       // スコアの出現
     int scoreTimer_;        // スコアの出現時間
     int maxScore_;          // 最大スコア
+    int pause_num_;         //ポーズ中の選択用
+    float pause_alpha_;     //ポーズ中に表示するテキストのα値
+    int pause_alpha_num_;   //α値を０～１まで往復させるための値
+    int perfectNum_;        // パーフェクト数
+    int greatNum_;          // グレイト数
+    int goodNum_;           // グッド数
+    int missNum_;           // ミス数
+    bool playerAlive_;     // 生存確認
+
+
     static const int maxAppearTime_ = 120; // 最大表示時間
 
     // ノーツ判定の表示時間
@@ -56,11 +66,6 @@ private:
     VECTOR2 notesPos;    // ノーツ判定の位置
     VECTOR2 notesSize;   // ノーツ判定の大きさ
     VECTOR4 notesColor;  // ノーツ判定の色
-
-    int pause_num_;      //ポーズ中の選択用
-    float pause_alpha_;  //ポーズ中に表示するテキストのα値
-    int pause_alpha_num_;//α値を０～１まで往復させるための値
-
 
 public:
     enum DECISION {
@@ -93,6 +98,11 @@ public:
     int maxScore() { return maxScore_; }
     int decision() { return decision_; }
     int maxAppearTime() { return maxAppearTime_; }
+    int perfectNum() { return perfectNum_; }
+    int greatNum() { return greatNum_; }
+    int goodNum() { return goodNum_; }
+    int missNum() { return missNum_; }
+    bool playerAlive() { return playerAlive_; }
 
     // セッター
     OBJ2D* player() const { return player_; }
@@ -114,6 +124,11 @@ public:
     void setDecision(DECISION d) {decision_ = d; }
     void deleteCombo() { combo_ = 0; }
     void deleteCombo2() { combo2_ = 0; }
+    void addPerfectNum() { perfectNum_++; }
+    void addGreatNum() { greatNum_++; }
+    void addGoodNum() { goodNum_++; }
+    void addMissNum() { missNum_++; }
+    void setPlayerAlive(bool a) { playerAlive_ = a; }
 
 private:
     // コンストラクタ
@@ -144,6 +159,11 @@ private:
         , pause_num_(0)
         , pause_alpha_(1.0f)
         , pause_alpha_num_(0)
+        , perfectNum_(0)
+        , greatNum_(0)
+        , goodNum_(0)
+        , missNum_(0)
+        , playerAlive_(true)
 
     {}
     Game(const Game&) = delete; // = delete コピーコンストラクタが存在しないことを明示

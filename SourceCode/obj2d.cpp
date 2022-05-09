@@ -124,7 +124,7 @@ void Collider::draw(const VECTOR2& scrollPos)
     {
         pos = VECTOR2(hitBox_.left, hitBox_.top) - scrollPos;
         color = { 0, 0, 1, 0.6f };
-        primitive::rect(pos, size, { 0,0 }, 0, color);
+        // primitive::rect(pos, size, { 0,0 }, 0, color);
     }
 
     // hitBox2
@@ -137,7 +137,7 @@ void Collider::draw(const VECTOR2& scrollPos)
         pos = VECTOR2(hitBox2_.left, hitBox2_.top) - scrollPos;
 
         color = { 0, 0, 0.7f, 0.5f };
-        primitive::rect(pos, size, { 0,0 }, 0, color);
+        // primitive::rect(pos, size, { 0,0 }, 0, color);
     }
 
     // hitBox3
@@ -150,7 +150,7 @@ void Collider::draw(const VECTOR2& scrollPos)
         pos = VECTOR2(hitBox3_.left, hitBox3_.top) - scrollPos;
 
         color = { 0, 0, 0.4f, 0.3f };
-        primitive::rect(pos, size, { 0,0 }, 0, color);
+        // primitive::rect(pos, size, { 0,0 }, 0, color);
     }
 
     // hitBox4
@@ -175,7 +175,7 @@ void Collider::draw(const VECTOR2& scrollPos)
     {
         pos = VECTOR2(hitBox5_.left, hitBox5_.top) - scrollPos;
         color = { 0, 0, 1, 0.6f };
-        primitive::rect(pos, size, { 0,0 }, 0, color);
+        // primitive::rect(pos, size, { 0,0 }, 0, color);
     }
 
     // hitBox6
@@ -188,7 +188,7 @@ void Collider::draw(const VECTOR2& scrollPos)
         pos = VECTOR2(hitBox6_.left, hitBox6_.top) - scrollPos;
 
         color = { 0, 0, 0.7f, 0.5f };
-        primitive::rect(pos, size, { 0,0 }, 0, color);
+        // primitive::rect(pos, size, { 0,0 }, 0, color);
     }
 
     // hitBox7
@@ -201,7 +201,7 @@ void Collider::draw(const VECTOR2& scrollPos)
         pos = VECTOR2(hitBox7_.left, hitBox7_.top) - scrollPos;
 
         color = { 0, 0, 0.4f, 0.3f };
-        primitive::rect(pos, size, { 0,0 }, 0, color);
+        // primitive::rect(pos, size, { 0,0 }, 0, color);
     }
 
     // attackBox
@@ -425,14 +425,19 @@ OBJ2D* OBJ2DManager::add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int
         scale.x = 1.0f;
 
         //大きさの設定
-        obj->transform()->setScale(scale);
+        obj->transform()->setOrgScale(scale);
     }
     //長押し(横)ノーツの時
     else if (scale.x > 0 && scale.x != 1.0f) {
         //縦幅は固定なので1を入れる
         scale.y = 1.0f;
         //大きさの設定
-        obj->transform()->setScale(scale);
+        obj->transform()->setOrgScale(scale);
+    }
+    else {
+        scale.x = 1.0f;
+        scale.y = 1.0f;
+        obj->transform()->setOrgScale(scale);
     }
 
     objList_.emplace_back(obj);
@@ -469,12 +474,14 @@ void OBJ2DManager::update()
 //--------------------------------------------------------------
 //  描画
 //--------------------------------------------------------------
+// 通常ノーツのみを描画する
 void OBJ2DManager::draw(const VECTOR2& scrollPos)
 {
-    constexpr float LIMIT = 256.0f; // これ以上スクリーンから出ているものはとばす
+    constexpr float LIMIT = 512.0f; // これ以上スクリーンから出ているものはとばす
     int cnt = 0;
     for (auto& obj : objList_)
     {
+        if (obj->behavior() != &enemy0Behavior && obj->behavior() != &enemy1Behavior) continue;
         const VECTOR2 pos = obj->transform()->position() - scrollPos;
         if (pos.x < -LIMIT || pos.x > window::getWidth() + LIMIT ||
             pos.y < -LIMIT || pos.y > window::getHeight() + LIMIT)
@@ -487,6 +494,91 @@ void OBJ2DManager::draw(const VECTOR2& scrollPos)
     }
 }
 
+// 長押しノーツ(上)と連打ノーツ(上)のみを描画する
+void OBJ2DManager::draw2(const VECTOR2& scrollPos)
+{
+    constexpr float LIMIT = 512.0f; // これ以上スクリーンから出ているものはとばす
+    int cnt = 0;
+    for (auto& obj : objList_)
+    {
+        if (obj->behavior() != &enemy2Behavior && obj->behavior() != &enemy3Behavior) continue;
+        if (obj->actorComponent()->posType() != 0) continue;
+
+        const VECTOR2 pos = obj->transform()->position() - scrollPos;
+        if (pos.x < -LIMIT || pos.x > window::getWidth() + LIMIT ||
+            pos.y < -LIMIT || pos.y > window::getHeight() + LIMIT)
+        {
+            cnt++;
+            continue;
+        }
+        obj->renderer()->draw(scrollPos);
+        obj->collider()->draw(scrollPos);
+    }
+}
+
+// 長押しノーツ(左)と連打ノーツ(左)のみを描画する
+void OBJ2DManager::draw3(const VECTOR2& scrollPos)
+{
+    constexpr float LIMIT = 512.0f; // これ以上スクリーンから出ているものはとばす
+    int cnt = 0;
+    for (auto& obj : objList_)
+    {
+        if (obj->behavior() != &enemy2Behavior && obj->behavior() != &enemy3Behavior) continue;
+        if (obj->actorComponent()->posType() != 1) continue;
+
+        const VECTOR2 pos = obj->transform()->position() - scrollPos;
+        if (pos.x < -LIMIT || pos.x > window::getWidth() + LIMIT ||
+            pos.y < -LIMIT || pos.y > window::getHeight() + LIMIT)
+        {
+            cnt++;
+            continue;
+        }
+        obj->renderer()->draw(scrollPos);
+        obj->collider()->draw(scrollPos);
+    }
+}
+
+// 長押しノーツ(右)と連打ノーツ(右)のみを描画する
+void OBJ2DManager::draw4(const VECTOR2& scrollPos)
+{
+    constexpr float LIMIT = 512.0f; // これ以上スクリーンから出ているものはとばす
+    int cnt = 0;
+    for (auto& obj : objList_)
+    {
+        if (obj->behavior() != &enemy2Behavior && obj->behavior() != &enemy3Behavior) continue;
+        if (obj->actorComponent()->posType() != 2) continue;
+
+        const VECTOR2 pos = obj->transform()->position() - scrollPos;
+        if (pos.x < -LIMIT || pos.x > window::getWidth() + LIMIT ||
+            pos.y < -LIMIT || pos.y > window::getHeight() + LIMIT)
+        {
+            cnt++;
+            continue;
+        }
+        obj->renderer()->draw(scrollPos);
+        obj->collider()->draw(scrollPos);
+    }
+}
+
+// プレイヤーだけ描画する
+void OBJ2DManager::drawPlayer(const VECTOR2& scrollPos)
+{
+    constexpr float LIMIT = 512.0f; // これ以上スクリーンから出ているものはとばす
+    int cnt = 0;
+    for (auto& obj : objList_)
+    {
+        if (obj->behavior() != &idlePlayerBehavior && obj->behavior() != &attackPlayerBehavior && obj->behavior() != &weaponBehavior) continue;
+        const VECTOR2 pos = obj->transform()->position() - scrollPos;
+        if (pos.x < -LIMIT || pos.x > window::getWidth() + LIMIT ||
+            pos.y < -LIMIT || pos.y > window::getHeight() + LIMIT)
+        {
+            cnt++;
+            continue;
+        }
+        obj->renderer()->draw(scrollPos);
+        obj->collider()->draw(scrollPos);
+    }
+}
 //--------------------------------------------------------------
 //  デストラクタ
 //--------------------------------------------------------------

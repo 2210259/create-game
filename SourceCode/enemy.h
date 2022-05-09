@@ -16,7 +16,6 @@ private:
     OBJ_TYPE getType() const override { return OBJ_TYPE::ENEMY; }
     OBJ_TYPE attackType() const override { return OBJ_TYPE::PLAYER; }
     void hit(OBJ2D* src, OBJ2D* dst) override;
-    // void hit2(OBJ2D* src, OBJ2D* dst) override;
 };
 
 // Žè— Œ•

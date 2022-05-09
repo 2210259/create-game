@@ -24,6 +24,7 @@ LoadTexture loadTexture[] = {
     { TEXNO::ENEMY5,        L"./Data/Images/no-tsu06.png",      1U },// ノーツ
     { TEXNO::RESTART,       L"./Data/Images/restart.png",       1U },// "再挑戦"文字
     { TEXNO::TOTITLE,       L"./Data/Images/to title.png",      1U },// "たいとるへ"文字
+    { TEXNO::MAP_BACK,      L"./Data/Images/background.png",    1U },// 背景
 
     { -1, nullptr }	// 終了フラグ
 };

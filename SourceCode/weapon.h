@@ -45,7 +45,7 @@ private:
     void hit6(OBJ2D* src, OBJ2D* dst) override;
     void hit7(OBJ2D* src, OBJ2D* dst) override;
 };
-EXTERN WeaponBehavior weaponbehavior;
+EXTERN WeaponBehavior weaponBehavior;
 
 //----------------------------------------//
 //         Å@Å@    ïêäÌè¡ãé               //

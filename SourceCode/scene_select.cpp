@@ -22,6 +22,10 @@ void Select::init() {
     // 読み込むテクスチャ
     GameLib::LoadTexture loadTextureSelect[static_cast<size_t>(TEXNO::NUM)] = {
         { static_cast<int>(TEXNO::STAR),  L"./Data/Images/star.png", 1U },
+        { static_cast<int>(TEXNO::BACK),  L"./Data/Images/stage_select.png", 1U },
+        { static_cast<int>(TEXNO::TUTORIAL),  L"./Data/Images/tutorial_icon.png", 1U },
+        { static_cast<int>(TEXNO::STAGE1),  L"./Data/Images/stage1_icon.png", 1U },
+        { static_cast<int>(TEXNO::STAGE2),  L"./Data/Images/stage2_icon.png", 1U },
     };                    
                         
     // テクスチャのロード
@@ -50,6 +54,8 @@ void Select::update() {
 
         GameLib::setBlendMode(GameLib::Blender::BS_ALPHA);   // 通常のアルファ処理
 
+        music::play(4, true);   //BGMの再生
+
         state_++;                                            // 初期化処理の終了
 
         /*fallthrough*/
@@ -68,19 +74,63 @@ void Select::update() {
     case 2:
         //////// 通常時の処理 ////////
 
-        switch(TRG(0) & (PAD_UP | PAD_DOWN)) {
-        case PAD_UP:    stageNum_++;    break;
-        case PAD_DOWN:  stageNum_--;    break;
-        }
-        // Enter
-        if (TRG(0) & PAD_START) {
-
-            //決定音
-             GameLib::music::play(7, false);
-
-            ++state_;   // フェードアウトへ
+        //ステージ選択用
+        if (TRG(0) & PAD_LEFT)
+        {
+            if(stageNum_ > 0)
+            stageNum_--;
         }
 
+        if (TRG(0) & PAD_RIGHT)
+        {
+            if(stageNum_ < 2)
+            stageNum_++;
+        }
+
+        //選択している画像のα値とスケールの変更
+        switch (stageNum_)
+        {
+        //チュートリアル選択中
+        case 0:
+            tutorialAlpha_ = 1.0f;            
+            tutorialScale_ = { 0.6f , 0.6f };
+
+            stage1Alpha_ = 0.2f;
+            stage1Scale_ = { 0.5f , 0.5f };
+
+            stage2Alpha_ = 0.2f;
+            stage2Scale_ = { 0.5f , 0.5f };
+            break;
+
+        //ステージ１選択中
+        case 1:
+            tutorialAlpha_ = 0.2f;
+            tutorialScale_ = { 0.5f , 0.5f };
+
+            stage1Alpha_ = 1.0f;
+            stage1Scale_ = { 0.6f , 0.6f };
+
+            stage2Alpha_ = 0.2f;
+            stage2Scale_ = { 0.5f , 0.5f };
+            break;
+
+        //ステージ２選択中
+        case 2:
+            tutorialAlpha_ = 0.2f;
+            tutorialScale_ = { 0.5f , 0.5f };
+
+            stage1Alpha_ = 0.2f;
+            stage1Scale_ = { 0.5f , 0.5f };
+
+            stage2Alpha_ = 1.0f;
+            stage2Scale_ = { 0.6f , 0.6f };
+            break;
+        }
+
+        if (TRG(0) & PAD_START)
+        {
+            ++state_;
+        }
         break;
 
     case 3:
@@ -129,22 +179,53 @@ void Select::draw() {
     DepthStencil::instance().set(DepthStencil::MODE::APPLY_MASK);
 
     // タイトルの描画
-    GameLib::font::textOut(4, "StageSelect",
-        { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 3) },
-        VECTOR2(5.0f, 5.0f),
-        { 1.0f, 1.0f, 1.0f, 1.0f },
-        GameLib::TEXT_ALIGN::UPPER_MIDDLE
+    //GameLib::font::textOut(4, "StageSelect",
+    //    { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 3) },
+    //    VECTOR2(5.0f, 5.0f),
+    //    { 1.0f, 1.0f, 1.0f, 1.0f },
+    //    GameLib::TEXT_ALIGN::UPPER_MIDDLE
+    //);
+
+    //背景の描画
+    sprBack_.draw(
+        { 960,540 },
+        { 1.0f,1.0f }
     );
 
+    //チュートリアルアイコンの描画
+    sprTutorial_.draw(
+        { GameLib::window::getWidth() / 2 - (GameLib::window::getWidth() / 2) / 2 , GameLib::window::getHeight() / 2 },
+        tutorialScale_,
+        ToRadian(0),
+        { 1.0f,1.0f,1.0f,tutorialAlpha_}
+    );
+
+    //ステージ１アイコンの描画
+    sprStage1_.draw(
+        { GameLib::window::getWidth() / 2 , GameLib::window::getHeight() / 2 },
+        stage1Scale_,
+        ToRadian(0),
+        { 1.0f,1.0f,1.0f,stage1Alpha_}
+    );
+
+    //ステージ２アイコンの描画
+    sprStage2_.draw(
+        { GameLib::window::getWidth() / 2 + (GameLib::window::getWidth() / 2) / 2 , GameLib::window::getHeight() / 2 },
+        stage2Scale_,
+        ToRadian(0),
+        { 1.0f,1.0f,1.0f,stage2Alpha_}
+    );
+
+
     // Push Enter Key の描画
-    if (timer_ >> 5 & 0x01) {
-        GameLib::font::textOut(4, "Push Enter Key",
-            { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 6) * 5 },
-            VECTOR2(1.5f, 1.5f),
-            { 1.0f, 1.0f, 1.0f, 1.0f },
-            GameLib::TEXT_ALIGN::LOWER_MIDDLE
-        );
-    }
+    //if (timer_ >> 5 & 0x01) {
+    //    GameLib::font::textOut(4, "Push Enter Key",
+    //        { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 6) * 5 },
+    //        VECTOR2(1.5f, 1.5f),
+    //        { 1.0f, 1.0f, 1.0f, 1.0f },
+    //        GameLib::TEXT_ALIGN::LOWER_MIDDLE
+    //    );
+    //}
 
     // フェードアウト
     // if (fadeOutTimer_ > 0.0f) {

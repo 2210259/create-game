@@ -21,9 +21,10 @@ void Title::init() {
     Scene::init();	    // 基底クラスのinitを呼ぶ
 
     // 読み込むテクスチャ
-    LoadTexture loadTextureTitle[static_cast<size_t>(TEXNOM::NUM)] = {
-        { static_cast<int>(TEXNOM::STAR),  L"./Data/Images/star.png", 1U },
-        { static_cast<int>(TEXNOM::START),  L"./Data/Images/start.png", 1U },
+    LoadTexture loadTextureTitle[static_cast<size_t>(TEXNUM::NUM)] = {
+        { static_cast<int>(TEXNUM::STAR),  L"./Data/Images/star.png", 1U },
+        { static_cast<int>(TEXNUM::START), L"./Data/Images/start.png", 1U },
+        { static_cast<int>(TEXNUM::PLAYER), L"./Data/Images/player.png", 1U },
     };
 
     // テクスチャのロード
@@ -45,15 +46,15 @@ void Title::update() {
         //////// 初期設定 ////////
         timer_ = 0;                         // タイマーを初期化
         fadeOutTimer_ = 0.0f;               // フェードアウト用変数の初期設定
-
+        switchNum = 0;
         starScale_ = { 0.0f, 0.0f };
         starAngle_ = 0.0f;
 
-        playerPos_      = { 320, 600 };
-        playerScale_    = { 1.0f, 1.0f };
+        playerPos_      = { BG::WINDOW_W / 4, 1000 };
+        playerScale_    = { 5.0f, 5.0f };
+        playerColor_    = { 1, 1, 1, 1 };
         playerTexPos_   = { 0, 0 };
-        playerTexSize_  = { 150, 150 };
-
+        
         //BGMを再生
         GameLib::music::play(5, false);
 
@@ -66,10 +67,10 @@ void Title::update() {
     case 1:
         //////// フェードイン中 ////////
         starAngle_ -= ToRadian(4);
-        starScale_ += { 0.1f, 0.1f };
+        starScale_ += { 0.2f, 0.2f };
 
-        if (starScale_.x > 8.0) {
-            starScale_ = { 8.0f , 8.0f };
+        if (starScale_.x > 15.0) {
+            starScale_ = { 15.0f , 15.0f };
             ++state_;   // 通常の処理へ
         }
         break;
@@ -90,21 +91,19 @@ void Title::update() {
     case 3:
         //////// フェードアウト中 ////////
         starAngle_ += ToRadian(4);
-        starScale_ -= { 0.1f , 0.1f };
+        starScale_ -= { 0.2f , 0.2f };
 
         if (starScale_.x < 0) {
             starScale_ = { 0.0f, 0.0f };
-        }
-
-        fadeOutTimer_ += 0.01167f;
-        if (fadeOutTimer_ >= 1.0f) {
             //BGMを止める
             GameLib::music::stop(5);
-            changeScene(Game::instance());
+            changeScene(Select::instance());
             break;
         }
         break;
     }
+    // プレイヤーのアニメーション
+    // playerAnime();
 
     debug::setString("timer_:%d", timer_);
     debug::setString("state_:%d", state_);
@@ -151,10 +150,13 @@ void Title::draw() {
     );
 
     // プレイヤーの描画
-    // texture::begin(TEXNO::PLAYER);
-    // texture::draw(TEXNO::PLAYER, playerPos_, playerScale_,
-    //     playerTexPos_, playerTexSize_);
-    // texture::end(TEXNO::PLAYER);
+
+    // sprPlayer_.draw(
+    //     { playerPos_.x, playerPos_.y }, 
+    //     { playerScale_.x, playerScale_.y },
+    //     0,
+    //     playerColor_
+    // );
 
     // Push Enter Key の描画
     //if (timer_ >> 5 & 0x01) {
@@ -187,4 +189,22 @@ void Title::draw() {
 
     // ステンシルモード：通常
     DepthStencil::instance().set(DepthStencil::MODE::NONE);
+}
+
+void Title::playerAnime() {
+    switch (switchNum)
+    {
+    case 0:
+        playerTexPos_ = { 0, 0 };
+        if (timer_ % 10 == 0)
+            switchNum++;
+        break;
+    case 1:
+        playerTexPos_ = { 150, 0 };
+        if (timer_ % 10 == 0)
+            switchNum--;
+        break;
+    }
+    debug::setString("playerTexPos_:%f", playerTexPos_.x);
+    debug::setString("switchNum:%d", switchNum);
 }

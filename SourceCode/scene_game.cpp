@@ -122,8 +122,7 @@ void Game::update()
          }
 
          //１(たいとるへ)を選んでいるとき
-         if (pause_num_ == false)
-         {
+         if (pause_num_ == false) {
              if (TRG(0) & PAD_START)
              {
                  music::play(7);
@@ -140,7 +139,7 @@ void Game::update()
         //////// 初期設定 ////////
         
         timer_       = 0;    // ゲームタイマー
-        combo2Timer_ = 0;
+        combo2Timer_ = 0;    // コンボタイマー
         scoreTimer_  = 0;    // スコアタイマー
         notesTimer_  = 0;    // ノーツタイマー
         score_       = 0;    // スコア
@@ -149,22 +148,36 @@ void Game::update()
         maxCombo_    = 0;    // 最大コンボ数
 
         // HPバーの設定
-        hpPos01      = { 950,  20 };         // HPバーの位置
-        hpSize01     = { 300,  60 };         // HPバーの大きさ
+        hpPos01      = { 1390,  20 };        // HPバーの位置
+        hpSize01     = { 500,  80 };         // HPバーの大きさ
         hpColor01    = { 0, 0, 0, 1.0f };    // HPバーの色
-        hpPos02      = { 955,  25 };         // HPバーの位置
-        hpSize02     = { 290,  50 };         // HPバーの大きさ
+        hpPos02      = { 1395,  25 };        // HPバーの位置
+        hpSize02     = { 490,  70 };         // HPバーの大きさ
         hpColor02    = { 1, 0, 0, 0.8f };    // HPバーの色
-        comboSize    = { 1, 1 };             // コンボの大きさ
-        combo2Pos    = { 1250, 240 };        // コンボ2の位置
-        combo2Size   = { 1, 1 };             // コンボ2の大きさ             
+
+        comboSize    = { 1.5f, 1.5f };       // コンボの大きさ
+        combo2Pos    = { 1890, 280 };        // コンボ2の位置
+        combo2Size   = { 1.5f, 1.5f };       // コンボ2の大きさ             
         combo2Color  = { 1, 1, 1, 0 };       // コンボ2の色
+
         scorePos     = { 10, 80 };           // スコアの位置
-        scoreSize    = { 1, 1 };             // スコアの大きさ             
+        scoreSize    = { 1.5f, 1.5f };       // スコアの大きさ             
         scoreColor   = { 1, 1, 1, 0 };       // スコアの色
-        notesPos     = { 1250, 200 };        // ノーツの位置
-        notesSize    = { 1, 1 };             // ノーツの大きさ             
+        
+        notesPos     = { 1890, 240 };        // ノーツの位置
+        notesSize    = { 1.5f, 1.5f };       // ノーツの大きさ             
         notesColor   = { 1, 1, 1, 0 };       // ノーツの色
+
+        perfectNum_ = 0; // パーフェクト数  
+        greatNum_   = 0; // グレイト数 
+        goodNum_    = 0; // グッド数 
+        missNum_    = 0; // ミス数
+
+        pause_num_       = 0;// ポーズ中の選択用
+        pause_alpha_     = 0;// ポーズ中に表示するテキストのα値
+        pause_alpha_num_ = 0;// α値を０～１まで往復させるための値
+        
+        playerAlive_ = true; //生存しているかどうか
 
         // BGMの再生
         music::play(0, false);
@@ -189,7 +202,7 @@ void Game::update()
                 new ActorComponent,
                 nullptr
             ),
-            &idlePlayerBehavior, VECTOR2(640, 700), -1, {});
+            &idlePlayerBehavior, VECTOR2(BG::WINDOW_W / 2, BG::WINDOW_H - (BG::WINDOW_H / 18)), -1, {});
 
         // BGの初期設定
         bg()->init(player_);
@@ -221,7 +234,7 @@ void Game::update()
         decisionJudge();
 
         // TODO:ゲームの終了時間の調整
-        if (timer_ > 100) {
+        if (timer_ > 500) {
             GameLib::music::stop(0);
             changeScene(Score::instance());
             break;
@@ -244,10 +257,76 @@ void Game::draw()
     // 画面クリア
     GameLib::clear(VECTOR4(0.5f, 0.5f, 0.5f, 1));
 
-    bg()->drawBack();   // オブジェクトの描画
+    // ステンシルモード：通常
+    DepthStencil::instance().set(DepthStencil::MODE::NONE);
 
-    // オブジェクトの描画
+    // 背景の描画
+    bg()->drawBack();
+
+    // 通常ノーツの描画
     obj2dManager()->draw(bg()->getScrollPos());
+
+    // 長押しノーツ(左)と連続ノーツ(左)の描画
+    {
+        // ステンシルモード：マスク生成
+        DepthStencil::instance().set(DepthStencil::MODE::MASK);
+
+        // 四角形
+        GameLib::primitive::rect(
+            { player()->transform()->position().x,
+            player()->transform()->position().y - player()->collider()->size().y },
+            { player()->transform()->position().x, player()->collider()->size().y },
+            { 0, 0 },
+            ToRadian(0),
+            { 0.0f, 0.0f, 0.0f, 0.0f }
+        );
+
+        // ステンシルモード：マスク以外に描画
+        DepthStencil::instance().set(DepthStencil::MODE::EXCLUSIVE);
+
+        // 長押しノーツ(左)と連続ノーツ(左)の描画
+        obj2dManager()->draw3(bg()->getScrollPos());
+    }
+
+    // 長押しノーツ(右)と連続ノーツ(右)の描画
+    {
+        // ステンシルモード：マスク生成
+        DepthStencil::instance().set(DepthStencil::MODE::MASK);
+
+        // ステンシルモード：マスク以外に描画
+        DepthStencil::instance().set(DepthStencil::MODE::APPLY_MASK);
+
+        // 長押しノーツ(右)と連続ノーツ(右)の描画
+        obj2dManager()->draw4(bg()->getScrollPos());
+    }
+
+    // 長押しノーツ(上)と連続ノーツ(上)の描画
+    {
+        // ステンシルモード：マスク生成
+        DepthStencil::instance().set(DepthStencil::MODE::MASK);
+
+        // 四角形
+        GameLib::primitive::rect(
+            { player()->transform()->position().x - (player()->collider()->size().x / 2),
+            player()->transform()->position().y - player()->collider()->size().y },
+            { player()->collider()->size().x, player()->collider()->size().y * 2 },
+            { 0, 0 },
+            ToRadian(0),
+            { 0.0f, 0.0f, 0.0f, 0.0f }
+        );
+
+        // ステンシルモード：マスク以外に描画
+        DepthStencil::instance().set(DepthStencil::MODE::EXCLUSIVE);
+
+        // 長押しノーツ(上)と連続ノーツ(上)の描画
+        obj2dManager()->draw2(bg()->getScrollPos());
+    }
+
+    // ステンシルモード：通常
+    DepthStencil::instance().set(DepthStencil::MODE::NONE);
+
+    // プレイヤーの描画
+    obj2dManager()->drawPlayer(bg()->getScrollPos());
 
     // HPバーの描画
     primitive::rect(hpPos01, hpSize01, { 0, 0 }, 0, hpColor01);
@@ -317,33 +396,56 @@ void Game::draw()
                 { 1,1,1,pause_alpha_ }
             );
         }
-
     }
 
-    //左の攻撃範囲表示
-    primitive::rect(445, 610, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
-    //右の攻撃範囲表示
-    primitive::rect(805, 610, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
-    //上の攻撃範囲表示
-    primitive::rect(625, 430, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
+    // 上の攻撃範囲表示
+    // primitive::rect(BG::WINDOW_W / 2 - 15, player()->transform()->position().y - (player()->collider()->size().y * 3 / 2) - 15,
+    //     30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
+    
+    primitive::circle(BG::WINDOW_W / 2, player()->transform()->position().y - (player()->collider()->size().y * 3 / 2),
+        15, 1, 1, ToRadian(0), 1.0f, 1.0f, 1.5f, 0.2f);
 
-    //プレイヤーが左を向いていたら
-    if (player()->actorComponent()->direction() == player()->actorComponent()->LEFT)
-    {
-        //左の攻撃範囲表示
-        primitive::rect(445, 610, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
+    // 左の攻撃範囲表示
+    // primitive::rect(player()->transform()->position().x - player()->collider()->size().x - 15, player()->transform()->position().y - player()->collider()->size().y / 2 - 15,
+    //     30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
+
+    primitive::circle(player()->transform()->position().x - player()->collider()->size().x, player()->transform()->position().y - player()->collider()->size().y / 2,
+        15, 1, 1, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
+
+    // 右の攻撃範囲表示
+    // primitive::rect(player()->transform()->position().x + player()->collider()->size().x - 15, player()->transform()->position().y - player()->collider()->size().y / 2 - 15,
+    //     30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
+    
+    primitive::circle(player()->transform()->position().x + player()->collider()->size().x, player()->transform()->position().y - player()->collider()->size().y / 2,
+        15, 1, 1, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.2f);
+
+    // プレイヤーが上を向いていたら
+    if (player()->actorComponent()->direction() == player()->actorComponent()->UP) {
+        // 上の攻撃範囲表示
+        // primitive::rect(BG::WINDOW_W / 2 - 15, player()->transform()->position().y - (player()->collider()->size().y * 3 / 2) - 15,
+        //     30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
+
+        primitive::circle(BG::WINDOW_W / 2, player()->transform()->position().y - (player()->collider()->size().y * 3 / 2),
+            15, 1, 1, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
     }
-    //プレイヤーが左を向いていたら
+    // プレイヤーが左を向いていたら
+    if (player()->actorComponent()->direction() == player()->actorComponent()->LEFT) {
+        // 左の攻撃範囲表示
+        // primitive::rect(player()->transform()->position().x - player()->collider()->size().x - 15, player()->transform()->position().y - player()->collider()->size().y / 2 - 15,
+        //     30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
+
+        primitive::circle(player()->transform()->position().x - player()->collider()->size().x, player()->transform()->position().y - player()->collider()->size().y / 2,
+            15, 1, 1, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
+    }
+    // プレイヤーが右を向いていたら
     if (player()->actorComponent()->direction() == player()->actorComponent()->RIGHT)
     {
-        //右の攻撃範囲表示
-        primitive::rect(805, 610, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
-    }
-     //プレイヤーが左を向いていたら
-    if (player()->actorComponent()->direction() == player()->actorComponent()->UP)
-    {
-        //上の攻撃範囲表示
-        primitive::rect(625, 430, 30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
+        // 右の攻撃範囲表示
+        // primitive::rect(player()->transform()->position().x + player()->collider()->size().x - 15, player()->transform()->position().y - player()->collider()->size().y / 2 - 15,
+        //     30, 30, 0, 0, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
+
+        primitive::circle(player()->transform()->position().x + player()->collider()->size().x, player()->transform()->position().y - player()->collider()->size().y / 2,
+            15, 1, 1, ToRadian(0), 1.0f, 1.0f, 1.0f, 0.6f);
     }
 }
 
@@ -413,17 +515,16 @@ void Game::calcCombo()
 
     // スコア表示をもとに戻す
     if (combo2Timer_ >= maxAppearTime_) {
-        combo2Pos   = { 1250, 240 };        // コンボの位置
-        combo2Size  = { 1, 1 };             // コンボの大きさ
+        combo2Pos   = { 1890, 300 };        // コンボの位置
+        combo2Size  = { 1.5f, 1.5f };       // コンボの大きさ
         combo2Color = { 1, 1, 1, 0 };       // コンボの色
     }
     // タイマーを減らす
     if (combo2Timer_ > 0) combo2Timer_--;
 
     // パラメータを変更
-    
     // コンボ1の設定
-    if (comboSize.x > 1.0f) 
+    if (comboSize.x > 1.5f) 
         comboSize -= { 0.05f, 0.05f };
 
     // コンボ2の設定
@@ -439,11 +540,11 @@ void Game::calcCombo()
         combo2Size -= { 0.1f, 0.1f };
 
     // 一定の値を超えないように設定
-    combo2Size.x = clamp(combo2Size.x, 1.0f, 1.5f);
-    combo2Size.y = clamp(combo2Size.y, 1.0f, 1.5f);
+    comboSize.x = clamp(comboSize.x, 1.5f, 2.0f);
+    comboSize.y = clamp(comboSize.y, 1.5f, 2.0f);
     if (combo2Pos.y < 240)        combo2Pos.y = 240;
-    combo2Size.x = clamp(combo2Size.x, 1.0f, 1.3f);
-    combo2Size.y = clamp(combo2Size.y, 1.0f, 1.3f);
+    combo2Size.x = clamp(combo2Size.x, 1.5f, 1.8f);
+    combo2Size.y = clamp(combo2Size.y, 1.5f, 1.8f);
     combo2Color.w = clamp(combo2Color.w, 0.0f, 1.0f);
 }
 
@@ -458,15 +559,15 @@ void Game::comboDraw()
     // コンボ数をテキスト表示
     font::textOut(6,
         ss1.str(),
-        { 1250, 120 },
-        { 1.0f, 1.0f },
+        { 1890, 140 },
+        { 1.5f, 1.5f },
         { 1.0f, 1.0f, 1.0f, 1.0f },
         TEXT_ALIGN::MIDDLE_RIGHT
     );
 
     font::textOut(6,
         ss2.str(),
-        { 1250, 120 },
+        { 1890, 140 },
         comboSize,
         { 1.0f, 1.0f, 1.0f, 1.0f },
         TEXT_ALIGN::MIDDLE_RIGHT
@@ -519,7 +620,7 @@ void Game::scoreDraw()
     font::textOut(6,
         ss1.str(),
         { 10, 10 },
-        { 1.0f, 1.0f },
+        { 1.5f, 1.5f },
         { 1.0f, 1.0f, 1.0f, 1.0f },
         TEXT_ALIGN::UPPER_LEFT
     );
@@ -544,7 +645,7 @@ void Game::decisionJudge()
     case Game::MISS:
         notesText.str("MISS");
         notesTimer_ = maxAppearTime_;
-        notesPos    = { 1250, 200 };
+        notesPos    = { 1890, 240 };
         notesSize   = { 0.2f, 0.2f };
         notesColor  = { 0.0f, 0.0f, 1.0f, 0.0f };
         decision_   = NONE;
@@ -552,7 +653,7 @@ void Game::decisionJudge()
     case Game::GOOD:
         notesText.str("GOOD");
         notesTimer_ = maxAppearTime_;
-        notesPos    = { 1250, 200 };
+        notesPos    = { 1890, 240 };
         notesSize   = { 0.2f, 0.2f };
         notesColor  = { 1.0f, 1.0f, 1.0f, 0.0f };
         decision_   = NONE;
@@ -560,7 +661,7 @@ void Game::decisionJudge()
     case Game::GREAT:
         notesText.str("GREAT");
         notesTimer_ = maxAppearTime_;
-        notesPos    = { 1250, 200 };
+        notesPos    = { 1890, 240 };
         notesSize   = { 0.2f, 0.2f };
         notesColor  = { 0.2f, 1.0f, 1.0f, 0.0f };
         decision_   = NONE;
@@ -568,7 +669,7 @@ void Game::decisionJudge()
     case Game::PERFECT:
         notesText.str("PERFECT");
         notesTimer_ = maxAppearTime_;
-        notesPos    = { 1250, 200 };
+        notesPos    = { 1890, 240 };
         notesSize   = { 0.2f, 0.2f };
         notesColor  = { 1.0f, 1.0f, 0.0f, 0.0f };
         decision_   = NONE;
@@ -589,8 +690,8 @@ void Game::decisionJudge()
         notesColor.w -= 0.04f;
     }
     // 一定の値を超えないように設定
-    if (notesPos.y < 180)       notesPos.y   = 180;
-    if (notesSize.x > 1.0f)     notesSize    = { 1.0f,1.0f };
+    if (notesPos.y < 220)       notesPos.y   = 220;
+    if (notesSize.x > 1.5f)     notesSize    = { 1.5f, 1.5f };
     notesColor.w = clamp(notesColor.w, 0.0f, 1.0f);
     debug::setString("notesTimer:%d", notesTimer_);
     debug::setString("notesColor.w:%f", notesColor.w);

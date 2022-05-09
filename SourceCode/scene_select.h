@@ -35,11 +35,20 @@ public:
     // 使用するテクスチャのラベル
     enum class TEXNO {
         STAR,
+        BACK,
+        TUTORIAL,
+        STAGE1,
+        STAGE2,
         NUM,
     };
 
     // 使用するスプライトデータ
     GameLib::SpriteData sprStar_ = SPRITE_CENTER(static_cast<INT>(TEXNO::STAR), 0, 0, 500, 500);
+    GameLib::SpriteData sprBack_ = SPRITE_CENTER(static_cast<INT>(TEXNO::BACK), 0, 0, 1920, 1080);
+    GameLib::SpriteData sprTutorial_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TUTORIAL), 0, 0, 700, 700);
+    GameLib::SpriteData sprStage1_ = SPRITE_CENTER(static_cast<INT>(TEXNO::STAGE1), 0, 0, 700, 700);
+    GameLib::SpriteData sprStage2_ = SPRITE_CENTER(static_cast<INT>(TEXNO::STAGE2), 0, 0, 700, 700);
+
 
 private:
     // フェードアウト用タイマー
@@ -49,4 +58,11 @@ private:
     VECTOR2 starScale_ = { 0.0f, 0.0f };
     float   starAngle_ = 0.0f;
     int stageNum_ = 0;
+    float tutorialAlpha_ = 1.0f;
+    float stage1Alpha_ = 1.0f;
+    float stage2Alpha_ = 1.0f;
+    VECTOR2 tutorialScale_ = { 0.5f , 0.5f };
+    VECTOR2 stage1Scale_ = { 0.5f , 0.5f };
+    VECTOR2 stage2Scale_ = { 0.5f , 0.5f };
+
 };

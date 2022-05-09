@@ -82,6 +82,7 @@ private:
     VECTOR2 position_ = {};
     VECTOR2 orgPos_;    // 最初に出現した位置を保持しておく
     VECTOR2 scale_ = {};
+    VECTOR2 orgScale_ = {};
     float rotation_ = 0;
     VECTOR2 speed_ = {};
 public:
@@ -96,6 +97,7 @@ public:
     const VECTOR2& position() const { return position_; }
     const VECTOR2& orgPos() const { return orgPos_; }
     const VECTOR2& scale() const { return scale_; }
+    const VECTOR2& orgScale() const { return orgScale_; }
     const float rotation() const { return rotation_; }
     const VECTOR2& speed() const { return speed_; }
 
@@ -109,6 +111,7 @@ public:
 
     void setOrgPos(const VECTOR2& pos) { orgPos_ = pos; }
     void setScale(const VECTOR2& s) { scale_ = s; }
+    void setOrgScale(const VECTOR2& s) { orgScale_ = s; }
     void setRotation(float r) { rotation_ = r; }
     void rotate(float r) { rotation_ += r; }
 
@@ -179,6 +182,7 @@ private:
     GameLib::fRECT hitBox7_;
 
     GameLib::fRECT attackBox_;
+    GameLib::fRECT attackBox2_;
 
     bool judgeFlag_;
     bool judgeBoxFlag_;
@@ -269,16 +273,16 @@ private:
     bool xFlip_;        // X座標の向き
     bool hitFlag_;      // 餌が敵に当たった時かどうかのフラグ
     int  deadTimer_;    // 敵の消滅時間
-    int  posType_;      // 敵の出現位置
+    int  posType_;      // 敵の出現方向
     bool deleteCombo2Flag_; // コンボ2を消滅するフラグ
     
 public:
     enum DIRECTON              // 向き
     {
         UP,                    // 上
-        DOWN,                  // 下
         LEFT,                  // 左
         RIGHT,                 // 右
+        DOWN,                  // 下
     } direction_;
     
     ActorComponent()
@@ -334,6 +338,7 @@ private:
     bool xFlip_;        // true左　false右向き
     bool weaponFlag_;   // 餌があるかどうかのフラグ
     bool removeLFlag_;
+    int  posType_;      // 武器の出現方向
 
 public:
     WeaponComponent()
@@ -341,6 +346,7 @@ public:
         , xFlip_(false)
         , weaponFlag_(false)
         , removeLFlag_(false)
+        , posType_(0)
     {}
 
     //ゲッター
@@ -348,12 +354,14 @@ public:
     bool xFlip() const { return xFlip_; }
     bool weaponFlag() const { return weaponFlag_; }
     bool removeLFlag() const { return removeLFlag_; }
+    int posType() const { return posType_; }
 
     //セッター
     void setOwner(OBJ2D* o) { if (!o) owner_ = o; }
     void setXFlip(bool b) { xFlip_ = b; }
     void setweaponFlag(bool f) { weaponFlag_ = f; }
     void setRemoveLFlag(bool f) { removeLFlag_ = f; }
+    void setPosType(int p) { posType_ = p; }
 
     // void copyOwnerXFlip();
 };
@@ -434,7 +442,11 @@ public:
 
     void init();    // 初期化
     void update();  // 更新
-    void draw(const VECTOR2&);    // 描画
+    void draw(const VECTOR2&);          // 描画
+    void draw2(const VECTOR2&);         // 描画
+    void draw3(const VECTOR2&);         // 描画
+    void draw4(const VECTOR2&);         // 描画
+    void drawPlayer(const VECTOR2&);    // 描画
 
     OBJ2D* add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int posType, VECTOR2 size);
     std::list<OBJ2D*>* getList() { return &objList_; }

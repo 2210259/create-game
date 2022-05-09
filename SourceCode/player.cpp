@@ -32,23 +32,23 @@ namespace
 
     // 上攻撃
     AnimeData animePlayer_Attack_U[] = {
-        { &sprPlayer_Attack_U0, 5 },
-        { &sprPlayer_Attack_U1, 5 },
-        { &sprPlayer_Attack_U2, 5 },
+        { &sprPlayer_Attack_U0, 4 },
+        { &sprPlayer_Attack_U1, 4 },
+        { &sprPlayer_Attack_U2, 4 },
         { nullptr, -1 },// 終了フラグ
     };
     // 右攻撃
     AnimeData animePlayer_Attack_R[] = {
-        { &sprPlayer_Attack_R0, 5 },
-        { &sprPlayer_Attack_R1, 5 },
-        { &sprPlayer_Attack_R2, 5 },
+        { &sprPlayer_Attack_R0, 4 },
+        { &sprPlayer_Attack_R1, 4 },
+        { &sprPlayer_Attack_R2, 4 },
         { nullptr, -1 },// 終了フラグ
     };
     // 左攻撃
     AnimeData animePlayer_Attack_L[] = {
-        { &sprPlayer_Attack_L0, 5 },
-        { &sprPlayer_Attack_L1, 5 },
-        { &sprPlayer_Attack_L2, 5 },
+        { &sprPlayer_Attack_L0, 4 },
+        { &sprPlayer_Attack_L1, 4 },
+        { &sprPlayer_Attack_L2, 4 },
         { nullptr, -1 },// 終了フラグ
     };
 }
@@ -122,15 +122,20 @@ IdlePlayerBehavior::IdlePlayerBehavior()
     param_.ANIME_IDLE = animePlayer_Idle;
 
     param_.SIZE = VECTOR2(150, 150);
-    param_.SCALE = VECTOR2(1, 1);
-    param_.MARGIN = 50.0f;
-    param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
-        param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
+    param_.SCALE = VECTOR2(2, 2);
+    const VECTOR2 size = {
+        param_.SIZE.x * param_.SCALE.x,
+        param_.SIZE.y * param_.SCALE.y
+    };
+    param_.MARGIN = 100.0f;
+    param_.HIT_BOX = { -size.x / 2 + param_.MARGIN, -size.y + param_.MARGIN,
+        size.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
+
     // param_.ATTACK_BOX   = { -150 / 2, 0, 150 / 2, -150 };
     // float left,top,right,bottom
 
     // HP
-    param_.HP = 4;
+    param_.HP = 10;
 }
 
 // void IdlePlayerBehavior::moveX(OBJ2D* obj)
@@ -165,19 +170,19 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
         if(obj->actorComponent()->direction_ == obj->actorComponent()->UP) 
         {
             //当たり判定の位置を設定
-            attackPosition = { 640, 445 };
+            attackPosition = { BG::WINDOW_W / 2, obj->transform()->position().y - (obj->collider()->size().y * 3 / 2) };
         }
         // もし左を向いてたら
         if (obj->actorComponent()->direction_ == obj->actorComponent()->LEFT)
         {
             //当たり判定の位置を設定
-            attackPosition = { 460, 625 };
+            attackPosition = { obj->transform()->position().x - obj->collider()->size().x, obj->transform()->position().y - obj->collider()->size().y / 2 };
         }
         // もし右を向いていたら
         if(obj->actorComponent()->direction_ == obj->actorComponent()->RIGHT)
         {
             //当たり判定の位置を設定
-            attackPosition = { 820 , 625 };
+            attackPosition = { obj->transform()->position().x + obj->collider()->size().x, obj->transform()->position().y - obj->collider()->size().y / 2 };
         }
         // 武器をセット
         OBJ2D* weapon = Game::instance()->obj2dManager()->add(
@@ -188,7 +193,7 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
                 nullptr,
                 new WeaponComponent
             ),
-            &weaponbehavior, attackPosition, -1, {});
+            &weaponBehavior, attackPosition, -1, {});
         weapon->weaponComponent()->setOwner(obj);
         
         // モードを変える
@@ -243,16 +248,19 @@ AttackPlayerBehavior::AttackPlayerBehavior()
     param_.ANIME_ATTACK_L = animePlayer_Attack_L;
     param_.ANIME_ATTACK_U = animePlayer_Attack_U;
 
-    param_.SIZE     = VECTOR2(150, 150);
-    param_.SCALE    = VECTOR2(1, 1);
-    param_.MARGIN   = 50.0f;
+    param_.SIZE = VECTOR2(150, 150);
+    param_.SCALE = VECTOR2(2, 2);
+    const VECTOR2 size = {
+        param_.SIZE.x * param_.SCALE.x,
+        param_.SIZE.y * param_.SCALE.y
+    };
+    param_.MARGIN = 100.0f;
 
-    // 当たり判定
-    param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
-        param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
-    
+    param_.HIT_BOX = { -size.x / 2 + param_.MARGIN, -size.y + param_.MARGIN,
+        size.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
+
     // HP
-    param_.HP = 5;
+    param_.HP = 10;
 }
 
 // void AttackPlayerBehavior::moveX(OBJ2D* obj)
@@ -309,15 +317,15 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
     using namespace input;
 
     // 攻撃アニメーション
-    if (renderer->animeTimer() < 15)
+    if (renderer->animeTimer() < 12)
     {
         //左
         if (obj->actorComponent()->direction_ == obj->actorComponent()->LEFT)
         {
             // アニメセット
             renderer->setAnimeData(getParam()->ANIME_ATTACK_L);
-            param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
-                param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
+            // param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
+            //     param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
             // debug::setString("LEFT");
         }
         //右
@@ -325,8 +333,9 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
         {
             // アニメセット
             renderer->setAnimeData(getParam()->ANIME_ATTACK_R);
-            param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
-                param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
+
+            // param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
+            //     param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
             // debug::setString("RIGHT");
         }
         //上
@@ -334,19 +343,19 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
         {
             //アニメセット
             renderer->setAnimeData(getParam()->ANIME_ATTACK_U);
-            param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
-                param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
+            // param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
+            //     param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
             // debug::setString("UP");
         }
 
         //アニメーション遷移タイマー加算
         renderer->countAnimeTime();
     }
-    else if (renderer->animeTimer() >= 15 && STATE(0) & PAD_START)
+    else if (renderer->animeTimer() >= 12 && STATE(0) & PAD_START)
     {
         renderer->setAnimeTimer(0);
     }
-    else if (renderer->animeTimer() >= 15)
+    else if (renderer->animeTimer() >= 12)
     {
         Game::instance()->setPlayerModeFlag(false);
     }

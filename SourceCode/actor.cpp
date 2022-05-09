@@ -9,20 +9,19 @@ void ActorBehavior::move(OBJ2D* obj)
         //////// ‰ŠúÝ’è ////////
         // ƒAƒjƒ‚Ì‰ŠúÝ’è
         obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
-        if (!obj->transform()->scale().x && !obj->transform()->scale().y) {
+        if (obj->behavior() != &enemy2Behavior || obj->behavior() != &enemy3Behavior) {
             obj->transform()->setScale(getParam()->SCALE);
-        }
-        const VECTOR2 size = {
-            getParam()->SIZE.x * getParam()->SCALE.x,
-            getParam()->SIZE.y * getParam()->SCALE.y,
-        };
-        if (size.x || size.y) {
-            obj->collider()->setSize(size);
+            const VECTOR2 size = {
+                getParam()->SIZE.x * getParam()->SCALE.x,
+                getParam()->SIZE.y * getParam()->SCALE.y,
+            };
+            if (size.x || size.y) {
+                obj->collider()->setSize(size);
+            }
         }
         obj->collider()->setJudgeFlag(true);
         obj->actorComponent()->setHP(getParam()->HP);
         obj->actorComponent()->setMaxHP(getParam()->HP);
-        obj->actorComponent()->setDeleteCombo2Flag(param_.FLAG_DELETE_COMBO2);
         obj->nextState();//state_++
         break;
     }
