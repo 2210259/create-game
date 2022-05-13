@@ -12,7 +12,7 @@ class BasePlayerBehavior : public ActorBehavior
 private:
     void moveX(OBJ2D* obj) override;
     OBJ_TYPE getType() const override { return OBJ_TYPE::PLAYER; }
-    OBJ_TYPE attackType() const override { return OBJ_TYPE::MAX; }
+    OBJ_TYPE attackType() const override { return OBJ_TYPE::NONE; }
     void hit(OBJ2D*, OBJ2D*) {};
 };
 
@@ -38,7 +38,7 @@ public:
     AttackPlayerBehavior();
 private:
     OBJ_TYPE getType() const override { return OBJ_TYPE::PLAYER; }
-    OBJ_TYPE attackType() const override { return OBJ_TYPE::MAX; }
+    OBJ_TYPE attackType() const override { return OBJ_TYPE::NONE; }
     // void moveX(OBJ2D* obj) override;
     void modechange(OBJ2D* obj) override;
     void playerAnimetion(OBJ2D* obj) override;

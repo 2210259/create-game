@@ -22,6 +22,7 @@
 #include "audio.h"
 
 #include "bg.h"
+#include "effect.h"
 #include "weapon.h"
 #include "actor.h"
 #include "player.h"

@@ -20,6 +20,10 @@ public:
     VECTOR2 hpSize02;   // HPバーの大きさ
     VECTOR4 hpColor02;  // HPバーの色
 
+    VECTOR2 squarePos_ = { 0,0 };
+    VECTOR2 squareScale_ = { 0.0f, 0.0f };
+    float squareAngle_ = 0.0f;
+
 private:
     // メンバ変数
     OBJ2DManager*   obj2dManager_;
@@ -38,14 +42,22 @@ private:
     int appearScore_;       // スコアの出現
     int scoreTimer_;        // スコアの出現時間
     int maxScore_;          // 最大スコア
-    int pause_num_;         //ポーズ中の選択用
-    float pause_alpha_;     //ポーズ中に表示するテキストのα値
-    int pause_alpha_num_;   //α値を０～１まで往復させるための値
+    int pause_num_;         // ポーズ中の選択用
+    float pause_alpha_;     // ポーズ中に表示するテキストのα値
+    int pause_alpha_num_;   // α値を０～１まで往復させるための値
     int perfectNum_;        // パーフェクト数
     int greatNum_;          // グレイト数
     int goodNum_;           // グッド数
     int missNum_;           // ミス数
-    bool playerAlive_;     // 生存確認
+    bool playerAlive_;      // 生存確認
+    VECTOR2 G_L_Fusuma_Pos_ = { 0,0 };  // 左襖位置
+    VECTOR2 G_R_Fusuma_Pos_ = { 0,0 };  // 右襖位置
+    int Fusuma_timer_ = 0;            // 襖タイマー
+    float G_Fusuma_timer_ = 0;          // 襖が閉じ始めるまでの時間
+    bool title_push_flg = false;        // タイトルへを選んだ時のフラグ
+    bool restart_push_flg = false;      // 再挑戦を選んだ時のフラグ
+    VECTOR2 shuriken_Pos_[11] = {};     //手裏剣位置の初期化
+    float shuriken_Angle_ = 0;          //手裏剣の角度の初期化
 
 
     static const int maxAppearTime_ = 120; // 最大表示時間
@@ -67,6 +79,15 @@ private:
     VECTOR2 notesSize;   // ノーツ判定の大きさ
     VECTOR4 notesColor;  // ノーツ判定の色
 
+    VECTOR2 t_EndPos;    // 文字の位置
+    VECTOR2 t_EndScale;  // 文字の大きさ
+    VECTOR2 t_EndSize;   // 文字の大きさ
+    VECTOR4 t_EndColor;  // 文字の色
+
+    VECTOR2 t_FullComboPos;    // 文字の位置
+    VECTOR2 t_FullComboScale;  // 文字の大きさ
+    VECTOR2 t_FullComboSize;   // 文字の大きさ
+    VECTOR4 t_FullComboColor;  // 文字の色
 public:
     enum DECISION {
         MISS,
@@ -164,6 +185,15 @@ private:
         , goodNum_(0)
         , missNum_(0)
         , playerAlive_(true)
+        , squarePos_({0,0})
+        , squareScale_({0.0f,0.0f})
+        , squareAngle_(0.0f)
+        , G_L_Fusuma_Pos_({ 0.0f,0.0f })  
+        , G_R_Fusuma_Pos_({ 0.0f,0.0f })
+        , G_Fusuma_timer_(0)
+        , title_push_flg(false)
+        , restart_push_flg(false)
+        , Fusuma_timer_(0)
 
     {}
     Game(const Game&) = delete; // = delete コピーコンストラクタが存在しないことを明示
@@ -191,10 +221,14 @@ private:
     // 操作方法UI
     void operationDraw();
 
+
 public:
     //使用するスプライトデータ
     GameLib::SpriteData sprRestart_ = SPRITE_CENTER(static_cast<INT>(TEXNO::RESTART), 0, 0, 600, 300);
     GameLib::SpriteData sprTotitle_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TOTITLE), 0, 0, 600, 300);
+    GameLib::SpriteData sprL_Fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNO::L_FUSUMA), 0, 0, 960, 1080);
+    GameLib::SpriteData sprR_Fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNO::R_FUSUMA), 0, 0, 960, 1080);
+    GameLib::SpriteData sprShuriken_ = SPRITE_CENTER(static_cast<INT>(TEXNO::ENEMY0), 0, 0, 128, 128);
 };
 
 //******************************************************************************

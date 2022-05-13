@@ -22,8 +22,9 @@ enum class OBJ_TYPE {
     PLAYER, // 0
     ENEMY,  // 1
     WEAPON, // 2
+    EFFECT, // 3
 
-    MAX,    // 3
+    NONE,   // 4
 };
 
 // 移動アルゴリズムクラス（抽象クラス）
@@ -145,7 +146,10 @@ public:
 
     // ゲッター
     void draw(const VECTOR2& scrollPos);
+    void draw2(const VECTOR2& scrollPos);
+    void draw3(const VECTOR2& scrollPos);
     bool animeUpdate();
+    
     VECTOR4 color() { return color_; }
     int animeTimer() { return animetimer_; }
 
@@ -172,6 +176,7 @@ class Collider : public Component
 {
 private:
     VECTOR2 size_ = {};
+    VECTOR2 mergin_ = {};
 
     GameLib::fRECT hitBox_;
     GameLib::fRECT hitBox2_;
@@ -193,6 +198,7 @@ private:
 public:
     Collider()
         :size_()
+        , mergin_()
         , judgeFlag_(false)
         , judgeBoxFlag_(false)
         , judgeBoxFlag2_(false)
@@ -243,6 +249,7 @@ public:
 
     //ゲッター
     const VECTOR2& size() const { return size_; }
+    const VECTOR2& mergin() const { return mergin_; }
     bool judgeFlag() const { return judgeFlag_; }
     bool judgeBoxFlag() const { return judgeBoxFlag_; }
     bool judgeBoxFlag2() const { return judgeBoxFlag2_; }
@@ -252,6 +259,7 @@ public:
 
     // セッター
     void setSize(const VECTOR2& s) { size_ = s; }
+    void setMergin(const VECTOR2& m) { mergin_ = m; }
     void setJudgeFlag(bool f) { judgeFlag_ = f; }
     void setJudgeBoxFlag(bool f) { judgeBoxFlag_ = f; }
     void setJudgeBoxFlag2(bool f) { judgeBoxFlag2_ = f; }
@@ -326,6 +334,7 @@ public:
 
     // HPを減らす
     void damage() { --hp_; }
+    void countDeadTimer() { --deadTimer_; }
 };
 
 //----------------------------------------
@@ -365,6 +374,33 @@ public:
 
     // void copyOwnerXFlip();
 };
+
+//----------------------------------------
+//            EffectComponent
+//----------------------------------------
+class EffectComponent : public Component
+{
+private:
+    OBJ2D* owner_;      // 持ち主
+    int  effectTimer_;    // エフェクトの描画時間
+
+public:
+    EffectComponent()
+        :owner_(nullptr)
+        , effectTimer_(0)
+    {}
+
+    //ゲッター
+    OBJ2D* owner() const { return owner_; }
+    int effectTimer() const { return effectTimer_; }
+
+    //セッター
+    void setOwner(OBJ2D* o) { if (!o) owner_ = o; }
+    void setEffectTimer(int t) { effectTimer_ = t; }
+
+    void countEffectTimer() { --effectTimer_; }
+};
+
 //----------------------------------------
 //            OBJ2D
 //----------------------------------------
@@ -387,15 +423,17 @@ private:
     Collider* collider_;
     ActorComponent* actorComponent_;
     WeaponComponent* weaponComponent_;
-
+    EffectComponent* effectComponent_;
 public:
     // メンバ関数
     OBJ2D(Renderer* renderer,
         Collider* collider,
         BG* bg,
         ActorComponent* actorComponent,
-        WeaponComponent* weaponComponent
+        WeaponComponent* weaponComponent,
+        EffectComponent* effectComponent
     );
+
     ~OBJ2D();
     void move();    // 移動
 
@@ -405,6 +443,7 @@ public:
     Collider* collider() const { return collider_; }
     ActorComponent* actorComponent() const { return actorComponent_; }
     WeaponComponent* weaponComponent() const { return weaponComponent_; }
+    EffectComponent* effectComponent() const { return effectComponent_; }
 
     // ゲッター
     int state() const { return state_; }
@@ -447,6 +486,7 @@ public:
     void draw3(const VECTOR2&);         // 描画
     void draw4(const VECTOR2&);         // 描画
     void drawPlayer(const VECTOR2&);    // 描画
+    void drawEffect(const VECTOR2&);    // 描画
 
     OBJ2D* add(OBJ2D* obj, Behavior* behavior, const VECTOR2& pos, int posType, VECTOR2 size);
     std::list<OBJ2D*>* getList() { return &objList_; }

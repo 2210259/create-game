@@ -22,9 +22,14 @@ LoadTexture loadTexture[] = {
     { TEXNO::ENEMY3,        L"./Data/Images/no-tsu04.png",      1U },// ノーツ
     { TEXNO::ENEMY4,        L"./Data/Images/no-tsu05.png",      1U },// ノーツ
     { TEXNO::ENEMY5,        L"./Data/Images/no-tsu06.png",      1U },// ノーツ
+    { TEXNO::EFFECT,        L"./Data/Images/effect.png",        1U },// エフェクト
     { TEXNO::RESTART,       L"./Data/Images/restart.png",       1U },// "再挑戦"文字
     { TEXNO::TOTITLE,       L"./Data/Images/to title.png",      1U },// "たいとるへ"文字
     { TEXNO::MAP_BACK,      L"./Data/Images/background.png",    1U },// 背景
+    { TEXNO::T_END,         L"./Data/Images/textEnd.png",       1U },// "閉幕！！"
+    { TEXNO::T_FULLCOMBO,   L"./Data/Images/textFullCombo.png", 1U },// "フルコンボ"
+    { TEXNO::L_FUSUMA,      L"./Data/Images/L_fusuma.png",      1U },// 左襖
+    { TEXNO::R_FUSUMA,      L"./Data/Images/R_fusuma.png",      1U },// 右襖
 
     { -1, nullptr }	// 終了フラグ
 };
@@ -65,26 +70,24 @@ SpriteData sprPlayer_Attack_U2 = SPRITE_BOTTOM(TEXNO::PLAYER, 150 * 2, 150 * 3, 
 //      手裏剣
 //================================
 // 攻撃
-SpriteData sprEnemy0_Idle0 = SPRITE_CENTER(TEXNO::ENEMY0, 128 * 0, 128 * 0, 128, 128);
-// SpriteData sprEnemy0_Idle1 = SPRITE_CENTER(TEXNO::ENEMY0, 128 * 1, 128 * 0, 128, 128);
+SpriteData sprEnemy0_Idle0 = SPRITE_CENTER(TEXNO::ENEMY0, 150 * 0, 150 * 0, 150, 150);
 
 // 死亡時
-// SpriteData sprEnemy0_Dead0 = SPRITE_CENTER(TEXNO::ENEMY0, 128 * 0, 128 * 4, 128, 128);
-// SpriteData sprEnemy0_Dead1 = SPRITE_CENTER(TEXNO::ENEMY0, 128 * 1, 128 * 4, 128, 128);
-// SpriteData sprEnemy0_Dead2 = SPRITE_CENTER(TEXNO::ENEMY0, 128 * 2, 128 * 4, 128, 128);
+SpriteData sprEnemy0_Dead0 = SPRITE_CENTER(TEXNO::ENEMY0, 150 * 1, 150 * 0, 150, 150);
+SpriteData sprEnemy0_Dead1 = SPRITE_CENTER(TEXNO::ENEMY0, 150 * 2, 150 * 0, 150, 150);
+SpriteData sprEnemy0_Dead2 = SPRITE_CENTER(TEXNO::ENEMY0, 150 * 3, 150 * 0, 150, 150);
 
 //================================
 //      クナイ
 //================================
 
 // 攻撃
-SpriteData sprEnemy1_Idle0 = SPRITE_CENTER(TEXNO::ENEMY1, 128 * 0, 128 * 0, 128, 128);
-// SpriteData sprEnemy1_Idle1 = SPRITE_CENTER(TEXNO::ENEMY0, 128 * 1, 128 * 0, 128, 128);
+SpriteData sprEnemy1_Idle0 = SPRITE_CENTER(TEXNO::ENEMY1, 150 * 0, 150 * 0, 150, 150);
 
 // 死亡時
-//SpriteData sprEnemy1_Dead0 = SPRITE_CENTER(TEXNO::ENEMY1, 128 * 0, 128 * 4, 128, 128);
-//SpriteData sprEnemy1_Dead1 = SPRITE_CENTER(TEXNO::ENEMY1, 128 * 1, 128 * 4, 128, 128);
-//SpriteData sprEnemy1_Dead2 = SPRITE_CENTER(TEXNO::ENEMY1, 128 * 2, 128 * 4, 128, 128);
+SpriteData sprEnemy1_Dead0 = SPRITE_CENTER(TEXNO::ENEMY1, 150 * 1, 150 * 0, 150, 150);
+SpriteData sprEnemy1_Dead1 = SPRITE_CENTER(TEXNO::ENEMY1, 150 * 2, 150 * 0, 150, 150);
+SpriteData sprEnemy1_Dead2 = SPRITE_CENTER(TEXNO::ENEMY1, 150 * 3, 150 * 0, 150, 150);
 
 //================================
 //      長押しノーツ(上)
@@ -92,7 +95,6 @@ SpriteData sprEnemy1_Idle0 = SPRITE_CENTER(TEXNO::ENEMY1, 128 * 0, 128 * 0, 128,
 
 // 攻撃
 SpriteData sprEnemy2_Idle0 = SPRITE_CENTER(TEXNO::ENEMY2, 128 * 0, 512 * 0, 128, 512);
-// SpriteData sprEnemy2_Idle1 = SPRITE_CENTER(TEXNO::ENEMY0, 128 * 1, 128 * 0, 128, 128);
 
 // 死亡時
 //SpriteData sprEnemy2_Dead0 = SPRITE_CENTER(TEXNO::ENEMY2, 250 * 0, 650 * 4, 250, 650);
@@ -106,7 +108,6 @@ SpriteData sprEnemy2_Idle0 = SPRITE_CENTER(TEXNO::ENEMY2, 128 * 0, 512 * 0, 128,
 
 // 攻撃
 SpriteData sprEnemy3_Idle0 = SPRITE_CENTER(TEXNO::ENEMY3, 128 * 0, 128 * 0, 512, 128);
-// SpriteData sprEnemy3_Idle1 = SPRITE_CENTER(TEXNO::ENEMY3, 128 * 1, 128 * 0, 128, 128);
 
 // 死亡時
 //SpriteData sprEnemy3_Dead0 = SPRITE_CENTER(TEXNO::ENEMY3, 250 * 0, 650 * 4, 250, 650);
@@ -120,7 +121,6 @@ SpriteData sprEnemy3_Idle0 = SPRITE_CENTER(TEXNO::ENEMY3, 128 * 0, 128 * 0, 512,
 
 // 攻撃
 SpriteData sprEnemy4_Idle0 = SPRITE_CENTER(TEXNO::ENEMY4, 128 * 0, 128 * 0, 128, 512);
-// SpriteData sprEnemy4_Idle1 = SPRITE_CENTER(TEXNO::ENEMY0, 128 * 1, 128 * 0, 128, 128);
 
 // 死亡時
 //SpriteData sprEnemy4_Dead0 = SPRITE_CENTER(TEXNO::ENEMY4, 250 * 0, 650 * 4, 250, 650);
@@ -142,12 +142,40 @@ SpriteData sprEnemy5_Idle0 = SPRITE_CENTER(TEXNO::ENEMY5, 128 * 0, 128 * 0, 512,
 //SpriteData sprEnemy4_Dead2 = SPRITE_CENTER(TEXNO::ENEMY4, 250 * 2, 650 * 4, 250, 650);
 //SpriteData sprEnemy4_Dead3 = SPRITE_CENTER(TEXNO::ENEMY4, 250 * 3, 650 * 4, 250, 650);
 
+//------< エフェクト >------------------------------------------------------------------
+
+//================================
+//      Goodエフェクト
+//================================
+
+SpriteData sprEffect0_Idle0 = SPRITE_CENTER(TEXNO::EFFECT, 150 * 0, 150 * 0, 150, 150);
+SpriteData sprEffect0_Idle1 = SPRITE_CENTER(TEXNO::EFFECT, 150 * 1, 150 * 0, 150, 150);
+SpriteData sprEffect0_Idle2 = SPRITE_CENTER(TEXNO::EFFECT, 150 * 2, 150 * 0, 150, 150);
+
+//================================
+//      Greatエフェクト
+//================================
+
+SpriteData sprEffect1_Idle0 = SPRITE_CENTER(TEXNO::EFFECT, 150 * 0, 150 * 1, 150, 150);
+SpriteData sprEffect1_Idle1 = SPRITE_CENTER(TEXNO::EFFECT, 150 * 1, 150 * 1, 150, 150);
+SpriteData sprEffect1_Idle2 = SPRITE_CENTER(TEXNO::EFFECT, 150 * 2, 150 * 1, 150, 150);
+
+//================================
+//      Perfectエフェクト
+//================================
+
+SpriteData sprEffect2_Idle0 = SPRITE_CENTER(TEXNO::EFFECT, 150 * 0, 150 * 2, 150, 150);
+SpriteData sprEffect2_Idle1 = SPRITE_CENTER(TEXNO::EFFECT, 150 * 1, 150 * 2, 150, 150);
+SpriteData sprEffect2_Idle2 = SPRITE_CENTER(TEXNO::EFFECT, 150 * 2, 150 * 2, 150, 150);
+
 //================================
 //           文字
 //================================
 
 SpriteData sprRestart = SPRITE_CENTER(TEXNO::RESTART, 0, 0, 600, 300);
 SpriteData sprTotitle = SPRITE_CENTER(TEXNO::TOTITLE, 0, 0, 600, 300);
+SpriteData sprT_End   = SPRITE_CENTER(TEXNO::T_END, 0, 0, 350,  94);
+SpriteData sprT_FullCombo = SPRITE_CENTER(TEXNO::T_FULLCOMBO, 0, 0, 782, 94);
 
 //------------------------------------------------------------------------------
 #undef SPRITE_CENTER

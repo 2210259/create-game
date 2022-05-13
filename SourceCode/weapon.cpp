@@ -64,7 +64,6 @@ void BaseWeaponBehavior::update(OBJ2D* obj)
 //----------------------------------------//
 WeaponBehavior::WeaponBehavior()
 {
-    // param_.SPR_WEAPON = &sprWeapon;
     param_.ERASER = &weaponEraser;
 
     param_.SCALE = { 1, 1 };
@@ -141,11 +140,15 @@ void WeaponBehavior::hit(OBJ2D* src, OBJ2D* dst)
         }
         debug::setString("deleteCombo2Flag:%d", dst->actorComponent()->deleteCombo2Flag());
     }
-    // 敵を消滅(長押しノーツと連続ノーツ以外)
+    // 敵を消滅する状態に設定(長押しノーツと連続ノーツ以外)
     if (dst->behavior() == &enemy0Behavior ||
         dst->behavior() == &enemy1Behavior) {
-        // 敵を消滅
-        dst->remove();
+
+        // 敵を消滅する状態に設定
+        dst->addEnemyState();
+
+        // Perfectエフェクトを生成
+        setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect2Behavior, src->transform()->position());
     }
 
     // ジャッジフラグをなくす(連打ノーツ以外)
@@ -182,10 +185,14 @@ void WeaponBehavior::hit2(OBJ2D* src, OBJ2D* dst)
     // グレイトカウントを足す 
     Game::instance()->addGreatNum();
 
+    // 敵を消滅する状態に設定(長押しノーツと連続ノーツ以外)
     if (dst->behavior() == &enemy0Behavior ||
         dst->behavior() == &enemy1Behavior) {
-        // 敵を消滅
-        dst->remove();
+        // 敵を消滅する状態に設定
+        dst->addEnemyState();
+
+        // Greatエフェクトを生成
+        setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect1Behavior, src->transform()->position());
     }
     // ジャッジフラグをなくす
     dst->collider()->setJudgeBoxFlag(false);
@@ -220,10 +227,14 @@ void WeaponBehavior::hit3(OBJ2D* src, OBJ2D* dst)
     // グッドカウントを足す
     Game::instance()->addGoodNum();
 
+    // 敵を消滅する状態に設定(長押しノーツと連続ノーツ以外)
     if (dst->behavior() == &enemy0Behavior ||
         dst->behavior() == &enemy1Behavior) {
-        // 敵を消滅
-        dst->remove();
+        // 敵を消滅する状態に設定
+        dst->addEnemyState();
+
+        // Goodエフェクトを生成
+        setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect0Behavior, src->transform()->position());
     }
     
     // ジャッジフラグをなくす
@@ -247,7 +258,7 @@ void WeaponBehavior::hit4(OBJ2D* src, OBJ2D* dst)
     {
         dst->collider()->setJudgeBoxFlag2(true);
     }
-    else if(dst->collider()->judgeBoxFlag4() == false) // 長押ししてない 且つ hit5,6,7の当たり判定に入っていないとき
+    if(TRG_RELEASE(0) & PAD_START && dst->collider()->judgeBoxFlag4() == false) // 長押ししてない 且つ hit5,6,7の当たり判定に入っていないとき
     {
         // コンボをなくす
         Game::instance()->deleteCombo();

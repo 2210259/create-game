@@ -16,15 +16,20 @@ enum TEXNO
 {
     // ゲーム
     PLAYER,
-    ENEMY0,       //敵1
-    ENEMY1,       //敵2
-    ENEMY2,       //敵3
-    ENEMY3,       //敵4
-    ENEMY4,       //敵5
-    ENEMY5,       //敵6
-    RESTART,      //"再挑戦"の文字
-    TOTITLE,      //"たいとるへ"の文字
+    ENEMY0,       // 敵1
+    ENEMY1,       // 敵2
+    ENEMY2,       // 敵3
+    ENEMY3,       // 敵4
+    ENEMY4,       // 敵5
+    ENEMY5,       // 敵6
+    EFFECT,       // エフェクト
+    RESTART,      // "再挑戦"の文字
+    TOTITLE,      // "たいとるへ"の文字
     MAP_BACK,     // 背景
+    T_END,        // "閉幕！！"
+    T_FULLCOMBO,  // "フルコンボ"
+    L_FUSUMA,     // ゲーム遷移の画像
+    R_FUSUMA,     // ゲーム遷移の画像
 
     NUM
 };
@@ -132,11 +137,38 @@ extern GameLib::SpriteData sprEnemy5_Idle0;
 // extern GameLib::SpriteData sprEnemy4_Dead2;
 // extern GameLib::SpriteData sprEnemy4_Dead3;
 
+//------< エフェクト >------------------------------------------------------------------
+
+//================================
+//      Goodエフェクト
+//================================
+
+extern GameLib::SpriteData sprEffect0_Idle0;
+extern GameLib::SpriteData sprEffect0_Idle1;
+extern GameLib::SpriteData sprEffect0_Idle2;
+
+//================================
+//      Greatエフェクト
+//================================
+
+extern GameLib::SpriteData sprEffect1_Idle0;
+extern GameLib::SpriteData sprEffect1_Idle1;
+extern GameLib::SpriteData sprEffect1_Idle2;
+
+//================================
+//      Perfectエフェクト
+//================================
+
+extern GameLib::SpriteData sprEffect2_Idle0;
+extern GameLib::SpriteData sprEffect2_Idle1;
+extern GameLib::SpriteData sprEffect2_Idle2;
+
 //================================
 //          文字
 //================================
 
 extern GameLib::SpriteData sprRestart;
 extern GameLib::SpriteData sprTotitle;
+extern GameLib::SpriteData sprTextEnd;
 
 //******************************************************************************

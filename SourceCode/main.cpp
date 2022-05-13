@@ -15,7 +15,7 @@ int APIENTRY WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
     SceneManager sceneManager;
 
     // タイトルシーン開始  // TODO:
-    sceneManager.execute(Game::instance());
+    sceneManager.execute(Title::instance());
 
     return 0;
 }

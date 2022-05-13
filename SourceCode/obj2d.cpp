@@ -18,13 +18,15 @@ OBJ2D::OBJ2D(Renderer* renderer,
     Collider* collider,
     BG* bg,
     ActorComponent* actorComponent,
-    WeaponComponent* weaponComponent
+    WeaponComponent* weaponComponent,
+    EffectComponent* effectComponent
     )
     : renderer_(renderer)
     , collider_(collider)
     , bg_(bg)
     , actorComponent_(actorComponent)
     , weaponComponent_(weaponComponent)
+    , effectComponent_(effectComponent)
 {
     transform_ = new Transform;
     if (transform_)         transform_->setParent(this);
@@ -32,6 +34,7 @@ OBJ2D::OBJ2D(Renderer* renderer,
     if (collider_)          collider_->setParent(this);
     if (actorComponent_)    actorComponent_->setParent(this);
     if (weaponComponent_)   weaponComponent_->setParent(this);
+    if (effectComponent_)   effectComponent_->setParent(this);
 }
 
 //--------------------------------------------------------------
@@ -44,6 +47,7 @@ OBJ2D::~OBJ2D()
     safe_delete(collider_);
     safe_delete(actorComponent_);
     safe_delete(weaponComponent_);
+    safe_delete(effectComponent_);
 }
 
 //--------------------------------------------------------------
@@ -70,6 +74,33 @@ void Renderer::draw(const VECTOR2& scrollPos)
     }
 }
 
+void Renderer::draw2(const VECTOR2& scrollPos)
+{
+    Transform* transform = parent()->transform();
+    Collider* collider = parent()->collider();
+    if (data_)
+    {
+        data_->draw(transform->position() - scrollPos,
+            transform->scale(),
+            0, 0,
+            collider->size().x - collider->mergin().x, collider->size().y - collider->mergin().y,
+            transform->rotation(), color_);  // dataのdrawメソッドでスプライトを描画する        
+    }
+}
+
+void Renderer::draw3(const VECTOR2& scrollPos)
+{
+    Transform* transform = parent()->transform();
+    Collider* collider = parent()->collider();
+    if (data_)
+    {
+        data_->draw(transform->position() - scrollPos,
+            transform->scale(),
+            collider->mergin().x, 0,
+            collider->size().x - collider->mergin().x, collider->size().y - collider->mergin().y,
+            transform->rotation(), color_);  // dataのdrawメソッドでスプライトを描画する        
+    }
+}
 //--------------------------------------------------------------
 //  アニメーション更新
 //--------------------------------------------------------------
@@ -213,7 +244,7 @@ void Collider::draw(const VECTOR2& scrollPos)
     {
         pos = VECTOR2(attackBox_.left, attackBox_.top) - scrollPos;
         color = { 1, 0, 0, 0.5f };
-        primitive::rect(pos, size, { 0,0 }, 0, color);
+        // primitive::rect(pos, size, { 0,0 }, 0, color);
     }
 };
 
@@ -511,7 +542,7 @@ void OBJ2DManager::draw2(const VECTOR2& scrollPos)
             cnt++;
             continue;
         }
-        obj->renderer()->draw(scrollPos);
+        obj->renderer()->draw2(scrollPos);
         obj->collider()->draw(scrollPos);
     }
 }
@@ -533,7 +564,7 @@ void OBJ2DManager::draw3(const VECTOR2& scrollPos)
             cnt++;
             continue;
         }
-        obj->renderer()->draw(scrollPos);
+        obj->renderer()->draw2(scrollPos);
         obj->collider()->draw(scrollPos);
     }
 }
@@ -555,7 +586,7 @@ void OBJ2DManager::draw4(const VECTOR2& scrollPos)
             cnt++;
             continue;
         }
-        obj->renderer()->draw(scrollPos);
+        obj->renderer()->draw3(scrollPos);
         obj->collider()->draw(scrollPos);
     }
 }
@@ -568,6 +599,24 @@ void OBJ2DManager::drawPlayer(const VECTOR2& scrollPos)
     for (auto& obj : objList_)
     {
         if (obj->behavior() != &idlePlayerBehavior && obj->behavior() != &attackPlayerBehavior && obj->behavior() != &weaponBehavior) continue;
+        const VECTOR2 pos = obj->transform()->position() - scrollPos;
+        if (pos.x < -LIMIT || pos.x > window::getWidth() + LIMIT ||
+            pos.y < -LIMIT || pos.y > window::getHeight() + LIMIT)
+        {
+            cnt++;
+            continue;
+        }
+        obj->renderer()->draw(scrollPos);
+        obj->collider()->draw(scrollPos);
+    }
+}
+void OBJ2DManager::drawEffect(const VECTOR2& scrollPos)
+{
+    constexpr float LIMIT = 512.0f; // これ以上スクリーンから出ているものはとばす
+    int cnt = 0;
+    for (auto& obj : objList_)
+    {
+        if (obj->behavior() != &notesEffect0Behavior && obj->behavior() != &notesEffect1Behavior && obj->behavior() != &notesEffect2Behavior) continue;
         const VECTOR2 pos = obj->transform()->position() - scrollPos;
         if (pos.x < -LIMIT || pos.x > window::getWidth() + LIMIT ||
             pos.y < -LIMIT || pos.y > window::getHeight() + LIMIT)

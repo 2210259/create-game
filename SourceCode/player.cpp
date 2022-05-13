@@ -191,7 +191,8 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
                 new Collider,
                 obj->bg(),
                 nullptr,
-                new WeaponComponent
+                new WeaponComponent,
+                nullptr
             ),
             &weaponBehavior, attackPosition, -1, {});
         weapon->weaponComponent()->setOwner(obj);

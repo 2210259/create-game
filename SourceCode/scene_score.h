@@ -30,6 +30,19 @@ private:
 
     int     performState_;   //演出用ステート
 
+    VECTOR2 C_L_Fusuma_Pos_ = { 0,0 };  // 左襖位置
+
+    VECTOR2 C_R_Fusuma_Pos_ = { 0,0 };  // 右襖位置
+
+    float C_Fusuma_timer_ = 0;          // 襖が閉じ始めるまでの時間
+
+    bool restart_push_flg_ = false;     // リスタートを選択した時に立つフラグ
+
+    bool title_push_flg_ = false;       // タイトルへを選択した時に立つフラグ
+
+    VECTOR2 shuriken_Pos_[10] = {};      //手裏剣位置の初期化
+
+    float shuriken_Angle_ = 0;          //手裏剣の角度の初期化
 
 
 public:
@@ -58,6 +71,13 @@ private:
         , missNum_(0)
         , missText_pos_({ 1920.0f,0.0f })
         , rank_Scale( 130.0f )
+        , C_L_Fusuma_Pos_({ 0.0f,0.0f })       
+        , C_R_Fusuma_Pos_({ 0.0f,0.0f })
+        , C_Fusuma_timer_(0)
+        , restart_push_flg_(false)
+        , title_push_flg_(false)
+        , shuriken_Angle_(0)
+
     {}
     ~Score() {}
 
@@ -66,25 +86,8 @@ private:
     Score(Score&&) noexcept = delete;             // ムーブコンストラクター
     Score& operator=(Score&&) noexcept = delete;  // ムーブ代入演算子
 
-//public:
-//    // 使用するテクスチャのラベル
-//    enum class TEXNO {
-//        STAR,
-//        NUM,
-//    };
-
-//    // 使用するスプライトデータ
-//    GameLib::SpriteData sprStar_ = SPRITE_CENTER(static_cast<INT>(TEXNO::STAR), 0, 0, 500, 500);
-
-//private:
-//    // フェードアウト用タイマー
-//    //float fadeOutTimer_ = 0.0f;
-
-//    // メンバ変数
-//    VECTOR2 starScale_ = { 0.0f, 0.0f };
-//    float   starAngle_ = 0.0f;
-//    int stageNum_ = 0;
-
+    void scoreDraw();
+    void scoreRusult();
 public:
     // 使用するテクスチャのラベル
     enum class TEXNOM {
@@ -92,7 +95,12 @@ public:
         TOTITLE,
         CLEAR,
         GAMEOVER,
+        L_FUSUMA,    
+        R_FUSUMA,
+        SHURIKEN,
+
         NUM,
+
     };
 
     //使用するスプライトデータ
@@ -100,5 +108,8 @@ public:
     GameLib::SpriteData sprTotitle_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::TOTITLE), 0, 0, 600, 300);
     GameLib::SpriteData sprClear_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::CLEAR), 0, 0, 1920, 1080);
     GameLib::SpriteData sprGameover_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::GAMEOVER), 0, 0, 1920, 1080);
+    GameLib::SpriteData sprL_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::L_FUSUMA), 0, 0, 960, 1080);
+    GameLib::SpriteData sprR_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::R_FUSUMA), 0, 0, 960, 1080);
+    GameLib::SpriteData sprShuriken_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::SHURIKEN), 0, 0, 128, 128);
 
 };

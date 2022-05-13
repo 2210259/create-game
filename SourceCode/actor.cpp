@@ -42,7 +42,9 @@ void ActorBehavior::move(OBJ2D* obj)
     obj->collider()->calcHitBox(getParam()->HIT_BOX);
     obj->collider()->calcHitBox2(getParam()->HIT_BOX2);
     obj->collider()->calcHitBox3(getParam()->HIT_BOX3);
-    obj->collider()->calcHitBox4(getParam()->HIT_BOX4);
+    if (getParam()->HIT_BOX4.left) {
+        obj->collider()->calcHitBox4(getParam()->HIT_BOX4);
+    }
     obj->collider()->calcHitBox5(getParam()->HIT_BOX5);
     obj->collider()->calcHitBox6(getParam()->HIT_BOX6);
     obj->collider()->calcHitBox7(getParam()->HIT_BOX7);

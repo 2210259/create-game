@@ -19,13 +19,16 @@ Select Select::instance_;
 void Select::init() {
     Scene::init();	    // 基底クラスのinitを呼ぶ
 
+    //TODO:変更
     // 読み込むテクスチャ
     GameLib::LoadTexture loadTextureSelect[static_cast<size_t>(TEXNO::NUM)] = {
-        { static_cast<int>(TEXNO::STAR),  L"./Data/Images/star.png", 1U },
         { static_cast<int>(TEXNO::BACK),  L"./Data/Images/stage_select.png", 1U },
         { static_cast<int>(TEXNO::TUTORIAL),  L"./Data/Images/tutorial_icon.png", 1U },
         { static_cast<int>(TEXNO::STAGE1),  L"./Data/Images/stage1_icon.png", 1U },
         { static_cast<int>(TEXNO::STAGE2),  L"./Data/Images/stage2_icon.png", 1U },
+        { static_cast<int>(TEXNO::L_FUSUMA),  L"./Data/Images/L_fusuma.png", 1U },
+        { static_cast<int>(TEXNO::R_FUSUMA),  L"./Data/Images/R_fusuma.png", 1U },
+
     };                    
                         
     // テクスチャのロード
@@ -46,15 +49,40 @@ void Select::update() {
     case 0:
         //////// 初期設定 ////////
         timer_ = 0;                         // タイマーを初期化
-        fadeOutTimer_ = 0.0f;               // フェードアウト用変数の初期設定
 
-        stageNum_ = 0;
-        starScale_ = { 0.0f, 0.0f };
-        starAngle_ = 0.0f;
+        //TODO:変数の変更
+
+        stageNum_ = 0;                      //ステージ番号の初期化
+
+        //アイコンの位置の初期化
+        tutorial_icon_Pos_ = { GameLib::window::getWidth() / 2 - (GameLib::window::getWidth() / 2) / 2 , GameLib::window::getHeight() / 2 };
+        stage1_icon_Pos_ = { GameLib::window::getWidth() / 2 , GameLib::window::getHeight() / 2 };
+        stage2_icon_Pos_ = { GameLib::window::getWidth() / 2 + (GameLib::window::getWidth() / 2) / 2 , GameLib::window::getHeight() / 2 };
+
+        //アイコンのα値の初期化
+        tutorial_icon_Alpha_ = 1.0f;
+        stage1_icon_Alpha_ = 1.0f;
+        stage2_icon_Alpha_ = 1.0f;
+
+        //アイコンのスケールの初期化
+        tutorial_icon_Scale_ = { 0.5f , 0.5f };
+        stage1_icon_Scale_ = { 0.5f , 0.5f };
+        stage2_icon_Scale_ = { 0.5f , 0.5f };
+        
+        //TODO:追加
+        //シーン切り替え用の画像位置の初期化
+        S_L_Fusuma_Pos_ = { 960 / 2,540 };     // 左襖の位置の初期化
+        S_R_Fusuma_Pos_ = { (960 * 2) - (960 / 2) , 540 }; // 右襖の位置の初期化
+
+        //襖のタイマーの初期化
+        Fusuma_timer_ = 0;
+
+        //フラグの初期化
+        push_flg = false;
 
         GameLib::setBlendMode(GameLib::Blender::BS_ALPHA);   // 通常のアルファ処理
 
-        music::play(4, true);   //BGMの再生
+        //music::play(4, true);   //BGMの再生
 
         state_++;                                            // 初期化処理の終了
 
@@ -62,93 +90,166 @@ void Select::update() {
 
     case 1:
         //////// フェードイン中 ////////
-        starAngle_ -= ToRadian(4);
-        starScale_ += { 0.1f, 0.1f };
 
-        if (starScale_.x > 8.0) {
-            starScale_ = { 8.0f , 8.0f };
-            ++state_;   // 通常の処理へ
+        // 襖の処理
+        if (S_L_Fusuma_Pos_.x > -960 / 2 && S_R_Fusuma_Pos_.x < (960 * 2) + (960 / 2))
+        {
+            S_L_Fusuma_Pos_.x -= 30;
+            S_R_Fusuma_Pos_.x += 30;
+
+            if (S_L_Fusuma_Pos_.x <= -960 / 2 && S_R_Fusuma_Pos_.x >= (960 * 2) + (960 / 2))
+            {
+                S_L_Fusuma_Pos_.x = -960 / 2;
+                S_R_Fusuma_Pos_.x = (960 * 2) + (960 / 2);
+                state_++;
+            }
         }
+
         break;
 
     case 2:
         //////// 通常時の処理 ////////
 
-        //ステージ選択用
-        if (TRG(0) & PAD_LEFT)
+        // 追加
+        if (push_flg == false)
         {
-            if(stageNum_ > 0)
-            stageNum_--;
-        }
+            //ステージ選択用
+            if (TRG(0) & PAD_LEFT)
+            {
+                if (stageNum_ > 0)
+                    stageNum_--;
+            }
 
-        if (TRG(0) & PAD_RIGHT)
-        {
-            if(stageNum_ < 2)
-            stageNum_++;
+            if (TRG(0) & PAD_RIGHT)
+            {
+                if (stageNum_ < 2)
+                    stageNum_++;
+            }
         }
-
         //選択している画像のα値とスケールの変更
         switch (stageNum_)
         {
         //チュートリアル選択中
         case 0:
-            tutorialAlpha_ = 1.0f;            
-            tutorialScale_ = { 0.6f , 0.6f };
+            tutorial_icon_Alpha_ = 1.0f;
+            
+            //アイコンのスケールが大きくなかったら大きくする
+            if (tutorial_icon_Scale_.x < 0.6f && tutorial_icon_Scale_.y < 0.6f)
+            {
+                tutorial_icon_Scale_.x += 0.005f;
+                tutorial_icon_Scale_.y += 0.005f;
+            }
 
-            stage1Alpha_ = 0.2f;
-            stage1Scale_ = { 0.5f , 0.5f };
+            stage1_icon_Alpha_ = 0.2f;
 
-            stage2Alpha_ = 0.2f;
-            stage2Scale_ = { 0.5f , 0.5f };
+            //アイコンのスケールが大きかったら小さくする
+            if (stage1_icon_Scale_.x > 0.5f && stage1_icon_Scale_.y > 0.5f)
+            {
+                stage1_icon_Scale_.x -= 0.005f;
+                stage1_icon_Scale_.y -= 0.005f;
+            }
+
+            stage2_icon_Alpha_ = 0.2f;
+
+            //アイコンのスケールが大きかったら小さくする
+            if (stage2_icon_Scale_.x > 0.5f && stage2_icon_Scale_.y > 0.5f)
+            {
+                stage2_icon_Scale_.x -= 0.005f;
+                stage2_icon_Scale_.y -= 0.005f;
+            }
             break;
 
         //ステージ１選択中
         case 1:
-            tutorialAlpha_ = 0.2f;
-            tutorialScale_ = { 0.5f , 0.5f };
+            tutorial_icon_Alpha_ = 0.2f;
 
-            stage1Alpha_ = 1.0f;
-            stage1Scale_ = { 0.6f , 0.6f };
+            //アイコンのスケールが大きかったら小さくする
+            if (tutorial_icon_Scale_.x > 0.5f && tutorial_icon_Scale_.y > 0.5f)
+            {
+                tutorial_icon_Scale_.x -= 0.005f;
+                tutorial_icon_Scale_.y -= 0.005f;
+            }
 
-            stage2Alpha_ = 0.2f;
-            stage2Scale_ = { 0.5f , 0.5f };
+            stage1_icon_Alpha_ = 1.0f;
+
+            //アイコンのスケールが大きくなかったら大きくする
+            if (stage1_icon_Scale_.x < 0.6f && stage1_icon_Scale_.y < 0.6f)
+            {
+                stage1_icon_Scale_.x += 0.005f;
+                stage1_icon_Scale_.y += 0.005f;
+            }
+
+            stage2_icon_Alpha_ = 0.2f;
+
+            //アイコンのスケールが大きかったら小さくする
+            if (stage2_icon_Scale_.x > 0.5f && stage2_icon_Scale_.y > 0.5f)
+            {
+                stage2_icon_Scale_.x -= 0.005f;
+                stage2_icon_Scale_.y -= 0.005f;
+            }
             break;
 
         //ステージ２選択中
         case 2:
-            tutorialAlpha_ = 0.2f;
-            tutorialScale_ = { 0.5f , 0.5f };
+            tutorial_icon_Alpha_ = 0.2f;
 
-            stage1Alpha_ = 0.2f;
-            stage1Scale_ = { 0.5f , 0.5f };
+            //アイコンのスケールが大きかったら小さくする
+            if (tutorial_icon_Scale_.x > 0.5f && tutorial_icon_Scale_.y > 0.5f)
+            {
+                tutorial_icon_Scale_.x -= 0.005f;
+                tutorial_icon_Scale_.y -= 0.005f;
+            }
 
-            stage2Alpha_ = 1.0f;
-            stage2Scale_ = { 0.6f , 0.6f };
+            stage1_icon_Alpha_ = 0.2f;
+
+            //アイコンのスケールが大きかったら小さくする
+            if (stage1_icon_Scale_.x > 0.5f && stage1_icon_Scale_.y > 0.5f)
+            {
+                stage1_icon_Scale_.x -= 0.005f;
+                stage1_icon_Scale_.y -= 0.005f;
+            }
+
+            stage2_icon_Alpha_ = 1.0f;
+
+            //アイコンのスケールが大きくなかったら大きくする
+            if (stage2_icon_Scale_.x < 0.6f && stage2_icon_Scale_.y < 0.6f)
+            {
+                stage2_icon_Scale_.x += 0.005f;
+                stage2_icon_Scale_.y += 0.005f;
+            }
             break;
         }
 
-        if (TRG(0) & PAD_START)
+        //Enterが押された時
+        if (TRG(0) & PAD_START && push_flg == false)
         {
-            ++state_;
-        }
-        break;
-
-    case 3:
-        //////// フェードアウト中 ////////
-        starAngle_ += ToRadian(4);
-        starScale_ -= { 0.1f, 0.1f };
-
-        if (starScale_.x < 0) {
-            starScale_ = { 0.0f, 0.0f };
+            //決定音
+            GameLib::music::play(7, false);
+            //TODO:追加
+            push_flg = true;
         }
 
-        fadeOutTimer_ += 0.01167f;
-        if (fadeOutTimer_ >= 1.0f) {
-            changeScene(Game::instance());
-            break;
-        }
+        //TODO:追加
+        //もしpush_flgがtrueだったら
+        if (push_flg)
+        {
+            if (S_L_Fusuma_Pos_.x <= 960 && S_R_Fusuma_Pos_.x >= (960 * 1.5f))
+            {
+                S_L_Fusuma_Pos_.x += 30;
+                S_R_Fusuma_Pos_.x -= 30;
+            }
 
-        break;
+            if (S_L_Fusuma_Pos_.x >= 480 && S_R_Fusuma_Pos_.x <= (960 * 1.5f))
+            {
+                S_L_Fusuma_Pos_.x = 480;
+                S_R_Fusuma_Pos_.x = (960 * 1.5f);
+
+                if(Fusuma_timer_ > 60)
+                changeScene(Game::instance());
+
+                Fusuma_timer_++;
+            }
+        }
     }
 
     GameLib::debug::setString("state_:%d", state_);
@@ -159,32 +260,10 @@ void Select::update() {
 
 // 描画
 void Select::draw() {
+
+    //TODO:マスク処理の削除＆描画の追加
     // 画面クリア
     GameLib::clear(VECTOR4(0.0f, 0.0f, 1.0f, 1));
-
-    // ステンシルモード：通常
-    DepthStencil::instance().set(DepthStencil::MODE::NONE);
-
-    // ステンシルモード：マスク生成
-    DepthStencil::instance().set(DepthStencil::MODE::MASK);
-
-    // 星を描画
-    sprStar_.draw(
-        { GameLib::window::getWidth() / 2, GameLib::window::getHeight() / 2 },
-        { starScale_.x , starScale_.y },
-        starAngle_
-    );
-
-    // ステンシルモード：マスクに描画
-    DepthStencil::instance().set(DepthStencil::MODE::APPLY_MASK);
-
-    // タイトルの描画
-    //GameLib::font::textOut(4, "StageSelect",
-    //    { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 3) },
-    //    VECTOR2(5.0f, 5.0f),
-    //    { 1.0f, 1.0f, 1.0f, 1.0f },
-    //    GameLib::TEXT_ALIGN::UPPER_MIDDLE
-    //);
 
     //背景の描画
     sprBack_.draw(
@@ -194,55 +273,35 @@ void Select::draw() {
 
     //チュートリアルアイコンの描画
     sprTutorial_.draw(
-        { GameLib::window::getWidth() / 2 - (GameLib::window::getWidth() / 2) / 2 , GameLib::window::getHeight() / 2 },
-        tutorialScale_,
+        tutorial_icon_Pos_,
+        tutorial_icon_Scale_,
         ToRadian(0),
-        { 1.0f,1.0f,1.0f,tutorialAlpha_}
+        { 1.0f,1.0f,1.0f,tutorial_icon_Alpha_}
     );
 
     //ステージ１アイコンの描画
     sprStage1_.draw(
-        { GameLib::window::getWidth() / 2 , GameLib::window::getHeight() / 2 },
-        stage1Scale_,
+        stage1_icon_Pos_,
+        stage1_icon_Scale_,
         ToRadian(0),
-        { 1.0f,1.0f,1.0f,stage1Alpha_}
+        { 1.0f,1.0f,1.0f,stage1_icon_Alpha_}
     );
 
     //ステージ２アイコンの描画
     sprStage2_.draw(
-        { GameLib::window::getWidth() / 2 + (GameLib::window::getWidth() / 2) / 2 , GameLib::window::getHeight() / 2 },
-        stage2Scale_,
+        stage2_icon_Pos_,
+        stage2_icon_Scale_,
         ToRadian(0),
-        { 1.0f,1.0f,1.0f,stage2Alpha_}
+        { 1.0f,1.0f,1.0f,stage2_icon_Alpha_}
     );
 
+    //TODO:追加
+    //襖の描画
+    sprL_fusuma_.draw(
+        S_L_Fusuma_Pos_
+    );
 
-    // Push Enter Key の描画
-    //if (timer_ >> 5 & 0x01) {
-    //    GameLib::font::textOut(4, "Push Enter Key",
-    //        { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 6) * 5 },
-    //        VECTOR2(1.5f, 1.5f),
-    //        { 1.0f, 1.0f, 1.0f, 1.0f },
-    //        GameLib::TEXT_ALIGN::LOWER_MIDDLE
-    //    );
-    //}
-
-    // フェードアウト
-    // if (fadeOutTimer_ > 0.0f) {
-    //     DepthStencil::instance().set(DepthStencil::MODE::APPLY_MASK);
-    //     GameLib::primitive::rect({ 0, 0 }, 
-    //         { GameLib::window::getWidth(), GameLib::window::getHeight() },
-    //         { 0, 0 }, 0, { 0, 0, 0, fadeOutTimer_ });
-    // }
-
-    // ステンシルモード：マスク以外に描画
-    DepthStencil::instance().set(DepthStencil::MODE::EXCLUSIVE);
-
-    // 四角形
-    GameLib::primitive::rect({ 0, 0 },
-        { GameLib::window::getWidth(), GameLib::window::getHeight() },
-        { 0, 0 },
-        ToRadian(0),
-        { 0.0f, 0.0f, 0.0f, 1.0f }
+    sprR_fusuma_.draw(
+        S_R_Fusuma_Pos_
     );
 }
