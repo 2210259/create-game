@@ -20,6 +20,7 @@ public:
     { // ‰Šú‰»ˆ—
         state_ = 0;
         timer_ = 0;
+
         nextScene_ = nullptr;
     };
 

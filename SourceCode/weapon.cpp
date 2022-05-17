@@ -25,10 +25,10 @@ void BaseWeaponBehavior::move(OBJ2D* obj)
         collider->calcAttackBox(getParam()->ATTACK_BOX);
         // collider->calcHitBox(getParam()->HIT_BOX);
         weaponComponent->setPosType(Game::instance()->player()->actorComponent()->direction());
-
+        
         // 左右の向き、速度を設定（プレイヤーにもxFlip_の設定が必要）
         // weaponComponent->copyOwnerXFlip();   // 武器の持ち主のxFlip_を武器に設定する
-
+        obj->weaponComponent()->setWeaponTimer(1);
         obj->nextState();//state++
         /*fallthrough*/
 
@@ -48,7 +48,10 @@ void BaseWeaponBehavior::update(OBJ2D* obj)
     Transform* transform = obj->transform();
 
     if (Game::instance()->playerModeFlag() == false) {
-        obj->remove();
+        if (obj->weaponComponent()->weaponTimer() == 0) {
+            obj->remove();
+        }
+        obj->weaponComponent()->countWeaponTimer();
     }
 
     // renderer->countAnimeTime();
@@ -246,8 +249,12 @@ void WeaponBehavior::hit4(OBJ2D* src, OBJ2D* dst)
 {
     // 処理をしないようにフラグを設定した時
     if (dst->collider()->judgeBoxFlag3() == true) {
+        
         // ノーツの色を変える
         dst->renderer()->setColor(VECTOR4(0.0f, 0.0f, 0.0f, 1));
+
+        // マスクの処理解除
+        Game::instance()->setNotesMaskFlag(false);
     }
 
     // falseの場合処理をしない
@@ -257,6 +264,7 @@ void WeaponBehavior::hit4(OBJ2D* src, OBJ2D* dst)
     if (STATE(0) & PAD_START) // 長押し出来てたら
     {
         dst->collider()->setJudgeBoxFlag2(true);
+        Game::instance()->setNotesMaskFlag(true);
     }
     if(TRG_RELEASE(0) & PAD_START && dst->collider()->judgeBoxFlag4() == false) // 長押ししてない 且つ hit5,6,7の当たり判定に入っていないとき
     {
@@ -271,6 +279,12 @@ void WeaponBehavior::hit4(OBJ2D* src, OBJ2D* dst)
         
         // ミスカウント 
         Game::instance()->addMissNum();
+
+        // ノーツの色を変える
+        dst->renderer()->setColor(VECTOR4(0.0f, 0.0f, 0.0f, 1));
+
+        // マスクの処理解除
+        Game::instance()->setNotesMaskFlag(false);
 
         // 処理をしないようにフラグを設定
         dst->collider()->setJudgeBoxFlag3(true);
@@ -311,6 +325,9 @@ void WeaponBehavior::hit5(OBJ2D* src, OBJ2D* dst)
         // パーフェクトカウントを足す
         Game::instance()->addPerfectNum();
 
+        // マスクの処理解除
+        Game::instance()->setNotesMaskFlag(false);
+
         // 敵を消滅
         dst->remove();
     }
@@ -350,6 +367,9 @@ void WeaponBehavior::hit6(OBJ2D* src, OBJ2D* dst)
         // グレイトカウントを足す
         Game::instance()->addGreatNum();
 
+        // マスクの処理解除
+        Game::instance()->setNotesMaskFlag(false);
+
         // 敵を消滅
         dst->remove();
     }
@@ -388,6 +408,9 @@ void WeaponBehavior::hit7(OBJ2D* src, OBJ2D* dst)
 
         // グッドカウントを進める
         Game::instance()->addGoodNum();
+
+        // マスクの処理解除
+        Game::instance()->setNotesMaskFlag(false);
 
         // 敵を消滅
         dst->remove();

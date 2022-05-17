@@ -44,8 +44,8 @@ public:
     VECTOR2 playerScale_   = { 5, 5 };
     VECTOR2 playerTexPos_  = { 0, 0 };
     VECTOR4 playerColor_   = { 1, 1, 1, 1 };
-    
-    bool push_flg_ = false;
+    VECTOR4 titleColor_    = { 0, 0, 0, 0 };
+
     float Fusuma_timer_ = 0;
     int switchNum = 0;
     VECTOR2 T_L_Fusuma_Pos_ = { 0.0f,0.0f };
@@ -58,6 +58,7 @@ public:
         SQUARE,
         START,
         PLAYER,
+        TITLE_BACK,
         NUM,
     };
 
@@ -66,4 +67,5 @@ public:
     GameLib::SpriteData sprStart_   = SPRITE_CENTER(static_cast<INT>(TEXNUM::START), 0, 0, 600, 300);
     GameLib::SpriteData sprL_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNUM::L_FUSUMA), 0, 0, 960, 1080);
     GameLib::SpriteData sprR_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNUM::R_FUSUMA), 0, 0, 960, 1080);
+    GameLib::SpriteData sprTitleBack_= SPRITE_CENTER(static_cast<INT>(TEXNUM::TITLE_BACK), 0, 0, 1920, 1080);
 };

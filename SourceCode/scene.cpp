@@ -44,7 +44,7 @@ Scene* Scene::execute()
         DepthStencil::instance().set(DepthStencil::MODE::NONE);
 
         // デバッグ文字列の描画
-        debug::display(0.5f, 1, 1, 1.5f, 1.5f);
+        debug::display(1, 0.6f, 0, 1.5f, 1.5f);
         //debug::setString("GP2_10 SAMPLE");
 
         // 画面フリップ
@@ -77,7 +77,7 @@ void SceneManager::execute(Scene* scene)
                                 //（Releaseモードのみ）
 
     // ゲームライブラリの初期化処理
-    GameLib::init(L"NONAME", BG::WINDOW_W, BG::WINDOW_H, isFullScreen);
+    GameLib::init(L"忍者楽", BG::WINDOW_W, BG::WINDOW_H, isFullScreen);
 
 #ifndef _DEBUG
     ShowCursor(!isFullScreen);	// フルスクリーン時はカーソルを消す

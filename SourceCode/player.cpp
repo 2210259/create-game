@@ -135,7 +135,7 @@ IdlePlayerBehavior::IdlePlayerBehavior()
     // float left,top,right,bottom
 
     // HP
-    param_.HP = 10;
+    param_.HP = 1;
 }
 
 // void IdlePlayerBehavior::moveX(OBJ2D* obj)
@@ -154,8 +154,10 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
 {
     Transform* transform = obj->transform();
     using namespace input;
-
-    // if (Title::instance()->state() > 0) return;
+    if (obj->actorComponent()->playerHitTimer() > 0) {
+        obj->actorComponent()->countPlayerHitTimer();
+    }
+    if (Game::instance()->state() > 2) return;
 
     // Enterが押されたら
     if (TRG(0) & PAD_START) {
@@ -261,7 +263,7 @@ AttackPlayerBehavior::AttackPlayerBehavior()
         size.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
 
     // HP
-    param_.HP = 10;
+    param_.HP = 1;
 }
 
 // void AttackPlayerBehavior::moveX(OBJ2D* obj)
@@ -317,6 +319,10 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
     Transform* transform = obj->transform();
     using namespace input;
 
+    if (obj->actorComponent()->playerHitTimer() > 0) {
+        obj->actorComponent()->countPlayerHitTimer();
+    }
+
     // 攻撃アニメーション
     if (renderer->animeTimer() < 12)
     {
@@ -352,7 +358,7 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
         //アニメーション遷移タイマー加算
         renderer->countAnimeTime();
     }
-    else if (renderer->animeTimer() >= 12 && STATE(0) & PAD_START)
+    else if (renderer->animeTimer() >= 12 && STATE(0) & PAD_START && Game::instance()->state() < 3)
     {
         renderer->setAnimeTimer(0);
     }
@@ -360,7 +366,6 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
     {
         Game::instance()->setPlayerModeFlag(false);
     }
-
     // debug::setString("animeTimer:%d", renderer->animeTimer());
 }
 

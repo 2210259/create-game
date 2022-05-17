@@ -29,9 +29,9 @@
 #include "enemy.h"
 
 #include "scene.h"
-#include "scene_score.h"
-#include "scene_game.h"
-#include "scene_select.h"
 #include "scene_title.h"
+#include "scene_select.h"
+#include "scene_game.h"
+#include "scene_score.h"
 
 //******************************************************************************

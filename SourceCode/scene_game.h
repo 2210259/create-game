@@ -13,12 +13,12 @@ class Game : public Scene
 {
 public:
     // メンバ変数
-    VECTOR2 hpPos01;    // HPバーの位置
-    VECTOR2 hpSize01;   // HPバーの大きさ
-    VECTOR4 hpColor01;  // HPバーの色
-    VECTOR2 hpPos02;    // HPバーの位置
-    VECTOR2 hpSize02;   // HPバーの大きさ
-    VECTOR4 hpColor02;  // HPバーの色
+    VECTOR2 hpPos01;     // HPバーの位置
+    VECTOR2 hpTexPos01;  // HPバーの切抜位置
+    VECTOR4 hpColor01;   // HPバーの色
+    VECTOR2 hpPos02;     // HPバーの位置
+    VECTOR2 hpSize02;    // HPバーの大きさ
+    VECTOR4 hpColor02;   // HPバーの色
 
     VECTOR2 squarePos_ = { 0,0 };
     VECTOR2 squareScale_ = { 0.0f, 0.0f };
@@ -58,7 +58,10 @@ private:
     bool restart_push_flg = false;      // 再挑戦を選んだ時のフラグ
     VECTOR2 shuriken_Pos_[11] = {};     //手裏剣位置の初期化
     float shuriken_Angle_ = 0;          //手裏剣の角度の初期化
-
+    bool notesMaskFlag_; // ノーツのマスクを生成フラグ
+    VECTOR2 tutorial_pos_ = { 0,0 };    //チュートリアル画像の位置
+    int tutorial_State_ = 0;            //チュートリアル画像のステート
+    float tutorial_timer_ = 0;          //チュートリアル画像の表示時間
 
     static const int maxAppearTime_ = 120; // 最大表示時間
 
@@ -78,6 +81,11 @@ private:
     VECTOR2 notesPos;    // ノーツ判定の位置
     VECTOR2 notesSize;   // ノーツ判定の大きさ
     VECTOR4 notesColor;  // ノーツ判定の色
+
+    VECTOR2 t_StartPos;    // 文字の位置
+    VECTOR2 t_StartScale;  // 文字の大きさ
+    VECTOR2 t_StartSize;   // 文字の大きさ
+    VECTOR4 t_StartColor;  // 文字の色
 
     VECTOR2 t_EndPos;    // 文字の位置
     VECTOR2 t_EndScale;  // 文字の大きさ
@@ -124,6 +132,7 @@ public:
     int goodNum() { return goodNum_; }
     int missNum() { return missNum_; }
     bool playerAlive() { return playerAlive_; }
+    bool notesMaskFlag() { return notesMaskFlag_; }
 
     // セッター
     OBJ2D* player() const { return player_; }
@@ -150,6 +159,7 @@ public:
     void addGoodNum() { goodNum_++; }
     void addMissNum() { missNum_++; }
     void setPlayerAlive(bool a) { playerAlive_ = a; }
+    void setNotesMaskFlag(bool f) { notesMaskFlag_ = f; }
 
 private:
     // コンストラクタ
@@ -172,7 +182,7 @@ private:
         , decision_(NONE)
         , notesTimer_(0)
         , hpPos01(0, 0)
-        , hpSize01(0, 0)
+        , hpTexPos01(0, 0)
         , hpColor01(0, 0, 0, 0)
         , hpPos02(0, 0)
         , hpSize02(0, 0)
@@ -194,6 +204,10 @@ private:
         , title_push_flg(false)
         , restart_push_flg(false)
         , Fusuma_timer_(0)
+        , notesMaskFlag_(false)
+        , tutorial_pos_({0.0f,0.0f})
+        , tutorial_State_(0)
+        , tutorial_timer_(0)
 
     {}
     Game(const Game&) = delete; // = delete コピーコンストラクタが存在しないことを明示
@@ -221,6 +235,8 @@ private:
     // 操作方法UI
     void operationDraw();
 
+    // HPアニメーション
+    void AnimetionHP();
 
 public:
     //使用するスプライトデータ
@@ -229,6 +245,11 @@ public:
     GameLib::SpriteData sprL_Fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNO::L_FUSUMA), 0, 0, 960, 1080);
     GameLib::SpriteData sprR_Fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNO::R_FUSUMA), 0, 0, 960, 1080);
     GameLib::SpriteData sprShuriken_ = SPRITE_CENTER(static_cast<INT>(TEXNO::ENEMY0), 0, 0, 128, 128);
+    GameLib::SpriteData sprTutorial0_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TUTORIAL0), 0, 0, 600, 700);
+    GameLib::SpriteData sprTutorial1_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TUTORIAL1), 0, 0, 600, 700);
+    GameLib::SpriteData sprTutorial2_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TUTORIAL2), 0, 0, 600, 700);
+    GameLib::SpriteData sprTutorial3_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TUTORIAL3), 0, 0, 600, 700);
+    GameLib::SpriteData sprTutorial4_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TUTORIAL4), 0, 0, 600, 700);
 };
 
 //******************************************************************************

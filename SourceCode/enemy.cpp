@@ -23,24 +23,69 @@ struct ENEMY_SET1
     VECTOR2     scale;      // 敵の大きさ(※長さを決める所以外は0に設定する。左がX軸の大きさ、右がY軸の大きさ { X , Y }) 例えば横1.5倍にしたいとき{ 1.5f, 0 }と書く;
     float       timer;      // 出現時間(※出現時間が0秒だとバグるかも)(例えば1.5秒に設定したいときは1.5fとfを数字の後ろにつける)
 } enemySet[] = {
-    {  0,  2,  0, {   0,   0 },  1, },  // 長押しノーツ(上)
-    {  0,  2,  1, {   0,   0 },  3, },  // 長押しノーツ(左)
-    {  0,  2,  2, {   0,   0 },  5, },  // 長押しノーツ(右)
-    {  0,  3,  0, {   0,   0 },  7, },  // 連打ノーツ(上)
-    {  0,  3,  1, {   0,   0 },  9, },  // 連打ノーツ(左)
-    {  0,  3,  2, {   0,   0 }, 11, },  // 連打ノーツ(右)
 
-    // {  0,  0,  0, {   0,   0 }, 1, },  // 手裏剣(上)
-    // {  0,  0,  1, {   0,   0 }, 3, },  // 手裏剣(左)
-    // {  0,  0,  2, {   0,   0 }, 5, },  // 手裏剣(右)
-    // {  0,  1,  0, {   0,   0 }, 7, },  // クナイ(上)
-    // {  0,  1,  1, {   0,   0 }, 9, },  // クナイ(左)
-    // {  0,  1,  2, {   0,   0 }, 11, },  // クナイ(右)
+    //////////////////////////
+    /////　チュートリアル　/////
+    //////////////////////////
+    //手裏剣の説明
+   {  0,  0,  2, { 0,   0 },  0.5f,  },  
+   {  0,  0,  0, { 0,   0 },  3.3f,  },
+   {  0,  0,  2, { 0,   0 },  5.6f,  },
+   {  0,  0,  2, { 0,   0 },  7.8f,  },
+   {  0,  0,  1, { 0,   0 },  8.2f,  },
+   {  0,  0,  1, { 0,   0 },  10.8f, },
+   {  0,  0,  1, { 0,   0 },  13.1f, },
+   {  0,  0,  2, { 0,   0 },  13.4f, },
+   {  0,  0,  2, { 0,   0 },  16.0f, },
+   {  0,  0,  2, { 0,   0 },  18.3f, },
+   {  0,  0,  0, { 0,   0 },  18.8f, },
 
-    // {  0,  0,  0, {   0,   0 }, 19, },  // 
-    // {  0,  0,  1, {   0,   0 }, 20, },  // 
-    // {  0,  0,  2, {   0,   0 }, 21, },  // 
-    // {  0,  1,  1, {   0,   0 }, 25, },  // 
+   //クナイの説明
+   {  0,  1,  0, { 0,   0 },  22.7f,  },
+   {  0,  1,  0, { 0,   0 },  25.0f,  },
+   {  0,  1,  1, { 0,   0 },  25.2f,  },
+   {  0,  1,  1, { 0,   0 },  27.7f,  },
+   {  0,  1,  1, { 0,   0 },  30.0f,  },
+   {  0,  1,  2, { 0,   0 },  30.3f,  },
+   {  0,  1,  1, { 0,   0 },  33.0f,  },
+   {  0,  1,  0, { 0,   0 },  35.4f,  },
+   {  0,  1,  1, { 0,   0 },  35.6f,  },
+   {  0,  1,  1, { 0,   0 },  38.3f,  },
+   {  0,  1,  1, { 0,   0 },  40.8f,  },
+   
+   //連打ノーツの説明
+   {  0,  3,  1, { 0.0f,   0 },  42.0f,  },
+   {  0,  3,  0, { 0.0f,   0 },  45.0f,  },
+   {  0,  3,  2, { 0.0f,   0 },  48.0f,  },
+   {  0,  3,  1, { 0.0f,   0 },  51.0f,  },
+
+   //長押しノーツの説明
+   {  0,  2,  1, { 1.82f,   0 },  54.0f,  },
+   {  0,  2,  0, { 0.0f,1.83f },  59.5f,  },
+   {  0,  2,  2, { 1.84f,0.0f },  64.5f,  },
+
+   //混合
+   {  0,  2,  1, { 1.4f,0.0f },  67.4f,  },
+   {  0,  2,  1, { 1.4f,0.0f },  70.0f,  },
+   {  0,  3,  2, { 2.0f,0.0f },  73.6f,  },
+   {  0,  3,  0, { 0.0f,2.0f },  76.2f,  },
+   {  0,  3,  1, { 2.5f,0.0f },  78.6f,  },
+   {  0,  0,  2, { 0.0f,0.0f },  82.0f,  },
+   {  0,  0,  1, { 0.0f,0.0f },  82.4f,  },
+   {  0,  0,  0, { 0.0f,0.0f },  83.5f,  },
+   {  0,  1,  2, { 0.0f,0.0f },  85.3f,  },
+   {  0,  0,  1, { 0.0f,0.0f },  84.8f,  },
+   {  0,  0,  0, { 0.0f,0.0f },  85.3f,  },
+   {  0,  0,  2, { 0.0f,0.0f },  86.0f,  },
+   {  0,  1,  2, { 0.0f,0.0f },  87.9f,  },
+
+   {  0,  0,  1, { 0.0f,0.0f },  86.4f,  },
+   //{  0,  0,  0, { 0.0f,0.0f },  85.3f,  },
+   //{  0,  3,  0, { 0.0f,0.0f },  86.0f,  },
+
+
+   //{  0,  1,  1, { 0.0f,0.0f },  87.9f,  },
+   //{  0,  1,  1, { 0.0f,0.0f },  87.9f,  },
 
     { -1, -1, -1, { -1, -1 }, -1 }, // ※これ消さないように
 };
@@ -125,69 +170,51 @@ namespace
         { nullptr, -1 },// 終了フラグ
     };
 
-    //------< 長押しノーツのアニメデータ >---------------------------------------------
+    //------< 長押しノーツ(縦)のアニメデータ >---------------------------------------------
     // 攻撃
-    AnimeData animeEnemy2_Idle[] = {
-        { &sprEnemy2_Idle0, 5 },
-        { &sprEnemy2_Idle0, 5 },
+    AnimeData animeEnemy2_1_Idle[] = {
+        { &sprEnemy2_1_Idle0, 5 },
+        { &sprEnemy2_1_Idle0, 5 },
+        { nullptr, -1 },// 終了フラグ
+    };
+
+    //------< 長押しノーツ(横)のアニメデータ >---------------------------------------------
+    // 攻撃
+    AnimeData animeEnemy2_2_Idle[] = {
+        { &sprEnemy2_2_Idle0, 5 },
+        { &sprEnemy2_2_Idle0, 5 },
         { nullptr, -1 },// 終了フラグ
     };
 
     // 死亡時
-    //AnimeData animeEnemy2_Dead[] = {
-    //    { &sprEnemy2_Dead0, 20 },
-    //    { &sprEnemy2_Dead1, 10 },
-    //    { &sprEnemy2_Dead2, 10 },
-    //    { nullptr, -1 },// 終了フラグ
-    //};
+    AnimeData animeEnemy2_Dead[] = {
+        { &sprEnemy2_Dead0, 5 },
+        { &sprEnemy2_Dead1, 5 },
+        { nullptr, -1 },// 終了フラグ
+    };
 
-    //------< 連打のアニメデータ >---------------------------------------------
+    //------< 連打(縦)のアニメデータ >---------------------------------------------
     // 攻撃
-    AnimeData animeEnemy3_Idle[] = {
-        { &sprEnemy3_Idle0, 5 },
-        { &sprEnemy3_Idle0, 5 },
+    AnimeData animeEnemy3_1_Idle[] = {
+        { &sprEnemy3_1_Idle0, 5 },
+        { &sprEnemy3_1_Idle0, 5 },
+        { nullptr, -1 },// 終了フラグ
+    };
+
+    //------< 連打(横)のアニメデータ >---------------------------------------------
+    // 攻撃
+    AnimeData animeEnemy3_2_Idle[] = {
+        { &sprEnemy3_2_Idle0, 5 },
+        { &sprEnemy3_2_Idle0, 5 },
         { nullptr, -1 },// 終了フラグ
     };
 
     // 死亡時
-    //AnimeData animeEnemy3_Dead[] = {
-    //    { &sprEnemy3_Dead0, 20 },
-    //    { &sprEnemy3_Dead1, 10 },
-    //    { &sprEnemy3_Dead2, 10 },
-    //    { nullptr, -1 },// 終了フラグ
-    //};
-
-    //------< Enemy4のアニメデータ >---------------------------------------------
-    // 攻撃
-    AnimeData animeEnemy4_Idle[] = {
-        { &sprEnemy4_Idle0, 5 },
-        { &sprEnemy4_Idle0, 5 },
+    AnimeData animeEnemy3_Dead[] = {
+        { &sprEnemy3_Dead0, 5 },
+        { &sprEnemy3_Dead1, 5 },
         { nullptr, -1 },// 終了フラグ
     };
-
-    // 死亡時
-    //AnimeData animeEnemy4_Dead[] = {
-    //    { &sprEnemy4_Dead0, 20 },
-    //    { &sprEnemy4_Dead1, 10 },
-    //    { &sprEnemy4_Dead2, 10 },
-    //    { nullptr, -1 },// 終了フラグ
-    //};
-
-    //------< Enemy5のアニメデータ >---------------------------------------------
-    // 攻撃
-    AnimeData animeEnemy5_Idle[] = {
-        { &sprEnemy5_Idle0, 5 },
-        { &sprEnemy5_Idle0, 5 },
-        { nullptr, -1 },// 終了フラグ
-    };
-
-    // 死亡時
-    //AnimeData animeEnemy5_Dead[] = {
-    //    { &sprEnemy5_Dead0, 20 },
-    //    { &sprEnemy5_Dead1, 10 },
-    //    { &sprEnemy5_Dead2, 10 },
-    //    { nullptr, -1 },// 終了フラグ
-    //};
 }
 
 // 敵のY座標の速度（重力）
@@ -249,7 +276,12 @@ void BaseEnemyBehavior::moveEnemy(OBJ2D* obj)
     }
     case 1:
         //////// プレイヤーに攻撃中 ////////
-
+        
+        // プレイヤーのHPが0になったらすべての敵のスピードをゼロにし消去
+        if (Game::instance()->state() >= 3) {
+            obj->transform()->setSpeed(VECTOR2(0, 0));
+            obj->addEnemyState();
+        }
         break;
     case 2:
         //////// 敵が消える ////////
@@ -278,12 +310,18 @@ void BaseEnemyBehavior::hit(OBJ2D* src, OBJ2D* dst)
 
     // ジャッジフラグをなくす
     src->collider()->setJudgeFlag(false);
+
+    // マスクの処理解除
+    Game::instance()->setNotesMaskFlag(false);
     
     // 通常ノーツがプレイヤーに当たった時のみ
     if (src->behavior() != &enemy2Behavior && src->behavior() != &enemy3Behavior) {
 
         // プレイヤーにダメージを与える
         dst->actorComponent()->damage();
+
+        // プレイヤー点滅
+        Game::instance()->player()->actorComponent()->setPlayerHitTimer(24);
 
         // ノーツ判定を送る
         Game::instance()->setDecision(Game::instance()->MISS);
@@ -397,8 +435,8 @@ void Enemy1Behavior::enemyParam(OBJ2D* obj)
 // 長押しノーツ
 Enemy2Behavior::Enemy2Behavior()
 {
-    param_.ANIME_IDLE = animeEnemy3_Idle;
-    // param_.ANIME_DEAD = animeEnemy3_Dead;
+    param_.ANIME_IDLE = animeEnemy2_1_Idle;
+    param_.ANIME_DEAD = animeEnemy2_Dead;
 
     param_.SIZE  = VECTOR2(512, 128);
     param_.SCALE = VECTOR2(1, 1);
@@ -433,8 +471,9 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
     switch (obj->actorComponent()->posType())
     {
     case 0: { // (位置が上の時)
-        param_.ANIME_IDLE = animeEnemy2_Idle;
-        renderer->setAnimeData(getParam()->ANIME_IDLE);
+        param_.ANIME_IDLE = animeEnemy2_1_Idle;
+        if (obj->enemyState() < 2)
+            renderer->setAnimeData(getParam()->ANIME_IDLE);
         param_.SIZE = VECTOR2(128, 512);
         collider->setSize(param_.SIZE);
         transform->setScale(transform->orgScale());
@@ -469,8 +508,9 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
         break;
     }
     case 1: { // (位置が左の時)
-        param_.ANIME_IDLE = animeEnemy3_Idle;
-        obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
+        param_.ANIME_IDLE = animeEnemy2_2_Idle;
+        if (obj->enemyState() < 2)
+            obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
         param_.SIZE = VECTOR2(512, 128);
         collider->setSize(param_.SIZE);
         transform->setScale(transform->orgScale());
@@ -479,7 +519,6 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
             collider->size().y * transform->scale().y,
         };
         collider->setSize(size);
-        obj->transform()->setRotation(ToRadian(180)); // 向きを変更
         obj->transform()->setSpeedX(param_.SPEED);    // スピードを設定
         param_.HIT_BOX  = { size.x / 2 - (size.y / 6), -size.y / 2, size.x / 2 + (size.y / 6), size.y / 2 }; // 敵が武器に攻撃される範囲
         param_.HIT_BOX2 = { size.x / 2 - (size.y / 3), -size.y / 2, size.x / 2 + (size.y / 3), size.y / 2 }; // 敵が武器に攻撃される範囲
@@ -506,8 +545,9 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
         break;
     }
     case 2: { // (位置が右の時)
-        param_.ANIME_IDLE = animeEnemy3_Idle;
-        obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
+        param_.ANIME_IDLE = animeEnemy2_2_Idle;
+        if (obj->enemyState() < 2)
+            obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
         param_.SIZE = VECTOR2(512, 128);
         collider->setSize(param_.SIZE);
         transform->setScale(transform->orgScale());
@@ -516,7 +556,7 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
             collider->size().y * transform->scale().y,
         };
         collider->setSize(size);
-        obj->transform()->setRotation(ToRadian(0));
+        obj->transform()->setRotation(ToRadian(180)); // 向きを変更
         obj->transform()->setSpeedX(-param_.SPEED);
         param_.HIT_BOX = { -size.x / 2 - (size.y / 6), -size.y / 2, -size.x / 2 + (size.y / 6), size.y / 2 }; // 敵が武器に攻撃される範囲
         param_.HIT_BOX2 = { -size.x / 2 - (size.y / 3), -size.y / 2, -size.x / 2 + (size.y / 3), size.y / 2 }; // 敵が武器に攻撃される範囲
@@ -554,8 +594,8 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
 // 連打ノーツ
 Enemy3Behavior::Enemy3Behavior()
 {
-    param_.ANIME_IDLE = animeEnemy5_Idle;
-    //param_.ANIME_DEAD = animeEnemy4_Dead;
+    param_.ANIME_IDLE = animeEnemy3_1_Idle;
+    param_.ANIME_DEAD = animeEnemy3_Dead;
 
     param_.SIZE = VECTOR2(512, 128);
     param_.SCALE = VECTOR2(1, 1);
@@ -583,8 +623,9 @@ void Enemy3Behavior::enemyParam(OBJ2D* obj)
     switch (obj->actorComponent()->posType())
     {
     case 0: { // (位置が上の時)
-        param_.ANIME_IDLE = animeEnemy4_Idle;
-        obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
+        param_.ANIME_IDLE = animeEnemy3_1_Idle;
+        if (obj->enemyState() < 2)
+            obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
         param_.SIZE = VECTOR2(128, 512);
         collider->setSize(param_.SIZE);
         transform->setScale(transform->orgScale());
@@ -596,12 +637,22 @@ void Enemy3Behavior::enemyParam(OBJ2D* obj)
         obj->transform()->setSpeedY(param_.SPEED);
         param_.HIT_BOX = { -size.x / 2, -size.y / 2, size.x / 2, size.y / 2 }; // 敵が武器に攻撃される範囲
         param_.ATTACK_BOX = { -size.x / 2, -size.y - (size.x / 6), size.x / 2, -size.y + (size.x / 6) }; // 敵がプレイヤーに攻撃する範囲
+        const float playerHeadPos = Game::instance()->player()->transform()->position().y - Game::instance()->player()->collider()->size().y;
+        const float notesPosBottom = transform->position().y + (size.y / 2);
 
+        // 一定の位置を超えたら描画位置を変更
+        if (notesPosBottom > playerHeadPos) {
+            collider->setMergin({ 0 ,notesPosBottom - playerHeadPos });
+        }
+        else {
+            collider->setMergin({ 0, 0 });
+        }
         break;
     }
     case 1: { // (位置が左の時)
-        param_.ANIME_IDLE = animeEnemy5_Idle;
-        obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
+        param_.ANIME_IDLE = animeEnemy3_2_Idle;
+        if (obj->enemyState() < 2)
+            obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
         param_.SIZE = VECTOR2(512, 128);
         collider->setSize(param_.SIZE);
         transform->setScale(transform->orgScale());
@@ -611,15 +662,25 @@ void Enemy3Behavior::enemyParam(OBJ2D* obj)
         };
         collider->setSize(size);
         obj->transform()->setSpeedX(param_.SPEED);
-        obj->transform()->setRotation(ToRadian(180));
         param_.HIT_BOX = { -size.x / 2, -size.y / 2, size.x / 2, size.y / 2 }; // 敵が武器に攻撃される範囲
         param_.ATTACK_BOX = { -size.x - (size.y / 6), -size.y / 2, -size.x + (size.y / 6), size.y / 2 }; // 敵がプレイヤーに攻撃する範囲
 
+        const float playerMiddlePos = Game::instance()->player()->transform()->position().x;
+        const float notesPosRight = transform->position().x + (size.x / 2);
+
+        // 一定の位置を超えたら描画位置を変更
+        if (notesPosRight > playerMiddlePos) {
+            collider->setMergin({ notesPosRight - playerMiddlePos, 0 });
+        }
+        else {
+            collider->setMergin({ 0, 0 });
+        }
         break;
     }
     case 2: { // (位置が右の時)
-        param_.ANIME_IDLE = animeEnemy5_Idle;
-        obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
+        param_.ANIME_IDLE = animeEnemy3_2_Idle;
+        if (obj->enemyState() < 2)
+            obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
         param_.SIZE = VECTOR2(512, 128);
         collider->setSize(param_.SIZE);
         transform->setScale(transform->orgScale());
@@ -628,11 +689,21 @@ void Enemy3Behavior::enemyParam(OBJ2D* obj)
             collider->size().y * transform->scale().y,
         };
         collider->setSize(size);
-        obj->transform()->setRotation(ToRadian(0));
+        obj->transform()->setRotation(ToRadian(180)); // 向きを変更
         obj->transform()->setSpeedX(-param_.SPEED);
         param_.HIT_BOX = { -size.x / 2, -size.y / 2, size.x / 2, size.y / 2 }; // 敵が武器に攻撃される範囲
         param_.ATTACK_BOX = { size.x - (size.y / 6), -size.y / 2, size.x + (size.y / 6), size.y / 2 }; // 敵がプレイヤーに攻撃する範囲
 
+        const float playerMiddlePos = Game::instance()->player()->transform()->position().x;
+        const float notesPosLeft = transform->position().x - (size.x / 2);
+
+        // 一定の位置を超えたら描画位置を変更
+        if (notesPosLeft < playerMiddlePos) {
+            collider->setMergin({ playerMiddlePos - notesPosLeft, 0 });
+        }
+        else {
+            collider->setMergin({ 0, 0 });
+        }
         break;
     }
     default:

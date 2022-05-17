@@ -92,8 +92,8 @@ void Score::update()
         //手裏剣位置の初期化
         for (int i = 0; i < 10; i++)
         {
-            shuriken_Pos_[i].x = 2400 + (128 * i);
-            shuriken_Pos_[i].y = 128 * i;
+            shuriken_Pos_[i].x = static_cast<float>(2400 + (128 * i));
+            shuriken_Pos_[i].y = static_cast<float>(128 * i);
         }
 
         shuriken_Angle_ = 0;
@@ -169,7 +169,11 @@ void Score::scoreRusult() {
     switch (performState_)
     {
     case 0:
-        //TODO:襖の処理
+
+        //音楽が流れるのが早すぎるので一時的に止める
+        GameLib::music::pause(5);
+
+        // 襖の処理
         if (C_L_Fusuma_Pos_.x > -960 / 2 && C_R_Fusuma_Pos_.x < (960 * 2) + (960 / 2) && C_Fusuma_timer_ > 60)
         {
             C_L_Fusuma_Pos_.x -= 30;
@@ -188,6 +192,8 @@ void Score::scoreRusult() {
 
         //"MAXCONBO"の文字の移動
     case 1:
+        //音楽の再生
+        music::resume(5);
         if (comboText_pos_.x > GameLib::window::getWidth() - 800)
         {
             comboText_pos_.x -= 30.0f;
@@ -430,19 +436,19 @@ void Score::scoreRusult() {
         //１(再挑戦)を選んでいるとき
         if (score_select_num_)
         {
-            if (TRG(0) & PAD_START)
+            if (TRG(0) & PAD_START&& restart_push_flg_ == false && title_push_flg_ == false)
             {
-                music::play(7);
+                music::play(8,false);
                 restart_push_flg_ = true;
             }
         }
 
         //０(たいとるへ)を選んでいるとき
-        if (score_select_num_ == false)
+        if (score_select_num_ == false&& restart_push_flg_ == false && title_push_flg_ == false)
         {
             if (TRG(0) & PAD_START)
             {
-                music::play(7);
+                music::play(8,false);
                 title_push_flg_ = true;
                 break;
             }
@@ -664,6 +670,4 @@ void Score::scoreDraw() {
     sprR_fusuma_.draw(
         C_R_Fusuma_Pos_
     );
-
-
 }

@@ -118,7 +118,6 @@ void BG::drawBack()
     // const int REM_X = static_cast<int>(scroll.x);
     // const int REM_Y = static_cast<int>(scroll.y);
 
-    //TODO ”wŒi•`‰æ
     texture::begin(TEXNO::MAP_BACK);
     texture::draw(TEXNO::MAP_BACK, 0, 0, 1, 1, 0, 0, 1920, 1080, 0, 0, 0);
     texture::end(TEXNO::MAP_BACK);

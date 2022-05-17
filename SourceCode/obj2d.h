@@ -283,6 +283,7 @@ private:
     int  deadTimer_;    // 敵の消滅時間
     int  posType_;      // 敵の出現方向
     bool deleteCombo2Flag_; // コンボ2を消滅するフラグ
+    int playerHitTimer_; // プレイヤーの点滅時間 
     
 public:
     enum DIRECTON              // 向き
@@ -303,6 +304,7 @@ public:
         , deadTimer_(0)
         , posType_(0)
         , deleteCombo2Flag_(false)
+        , playerHitTimer_(0)
         , direction_(UP)
     {}
     // ゲッター
@@ -315,6 +317,7 @@ public:
     int deadTimer() const { return deadTimer_; }
     int posType() const { return posType_; }
     int score() { return score_; }
+    int playerHitTimer() { return playerHitTimer_; }
     bool deleteCombo2Flag() const { return deleteCombo2Flag_; }
 
     // セッター
@@ -327,6 +330,7 @@ public:
     void setDeadTimer(int t) { deadTimer_ = t; }
     void setPosType(int p) { posType_ = p; }
     void setScore(int s) { score_ = s; }
+    void setPlayerHitTimer(int t) { playerHitTimer_ = t; }
     void setDeleteCombo2Flag(bool f) { deleteCombo2Flag_ = f; }
 
     // X座標の向きを反転
@@ -335,6 +339,7 @@ public:
     // HPを減らす
     void damage() { --hp_; }
     void countDeadTimer() { --deadTimer_; }
+    void countPlayerHitTimer() { --playerHitTimer_; }
 };
 
 //----------------------------------------
@@ -348,6 +353,7 @@ private:
     bool weaponFlag_;   // 餌があるかどうかのフラグ
     bool removeLFlag_;
     int  posType_;      // 武器の出現方向
+    int weaponTimer_;  
 
 public:
     WeaponComponent()
@@ -356,6 +362,7 @@ public:
         , weaponFlag_(false)
         , removeLFlag_(false)
         , posType_(0)
+        , weaponTimer_(0)
     {}
 
     //ゲッター
@@ -364,14 +371,17 @@ public:
     bool weaponFlag() const { return weaponFlag_; }
     bool removeLFlag() const { return removeLFlag_; }
     int posType() const { return posType_; }
+    int weaponTimer() const { return weaponTimer_; }
 
     //セッター
     void setOwner(OBJ2D* o) { if (!o) owner_ = o; }
     void setXFlip(bool b) { xFlip_ = b; }
     void setweaponFlag(bool f) { weaponFlag_ = f; }
     void setRemoveLFlag(bool f) { removeLFlag_ = f; }
-    void setPosType(int p) { posType_ = p; }
+    void setPosType(int t) { posType_ = t; }
+    void setWeaponTimer(int t) { weaponTimer_ = t; }
 
+    void countWeaponTimer() { weaponTimer_--; }
     // void copyOwnerXFlip();
 };
 

@@ -23,11 +23,12 @@ void Title::init() {
     //データ、TEXNUMの変更
     // 読み込むテクスチャ
     LoadTexture loadTextureTitle[static_cast<size_t>(TEXNUM::NUM)] = {
-        { static_cast<int>(TEXNUM::SQUARE),  L"./Data/Images/tutorial_icon.png", 1U },
-        { static_cast<int>(TEXNUM::START), L"./Data/Images/start.png", 1U },
-        { static_cast<int>(TEXNUM::PLAYER), L"./Data/Images/player.png", 1U },
-        { static_cast<int>(TEXNUM::L_FUSUMA), L"./Data/Images/L_fusuma.png", 1U },
-        { static_cast<int>(TEXNUM::R_FUSUMA), L"./Data/Images/R_fusuma.png", 1U },
+        { static_cast<int>(TEXNUM::SQUARE),  L"./Data/Images/tutorial_icon.png",    1U },
+        { static_cast<int>(TEXNUM::START), L"./Data/Images/start.png",              1U },
+        { static_cast<int>(TEXNUM::PLAYER), L"./Data/Images/player.png",            1U },
+        { static_cast<int>(TEXNUM::L_FUSUMA), L"./Data/Images/L_fusuma.png",        1U },
+        { static_cast<int>(TEXNUM::R_FUSUMA), L"./Data/Images/R_fusuma.png",        1U },
+        { static_cast<int>(TEXNUM::TITLE_BACK), L"./Data/Images/title.png",         1U }, // タイトル背景
     };
 
     // テクスチャのロード
@@ -50,16 +51,15 @@ void Title::update() {
         timer_ = 0;                         // タイマーを初期化
         switchNum = 0;
 
-        squarePos_ = { -window::getWidth() , -window::getHeight()};
+        squarePos_ = { -window::getWidth() , -window::getHeight() };
         squareScale_ = { 8.0f, 0.02f };
         squareAngle_ = 29.0f;
 
-        playerPos_      = { BG::WINDOW_W / 4, 1000 };
-        playerScale_    = { 5.0f, 5.0f };
-        playerColor_    = { 1, 1, 1, 1 };
-        playerTexPos_   = { 0, 0 };
-        
-        push_flg_ = false;
+        playerPos_ = { BG::WINDOW_W / 4, 1000 };
+        playerScale_ = { 5.0f, 5.0f };
+        playerColor_ = { 1, 1, 1, 1 };
+        playerTexPos_ = { 0, 0 };
+        titleColor_ = { 1, 1 ,1 ,1 };
 
         //シーン切り替え用の画像位置の初期化
         T_L_Fusuma_Pos_ = { -960 / 2,540 };
@@ -67,12 +67,13 @@ void Title::update() {
 
         Fusuma_timer_ = 0;
 
-        //TODO:順番変更に伴う変更
         //BGMを再生
         GameLib::music::play(6, false);
 
+        GameLib::music::play(12, false);
+
         GameLib::setBlendMode(GameLib::Blender::BS_ALPHA);   // 通常のアルファ処理
-                 
+
         state_++;                                            // 初期化処理の終了
 
         /*fallthrough*/
@@ -80,7 +81,6 @@ void Title::update() {
     case 1:
         //////// フェードイン中 ////////
 
-        //TODO:画面遷移の処理
         //四角形の移動
         if (squarePos_.x < window::getWidth() / 2 && squarePos_.y < window::getHeight() / 2)
         {
@@ -88,20 +88,18 @@ void Title::update() {
             squarePos_.y += 56.2f * 3;
         }
         //四角形が指定の位置に行ったら固定
-        else
-        {
+        else {
             squarePos_.x = window::getWidth() / 2;
             squarePos_.y = window::getHeight() / 2;
         }
 
         //スケールを変化させる(ゆっくり)
-        if (squarePos_.x >= window::getWidth() / 2 && squarePos_.y >= window::getHeight() / 2 && 
-            squareScale_.y < 0.05f)
-        {
+        if (squarePos_.x >= window::getWidth() / 2 && squarePos_.y >= window::getHeight() / 2 &&
+            squareScale_.y < 0.05f) {
             squareScale_.y += 0.001f;
         }
         //スケールを変化させる(早い)
-        else if(squarePos_.x >= window::getWidth() / 2 && squarePos_.y >= window::getHeight() / 2 &&
+        else if (squarePos_.x >= window::getWidth() / 2 && squarePos_.y >= window::getHeight() / 2 &&
             squareScale_.y >= 0.05f)
         {
             squareScale_.y += 0.1f;
@@ -113,42 +111,50 @@ void Title::update() {
                 break;
             }
         }
-
         break;
 
     case 2:
         //////// 通常時の処理 ////////
 
-        if (TRG(0) & PAD_START) 
-        {
+        if (TRG(0) & PAD_START) {
             //決定音
-            GameLib::music::play(7, false);
+            GameLib::music::play(8, false);
 
-            //TODO:フラグをtrueに
-            push_flg_ = true;
+            // プレイヤーの処理へ
+            timer_ = 0;
+            state_++;
         }
-
-        //TODO:襖の処理
-        if (push_flg_)
+        break;
+    case 3:
+        //////// 通常時の処理 ////////
+        if (timer_ % 10 == 0 && titleColor_.w > 0) {
+            titleColor_.w = 0;
+        }
+        else if (timer_ % 10 == 0 && titleColor_.w <= 0) {
+            titleColor_.w = 1;
+        }
+        if (timer_ > 120) 
+            state_++;
+        break;
+    case 4:
+        //////// 襖の処理 ////////
+        if (T_L_Fusuma_Pos_.x <= 960 && T_R_Fusuma_Pos_.x >= (960 * 1.5f))
         {
-            if (T_L_Fusuma_Pos_.x <= 960 && T_R_Fusuma_Pos_.x >= (960 * 1.5f))
-            {
-                T_L_Fusuma_Pos_.x += 30;
-                T_R_Fusuma_Pos_.x -= 30;
-            }
-
-            if (T_L_Fusuma_Pos_.x >= 480 && T_R_Fusuma_Pos_.x <= (960 * 1.5f))
-            {
-                T_L_Fusuma_Pos_.x = 480;
-                T_R_Fusuma_Pos_.x = (960 * 1.5f);
-
-                if (Fusuma_timer_ > 60)
-                    changeScene(Select::instance());
-
-                Fusuma_timer_++;
-            }
+            T_L_Fusuma_Pos_.x += 30;
+            T_R_Fusuma_Pos_.x -= 30;
         }
 
+        if (T_L_Fusuma_Pos_.x >= 480 && T_R_Fusuma_Pos_.x <= (960 * 1.5f))
+        {
+            T_L_Fusuma_Pos_.x = 480;
+            T_R_Fusuma_Pos_.x = (960 * 1.5f);
+
+            if (Fusuma_timer_ > 60)
+                music::stop(6);
+                changeScene(Select::instance());
+
+            Fusuma_timer_++;
+        }
         break;
     }
     // プレイヤーのアニメーション
@@ -181,33 +187,24 @@ void Title::draw() {
     sprSquare_.draw(
         squarePos_,
         squareScale_,
-        squareAngle_ * PI / 180 
+        squareAngle_ * PI / 180
     );
 
     // ステンシルモード：マスクに描画
     DepthStencil::instance().set(DepthStencil::MODE::APPLY_MASK);
-
+    
     // タイトルの描画
-    GameLib::font::textOut(4, "NoName",
-        { GameLib::window::getWidth() / 4 * 3, (GameLib::window::getHeight() / 4) },
-        VECTOR2(2.0f, 2.0f),
-        { 1.0f, 1.0f, 1.0f, 1.0f },
-        GameLib::TEXT_ALIGN::UPPER_RIGHT
+    sprTitleBack_.draw(
+        { GameLib::window::getWidth() / 2, GameLib::window::getHeight() / 2 }
     );
 
     //"開始"の文字の描画
     sprStart_.draw(
-        { GameLib::window::getWidth() - sprStart_.width / 2, GameLib::window::getHeight() - sprStart_.height / 2 }
+        { GameLib::window::getWidth() - sprStart_.width / 2, GameLib::window::getHeight() - sprStart_.height / 2},
+        VECTOR2(1,1), ToRadian(0), titleColor_
     );
 
     // プレイヤーの描画
-
-    // sprPlayer_.draw(
-    //     { playerPos_.x, playerPos_.y }, 
-    //     { playerScale_.x, playerScale_.y },
-    //     0,
-    //     playerColor_
-    // );
 
     // Push Enter Key の描画
     //if (timer_ >> 5 & 0x01) {
@@ -241,14 +238,9 @@ void Title::draw() {
     // ステンシルモード：通常
     DepthStencil::instance().set(DepthStencil::MODE::NONE);
 
-    sprL_fusuma_.draw(
-        T_L_Fusuma_Pos_
-    );
-
-    sprR_fusuma_.draw(
-        T_R_Fusuma_Pos_
-    );
-
+    // 襖の描画
+    sprL_fusuma_.draw(T_L_Fusuma_Pos_);
+    sprR_fusuma_.draw(T_R_Fusuma_Pos_);
 }
 
 void Title::playerAnime() {

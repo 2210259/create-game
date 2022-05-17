@@ -96,7 +96,7 @@ void Renderer::draw3(const VECTOR2& scrollPos)
     {
         data_->draw(transform->position() - scrollPos,
             transform->scale(),
-            collider->mergin().x, 0,
+            0, 0,
             collider->size().x - collider->mergin().x, collider->size().y - collider->mergin().y,
             transform->rotation(), color_);  // dataのdrawメソッドでスプライトを描画する        
     }

@@ -50,8 +50,6 @@ void Select::update() {
         //////// 初期設定 ////////
         timer_ = 0;                         // タイマーを初期化
 
-        //TODO:変数の変更
-
         stageNum_ = 0;                      //ステージ番号の初期化
 
         //アイコンの位置の初期化
@@ -69,7 +67,6 @@ void Select::update() {
         stage1_icon_Scale_ = { 0.5f , 0.5f };
         stage2_icon_Scale_ = { 0.5f , 0.5f };
         
-        //TODO:追加
         //シーン切り替え用の画像位置の初期化
         S_L_Fusuma_Pos_ = { 960 / 2,540 };     // 左襖の位置の初期化
         S_R_Fusuma_Pos_ = { (960 * 2) - (960 / 2) , 540 }; // 右襖の位置の初期化
@@ -82,7 +79,7 @@ void Select::update() {
 
         GameLib::setBlendMode(GameLib::Blender::BS_ALPHA);   // 通常のアルファ処理
 
-        //music::play(4, true);   //BGMの再生
+        music::play(7, true);   //BGMの再生
 
         state_++;                                            // 初期化処理の終了
 
@@ -224,12 +221,10 @@ void Select::update() {
         if (TRG(0) & PAD_START && push_flg == false)
         {
             //決定音
-            GameLib::music::play(7, false);
-            //TODO:追加
+            GameLib::music::play(8, false);
             push_flg = true;
         }
 
-        //TODO:追加
         //もしpush_flgがtrueだったら
         if (push_flg)
         {
@@ -244,9 +239,10 @@ void Select::update() {
                 S_L_Fusuma_Pos_.x = 480;
                 S_R_Fusuma_Pos_.x = (960 * 1.5f);
 
-                if(Fusuma_timer_ > 60)
-                changeScene(Game::instance());
-
+                if (Fusuma_timer_ > 60) {
+                    GameLib::music::stop(5);
+                    changeScene(Game::instance());
+                }
                 Fusuma_timer_++;
             }
         }
@@ -295,7 +291,6 @@ void Select::draw() {
         { 1.0f,1.0f,1.0f,stage2_icon_Alpha_}
     );
 
-    //TODO:追加
     //襖の描画
     sprL_fusuma_.draw(
         S_L_Fusuma_Pos_

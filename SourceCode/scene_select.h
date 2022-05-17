@@ -36,7 +36,6 @@ private:
     Select& operator=(Select&&) noexcept = delete;  // ムーブ代入演算子
 
 public:
-    //TODO:変更
     // 使用するテクスチャのラベル
     enum class TEXNO {
         BACK,
