@@ -61,3 +61,14 @@ private:
 };
 
 EXTERN Enemy3Behavior enemy3Behavior;
+
+// Žè— Œ•
+class Enemy4Behavior : public BaseEnemyBehavior
+{
+public:
+    Enemy4Behavior();
+private:
+    void enemyParam(OBJ2D* obj) override;
+};
+
+EXTERN Enemy4Behavior enemy4Behavior;

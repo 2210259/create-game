@@ -45,6 +45,7 @@ public:
     VECTOR2 playerTexPos_  = { 0, 0 };
     VECTOR4 playerColor_   = { 1, 1, 1, 1 };
     VECTOR4 titleColor_    = { 0, 0, 0, 0 };
+    VECTOR2 titleBackTexPos_ = {};
 
     float Fusuma_timer_ = 0;
     int switchNum = 0;
@@ -53,19 +54,19 @@ public:
 
     // 使用するテクスチャのラベル
     enum class TEXNUM {
+        SQUARE,
         L_FUSUMA,
         R_FUSUMA,
-        SQUARE,
         START,
-        PLAYER,
         TITLE_BACK,
+        T_AORENTER,
         NUM,
     };
 
-    GameLib::SpriteData sprSquare_  = SPRITE_CENTER(static_cast<INT>(TEXNUM::SQUARE), 0, 0, 500, 500);
-    GameLib::SpriteData sprPlayer_  = SPRITE_BOTTOM(static_cast<INT>(TEXNUM::PLAYER), 0, 0, 150, 150);
-    GameLib::SpriteData sprStart_   = SPRITE_CENTER(static_cast<INT>(TEXNUM::START), 0, 0, 600, 300);
-    GameLib::SpriteData sprL_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNUM::L_FUSUMA), 0, 0, 960, 1080);
-    GameLib::SpriteData sprR_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNUM::R_FUSUMA), 0, 0, 960, 1080);
-    GameLib::SpriteData sprTitleBack_= SPRITE_CENTER(static_cast<INT>(TEXNUM::TITLE_BACK), 0, 0, 1920, 1080);
+    GameLib::SpriteData sprSquare_    = SPRITE_CENTER(static_cast<INT>(TEXNUM::SQUARE), 0, 0, 500, 500);
+    GameLib::SpriteData sprL_fusuma_  = SPRITE_CENTER(static_cast<INT>(TEXNUM::L_FUSUMA), 0, 0, 960, 1080);
+    GameLib::SpriteData sprR_fusuma_  = SPRITE_CENTER(static_cast<INT>(TEXNUM::R_FUSUMA), 0, 0, 960, 1080);
+    GameLib::SpriteData sprStart_     = SPRITE_CENTER(static_cast<INT>(TEXNUM::START), 0, 0, 600, 300);
+    GameLib::SpriteData sprTitleBack_ = SPRITE_CENTER(static_cast<INT>(TEXNUM::TITLE_BACK), 0, 0, 1920, 1080);
+    GameLib::SpriteData sprAorEnter   = SPRITE_CENTER(static_cast<INT>(TEXNUM::T_AORENTER), 0, 0, 300, 150);
 };

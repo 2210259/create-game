@@ -9,9 +9,9 @@
 class Scene
 {
 protected:
-    int state_;          // 状態
-    int timer_;          // タイマー
-    Scene* nextScene_;   // 次のシーン
+    int state_ = 0;          // 状態
+    int timer_ = 0;          // タイマー
+    Scene* nextScene_ = nullptr;   // 次のシーン
 
 public:
     Scene* execute();   // 実行処理
@@ -27,7 +27,7 @@ public:
     virtual void deinit() {};   // 終了処理
     virtual void update() = 0;  // 更新処理
     virtual void draw() = 0;    // 描画処理
-
+    
     int state() { return state_; }; // ゲッター
     void changeScene(Scene* scene) { nextScene_ = scene; }   // シーン変更処理
     Scene* getScene() const { return nextScene_; }           // nextSceneのゲッター

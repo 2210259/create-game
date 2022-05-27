@@ -2,6 +2,8 @@
 class Score : public Scene
 {
 private:
+
+    
     static Score instance_;
 
     int score_select_num_;   //選択用
@@ -34,16 +36,11 @@ private:
 
     VECTOR2 C_R_Fusuma_Pos_ = { 0,0 };  // 右襖位置
 
-    float C_Fusuma_timer_ = 0;          // 襖が閉じ始めるまでの時間
+    float C_Fusuma_timer_ = 0;          // 襖が開閉し始めるまでの時間
 
     bool restart_push_flg_ = false;     // リスタートを選択した時に立つフラグ
 
-    bool title_push_flg_ = false;       // タイトルへを選択した時に立つフラグ
-
-    VECTOR2 shuriken_Pos_[10] = {};      //手裏剣位置の初期化
-
-    float shuriken_Angle_ = 0;          //手裏剣の角度の初期化
-
+    bool select_push_flg_ = false;       //"タイトルへ"を選んでいるか判定する変数の初期化
 
 public:
     // インスタンスの取得
@@ -75,9 +72,8 @@ private:
         , C_R_Fusuma_Pos_({ 0.0f,0.0f })
         , C_Fusuma_timer_(0)
         , restart_push_flg_(false)
-        , title_push_flg_(false)
-        , shuriken_Angle_(0)
-
+        , select_push_flg_(false) //"タイトルへ"を選んでいるか判定する変数の初期化
+        , comboNum_(0)
     {}
     ~Score() {}
 
@@ -89,10 +85,10 @@ private:
     void scoreDraw();
     void scoreRusult();
 public:
-    // 使用するテクスチャのラベル
+    // TODO:使用するテクスチャのラベル
     enum class TEXNOM {
         RESTART,
-        TOTITLE,
+        TOSELECT,
         CLEAR,
         GAMEOVER,
         L_FUSUMA,    
@@ -103,13 +99,12 @@ public:
 
     };
 
-    //使用するスプライトデータ
+    //TODO:使用するスプライトデータ
+    GameLib::SpriteData sprToselect_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::TOSELECT), 0, 0, 600, 300);
     GameLib::SpriteData sprRestart_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::RESTART), 0, 0, 600, 300);
-    GameLib::SpriteData sprTotitle_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::TOTITLE), 0, 0, 600, 300);
     GameLib::SpriteData sprClear_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::CLEAR), 0, 0, 1920, 1080);
     GameLib::SpriteData sprGameover_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::GAMEOVER), 0, 0, 1920, 1080);
     GameLib::SpriteData sprL_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::L_FUSUMA), 0, 0, 960, 1080);
     GameLib::SpriteData sprR_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::R_FUSUMA), 0, 0, 960, 1080);
-    GameLib::SpriteData sprShuriken_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::SHURIKEN), 0, 0, 128, 128);
-
+    GameLib::SpriteData sprShuriken_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::SHURIKEN), 0, 0, 150, 150);
 };

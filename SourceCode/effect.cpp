@@ -88,7 +88,6 @@ void BaseEffectBehavior::move(OBJ2D* obj)
         obj->setEraser(getParam()->ERASER);
         obj->renderer()->setAnimeData(getParam()->ANIME_IDLE);
         obj->effectComponent()->setEffectTimer(getParam()->EFFECT_TIMER);
-
         obj->nextState();//state++
         /*fallthrough*/
     }

@@ -27,10 +27,11 @@ enum TEXNO
     EFFECT,       // エフェクト
     RESTART,      // "再挑戦"の文字
     TOTITLE,      // "たいとるへ"の文字
+    CONTINUE,     // "再開"の文字
     MAP_BACK,     // 背景
-    T_START,      // "開幕！！"
-    T_END,        // "閉幕！！"
-    T_FULLCOMBO,  // "フルコンボ"
+    T_START,      // "いざ！！"
+    T_END,        // "そこまで！！"
+    T_FULLCOMBO,  // "あっぱれ"
     L_FUSUMA,     // ゲーム遷移の画像
     R_FUSUMA,     // ゲーム遷移の画像
     HP_BAR,       // HPバー

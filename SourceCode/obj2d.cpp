@@ -83,21 +83,7 @@ void Renderer::draw2(const VECTOR2& scrollPos)
         data_->draw(transform->position() - scrollPos,
             transform->scale(),
             0, 0,
-            collider->size().x - collider->mergin().x, collider->size().y - collider->mergin().y,
-            transform->rotation(), color_);  // dataのdrawメソッドでスプライトを描画する        
-    }
-}
-
-void Renderer::draw3(const VECTOR2& scrollPos)
-{
-    Transform* transform = parent()->transform();
-    Collider* collider = parent()->collider();
-    if (data_)
-    {
-        data_->draw(transform->position() - scrollPos,
-            transform->scale(),
-            0, 0,
-            collider->size().x - collider->mergin().x, collider->size().y - collider->mergin().y,
+            512 - collider->mergin().x / transform->scale().x, 512 - collider->mergin().y / transform->scale().y,
             transform->rotation(), color_);  // dataのdrawメソッドでスプライトを描画する        
     }
 }
@@ -512,7 +498,7 @@ void OBJ2DManager::draw(const VECTOR2& scrollPos)
     int cnt = 0;
     for (auto& obj : objList_)
     {
-        if (obj->behavior() != &enemy0Behavior && obj->behavior() != &enemy1Behavior) continue;
+        if (obj->behavior() != &enemy4Behavior && obj->behavior() != &enemy1Behavior) continue;
         const VECTOR2 pos = obj->transform()->position() - scrollPos;
         if (pos.x < -LIMIT || pos.x > window::getWidth() + LIMIT ||
             pos.y < -LIMIT || pos.y > window::getHeight() + LIMIT)
@@ -586,7 +572,7 @@ void OBJ2DManager::draw4(const VECTOR2& scrollPos)
             cnt++;
             continue;
         }
-        obj->renderer()->draw3(scrollPos);
+        obj->renderer()->draw2(scrollPos);
         obj->collider()->draw(scrollPos);
     }
 }

@@ -20,8 +20,15 @@ void ActorBehavior::move(OBJ2D* obj)
             }
         }
         obj->collider()->setJudgeFlag(true);
-        obj->actorComponent()->setHP(getParam()->HP);
-        obj->actorComponent()->setMaxHP(getParam()->HP);
+        // チュートリアル用
+        if (Game::instance()->stageNo() == 0) {
+            obj->actorComponent()->setHP(35);
+            obj->actorComponent()->setMaxHP(35);
+        }
+        else {
+            obj->actorComponent()->setHP(getParam()->HP);
+            obj->actorComponent()->setMaxHP(getParam()->HP);
+        }
         obj->renderer()->setAnimeTimer(12);
         obj->actorComponent()->setPlayerHitTimer(0);
         obj->nextState();//state_++

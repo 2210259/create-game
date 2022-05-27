@@ -22,7 +22,12 @@ public:
     void update() override;
     void draw() override;
 
-    //TODO:ゲッターの設定
+    float calcIconFlashing(float colorW, int timer);
+    float calcIconFade(float colorW);
+
+    void shurikenAct();
+
+    //ゲッターの設定
     //ゲッター
     int stageNum() { return stageNum_; }
 
@@ -37,43 +42,57 @@ private:
 
 public:
     // 使用するテクスチャのラベル
-    enum class TEXNO {
+    enum class TEXNOM {
         BACK,
         TUTORIAL,
         STAGE1,
-        STAGE2,
         L_FUSUMA,
         R_FUSUMA,
+        TOTITLE,
+        DECORATION,
+        SHURIKEN,
         NUM,
     };
 
-    //TODO:変更
     // 使用するスプライトデータ
-    GameLib::SpriteData sprBack_ = SPRITE_CENTER(static_cast<INT>(TEXNO::BACK), 0, 0, 1920, 1080);
-    GameLib::SpriteData sprTutorial_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TUTORIAL), 0, 0, 700, 700);
-    GameLib::SpriteData sprStage1_ = SPRITE_CENTER(static_cast<INT>(TEXNO::STAGE1), 0, 0, 700, 700);
-    GameLib::SpriteData sprStage2_ = SPRITE_CENTER(static_cast<INT>(TEXNO::STAGE2), 0, 0, 700, 700);
-    GameLib::SpriteData sprL_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNO::L_FUSUMA), 0, 0, 960, 1080);
-    GameLib::SpriteData sprR_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNO::R_FUSUMA), 0, 0, 960, 1080);
-
+    GameLib::SpriteData sprBack_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::BACK), 0, 0, 1920, 1080);
+    GameLib::SpriteData sprTutorial_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::TUTORIAL), 0, 0, 438, 1050);
+    GameLib::SpriteData sprStage1_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::STAGE1), 0, 0, 438, 1050);
+    GameLib::SpriteData sprL_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::L_FUSUMA), 0, 0, 960, 1080);
+    GameLib::SpriteData sprR_fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::R_FUSUMA), 0, 0, 960, 1080);
+    GameLib::SpriteData sprTotitle_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::TOTITLE), 0, 0, 438, 1050);
+    GameLib::SpriteData sprShuriken_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::SHURIKEN), 0, 0, 150, 150);
+    GameLib::SpriteData sprDecration_ = SPRITE_CENTER(static_cast<INT>(TEXNOM::DECORATION), 0, 0, 438, 1050);
 
 private:
+    struct Param {
+        VECTOR2 pos;
+        VECTOR2 scale;
+        VECTOR2 texPos;
+        VECTOR2 texSize;
+        float angle;
+        VECTOR4 color;
+    } param_ = {};
 
     // メンバ変数
     int stageNum_ = 0;
     bool push_flg = false;
 
-    //TODO:変数の追加＆変更
-    float tutorial_icon_Alpha_ = 1.0f;
-    float stage1_icon_Alpha_ = 1.0f;
-    float stage2_icon_Alpha_ = 1.0f;
-    VECTOR2 tutorial_icon_Scale_ = { 0.5f , 0.5f };
-    VECTOR2 stage1_icon_Scale_ = { 0.5f , 0.5f };
-    VECTOR2 stage2_icon_Scale_ = { 0.5f , 0.5f };
-    VECTOR2 tutorial_icon_Pos_ = { GameLib::window::getWidth() / 2 - (GameLib::window::getWidth() / 2) / 2 , GameLib::window::getHeight() / 2 };
-    VECTOR2 stage1_icon_Pos_ = { GameLib::window::getWidth() / 2 , GameLib::window::getHeight() / 2 };
-    VECTOR2 stage2_icon_Pos_ = { GameLib::window::getWidth() / 2 + (GameLib::window::getWidth() / 2) / 2 , GameLib::window::getHeight() / 2 };
-    VECTOR2 S_L_Fusuma_Pos_ = { 0,0 };
-    VECTOR2 S_R_Fusuma_Pos_ = { 0,0 };
-    float Fusuma_timer_ = 0.0f;
+    float tutorial_icon_Alpha_ = 1.0f;// チュートリアルのアイコンα
+    float stage1_icon_Alpha_ = 1.0f;  // ステージ１のアイコンα
+    VECTOR2 tutorial_icon_Scale_ = { 0.5f , 0.5f }; // チュートリアルのアイコンスケール
+    VECTOR2 stage1_icon_Scale_ = { 0.5f , 0.5f };   // ステージ１のアイコンスケール
+    VECTOR2 tutorial_icon_Pos_ = { GameLib::window::getWidth() / 2 - (GameLib::window::getWidth() / 2) / 2 , GameLib::window::getHeight() / 2 };    //チュートリアルのアイコン位置
+    VECTOR2 stage1_icon_Pos_ = { GameLib::window::getWidth() / 2 , GameLib::window::getHeight() / 2 };  //ステージ１のアイコン位置
+    VECTOR2 S_L_Fusuma_Pos_ = { 0,0 };  // 左襖の位置
+    VECTOR2 S_R_Fusuma_Pos_ = { 0,0 };  // 右襖の位置
+    float Fusuma_timer_ = 0.0f;         // 襖が開閉し始めるまでの時間
+    VECTOR2 shuriken_Pos_[10] = {};      //手裏剣位置の初期化
+    float shuriken_Angle_ = 0;          //手裏剣の角度の初期化
+    VECTOR2 title_icon_Scale_ = { 0.5f , 0.5f };   // タイトルのアイコンスケール
+    VECTOR2 title_icon_Pos_ = { GameLib::window::getWidth() / 2 - (GameLib::window::getWidth() / 2) / 2 , GameLib::window::getHeight() / 2 };    //タイトルへのアイコン位置
+    float title_icon_Alpha_ = 1.0f;  // タイトルのアイコンα
+    bool title_push_flg_ = false;
+
+    Param stagingShuriken_[1] = {};
 };

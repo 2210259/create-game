@@ -42,7 +42,6 @@ void Game::deinit()
     // テクスチャの解放
     texture::releaseAll();
 
-    // TODO:音楽流れなかったらコメントアウト
     // 音楽のクリア 
     // music::clear();
 }
@@ -54,17 +53,10 @@ void Game::update()
 {
     using namespace input;
 
-    // ステージセレクト
-    if ((STATE(0) & PAD_SELECT) && (STATE(0) & PAD_START))
-    {
-        changeScene(Title::instance()); // タイトルシーンに切り替える
-        return;
-    }
-
      debug::setString("isPaused_%d", isPaused_);
 
     // ポーズ処理
-     if (TRG(0) & PAD_TRG1)
+     if (TRG(0) & PAD_TRG1 && title_push_flg == false && restart_push_flg == false)
      {
          //音楽を再開
          GameLib::music::resume(stageNo_);
@@ -79,8 +71,7 @@ void Game::update()
          if (title_push_flg == false && restart_push_flg == false)
          {
              // Aキーが押された時
-             if (TRG(0) & PAD_RIGHT)
-             {
+             if (TRG(0) & PAD_RIGHT) {
                  if (pause_num_ > 0)
                  {
                      pause_num_--;
@@ -88,33 +79,43 @@ void Game::update()
              }
 
              //　Dキーが押された時
-             if (TRG(0) & PAD_LEFT)
-             {
-                 if (pause_num_ < 1)
+             if (TRG(0) & PAD_LEFT) {
+                 if (pause_num_ < 2)
                  {
                      pause_num_++;
                  }
              }
          }
-             //音楽を止める
-             GameLib::music::pause(stageNo_);
+         //音楽を止める
+         GameLib::music::pause(stageNo_);
 
-             //文字のα値を０～１の間で往復させる処理
-             switch (pause_alpha_num_)
+         //文字のα値を０～１の間で往復させる処理
+         switch (pause_alpha_num_)
+         {
+         case 0:
+             pause_alpha_ -= 0.03f;
+             if (pause_alpha_ <= 0)   pause_alpha_num_++;
+             break;
+
+         case 1:
+             pause_alpha_ += 0.03f;
+             if (pause_alpha_ >= 1)   pause_alpha_num_--;
+             break;
+         }
+
+         //１(再開)を選んでいるとき
+         if (pause_num_ == 1 && title_push_flg == false && restart_push_flg == false)
+         {
+             if (TRG(0) & PAD_START)
              {
-             case 0:
-                 pause_alpha_ -= 0.03f;
-                 if (pause_alpha_ <= 0)   pause_alpha_num_++;
-                 break;
-
-             case 1:
-                 pause_alpha_ += 0.03f;
-                 if (pause_alpha_ >= 1)   pause_alpha_num_--;
-                 break;
+                 //music::play(8, false);
+                 isPaused_ = !isPaused_;
              }
+
+         }
          
-         //０(再挑戦)を選んでいるとき
-         if (pause_num_ && title_push_flg == false && restart_push_flg == false)
+         //２(再挑戦)を選んでいるとき
+         if (pause_num_ == 2 && title_push_flg == false && restart_push_flg == false)
          {
              if (TRG(0) & PAD_START)
              {
@@ -123,8 +124,8 @@ void Game::update()
              }
          }
 
-         //１(たいとるへ)を選んでいるとき
-         if (pause_num_ == false && title_push_flg == false && restart_push_flg == false) 
+         //０(たいとるへ)を選んでいるとき
+         if (pause_num_ == 0 && title_push_flg == false && restart_push_flg == false) 
          {
              if (TRG(0) & PAD_START)
              {
@@ -179,7 +180,6 @@ void Game::update()
     case 0:
         //////// 初期設定 ////////
         
-        timer_       = 0;    // ゲームタイマー
         combo2Timer_ = 0;    // コンボタイマー
         scoreTimer_  = 0;    // スコアタイマー
         notesTimer_  = 0;    // ノーツタイマー
@@ -194,10 +194,11 @@ void Game::update()
         hpColor01    = { 1, 1, 1, 1.0f };    // HPバーの色
 
         hpPos02      = { 1390,  80 };        // HPバーの位置
-        hpSize02     = { 490,  70 };         // HPバーの大きさ
+        hpSize02     = { 0,  70 };           // HPバーの大きさ
         hpColor02    = { 1, 0, 0, 0.8f };    // HPバーの色
 
         comboSize    = { 1.5f, 1.5f };       // コンボの大きさ
+        comboColor   = { 1, 1, 1, 1 };       // コンボの色
         combo2Pos    = { 1890, 360 };        // コンボ2の位置
         combo2Size   = { 1.5f, 1.5f };       // コンボ2の大きさ             
         combo2Color  = { 1, 1, 1, 0 };       // コンボ2の色
@@ -233,7 +234,8 @@ void Game::update()
         pause_num_       = 0; // ポーズ中の選択用
         pause_alpha_     = 0; // ポーズ中に表示するテキストのα値
         pause_alpha_num_ = 0; // α値を０～１まで往復させるための値
-        
+        HPAnimeTimer_    = 0;
+
         playerAlive_   = true; //生存しているかどうか
         notesMaskFlag_ = false;
 
@@ -259,8 +261,7 @@ void Game::update()
 
         tutorial_timer_ = 0;                   // チュートリアル画像の表示時間の初期化
 
-
-        setStageNo(Select::instance()->stageNum());
+        setStageNo(Select::instance()->stageNum() - 1);
 
         GameLib::setBlendMode(Blender::BS_ALPHA);   // 通常のアルファ処理
 
@@ -289,8 +290,13 @@ void Game::update()
             ),
             &idlePlayerBehavior, VECTOR2(BG::WINDOW_W / 2, BG::WINDOW_H - (BG::WINDOW_H / 18)), -1, {});
 
+        player_->renderer()->setColor(VECTOR4(1, 1, 1, 0));
+
         // BGの初期設定
         bg()->init(player_);
+
+        //襖開閉音
+        GameLib::music::play(11, false);
 
         state_++;    // 初期設定処理の終了
         /*fallthrough*/
@@ -298,12 +304,11 @@ void Game::update()
     case 1:
         //////// 襖が開ける処理 ////////
         // 襖の処理
-        if (G_L_Fusuma_Pos_.x > -960 / 2 && G_R_Fusuma_Pos_.x < (960 * 2) + (960 / 2))
+        if (G_L_Fusuma_Pos_.x > -960 / 2 && G_R_Fusuma_Pos_.x < (960 * 2) + (960 / 2) && timer_ > 3)
         {
             G_L_Fusuma_Pos_.x -= 30;
             G_R_Fusuma_Pos_.x += 30;
         }
-
         // 襖が画面外に移動
         if (G_L_Fusuma_Pos_.x <= -960 / 2 && G_R_Fusuma_Pos_.x >= (960 * 2) + (960 / 2))
         {
@@ -311,19 +316,21 @@ void Game::update()
             G_R_Fusuma_Pos_.x = (960 * 2) + (960 / 2);
 
             // 開始演出を出す
-            if (t_StartScale.x > 1.5f) {
-                t_StartScale -= { 0.25f, 0.25f };
-                t_StartPos.y += 30;
-            }
+            if (timer_ > 110) {
+                if (t_StartScale.x > 1.5f) {
+                    t_StartScale -= { 0.25f, 0.25f };
+                    t_StartPos.y += 30;
+                }
 
-            // caseを一つ動かす
-            if (t_StartScale.x <= 1.5f) {
-                // 効果音
-                music::play(8, false);
+                // caseを一つ動かす
+                if (t_StartScale.x <= 1.5f) {
+                    // 効果音
+                    music::play(8, false);
 
-                timer_ = 0;
-                state_++;
-                break;
+                    timer_ = 0;
+                    state_++;
+                    break;
+                }
             }
         }
         // オブジェクトの更新
@@ -335,6 +342,10 @@ void Game::update()
         // HPバーのアニメーション
         AnimetionHP();
 
+        if (player_->renderer()->color().w < 1) {
+            player_->renderer()->addColorW(0.02f);
+        }
+        timer_++;
         break;
     case 2:
         //////// 通常時の処理 ////////
@@ -343,9 +354,11 @@ void Game::update()
         if(timer_ > 30 && t_StartColor.w > 0)
             t_StartColor.w -= 0.02f;
 
-        if (timer_ > 100) {
+        //１秒後に音楽を開始
+        if (timer_ > 60) {
             music::resume(stageNo_);
         }
+
         // オブジェクトの更新
         obj2dManager()->update();
 
@@ -370,8 +383,8 @@ void Game::update()
         // HPバーのアニメーション
         AnimetionHP();
 
-        //ゲームの終了時間の調整
-        if ((stageNo_ == 0 && timer_ > 5500) || (stageNo_ == 1 && timer_ > 5500)) {
+        // ゲームの終了時間の調整
+        if ((stageNo_ == 0 && timer_ > 5640) || (stageNo_ == 1 && timer_ > 6500)) {
             setPlayerAlive(true);
             GameLib::music::stop(stageNo_);
             state_++;
@@ -399,6 +412,15 @@ void Game::update()
 
         // HPバーのアニメーション
         AnimetionHP();
+
+        // スコアの計算
+        calcScore();
+
+        // コンボの計算
+        calcCombo();
+
+        // ノーツ判定の更新
+        decisionJudge();
 
         // 止める演出を出す
         if (t_EndScale.x > 1.5f) {
@@ -428,6 +450,15 @@ void Game::update()
         // HPバーのアニメーション
         AnimetionHP();
 
+        // スコアの計算
+        calcScore();
+
+        // コンボの計算
+        calcCombo();
+
+        // ノーツ判定の更新
+        decisionJudge();
+
         // 閉幕のアルファ値を下げる 
         if (timer_ > 60 && t_EndColor.w > 0)
             t_EndColor.w -= 0.02f;
@@ -436,10 +467,17 @@ void Game::update()
         if (timer_ > 120) {
             // ミスがなし＋プレイヤーが生きてる状態であれば演出を追加
             if (missNum_ <= 0 && player()->actorComponent()->hp() > 0){
-                state_++;
+            
+            //襖開閉音
+            GameLib::music::play(11, false);
+
+            state_++;
             }
             // スコア画面にそのまま遷移
             else { 
+                //襖開閉音
+                GameLib::music::play(11, false);
+
                 state_ = 6;
             }
         }
@@ -463,6 +501,9 @@ void Game::update()
         if (t_FullComboPos.x > BG::CLIENT_W / 2) {
             t_FullComboPos.x = BG::CLIENT_W / 2;
 
+            //フルコンボ音
+            GameLib::music::play(10,false);
+
             // 真ん中にとまった後エフェクトを出す
             if (timer_ % 6 == 0) {
                 setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect0Behavior, { static_cast<float>(rand() % BG::WINDOW_W), static_cast<float>(rand() % BG::WINDOW_H) });
@@ -472,7 +513,11 @@ void Game::update()
             
             // スコア画面に遷移
             if (TRG(0) & PAD_START || timer_ > 1000) {
-                state_++;
+            
+            // 襖開閉音
+            GameLib::music::play(11, false);
+            
+            state_++;
             }
         }
         timer_++;
@@ -489,14 +534,12 @@ void Game::update()
         // HPバーのアニメーション
         AnimetionHP();
 
-        if (G_L_Fusuma_Pos_.x <= 960 && G_R_Fusuma_Pos_.x >= (960 * 1.5f))
-        {
+        if (G_L_Fusuma_Pos_.x <= 960 && G_R_Fusuma_Pos_.x >= (960 * 1.5f)) {
             G_L_Fusuma_Pos_.x += 30;
             G_R_Fusuma_Pos_.x -= 30;
         }
 
-        if (G_L_Fusuma_Pos_.x >= 480 && G_R_Fusuma_Pos_.x <= (960 * 1.5f))
-        {
+        if (G_L_Fusuma_Pos_.x >= 480 && G_R_Fusuma_Pos_.x <= (960 * 1.5f)) {
             G_L_Fusuma_Pos_.x = 480;
             G_R_Fusuma_Pos_.x = (960 * 1.5f);
             state_++;
@@ -509,6 +552,7 @@ void Game::update()
 
         changeScene(Score::instance());
         break;
+
     }
     // debug::setString("Combo:%d", combo());
     // debug::setString("maxCombo:%d", maxCombo());
@@ -545,7 +589,7 @@ void Game::draw()
             GameLib::primitive::rect(
                 { player()->transform()->position().x - player()->collider()->size().x,
                   player()->transform()->position().y - player()->collider()->size().y },
-                { player()->collider()->size().x, player()->collider()->size().y },
+                { BG::CLIENT_W, player()->collider()->size().y },
                 { 0, 0 },
                 ToRadian(0),
                 { 0.0f, 0.0f, 0.0f, 0.0f }
@@ -567,9 +611,9 @@ void Game::draw()
         if (Game::instance()->player()->actorComponent()->direction() == Game::instance()->player()->actorComponent()->RIGHT
             && notesMaskFlag_ == true) {
             GameLib::primitive::rect(
-                { player()->transform()->position().x,
+                { 0,
                   player()->transform()->position().y - player()->collider()->size().y },
-                { player()->collider()->size().x, player()->collider()->size().y },
+                { player()->transform()->position().x + player()->collider()->size().x, player()->collider()->size().y },
                 { 0, 0 },
                 ToRadian(0),
                 { 0.0f, 0.0f, 0.0f, 0.0f }
@@ -594,7 +638,7 @@ void Game::draw()
             GameLib::primitive::rect(
                 { player()->transform()->position().x - (player()->collider()->size().x / 2),
                 player()->transform()->position().y - (player()->collider()->size().y * 3 / 2) },
-                { player()->collider()->size().x, player()->collider()->size().y / 2 },
+                { player()->collider()->size().x, player()->collider()->size().y * 2 },
                 { 0, 0 },
                 ToRadian(0),
                 { 0.0f, 0.0f, 0.0f, 0.0f }
@@ -626,12 +670,20 @@ void Game::draw()
     // HPバーの描画
     {
         if (player()->actorComponent()->hp() >= 0) {
+            GameLib::setBlendMode(Blender::BS_ALPHA);   // 通常のアルファ処理
+            // プレイヤーがダメージを食らったとき点滅させる
+            if ((player_->actorComponent()->playerHitTimer() >= 1 && player_->actorComponent()->playerHitTimer() <= 6) ||
+                (player_->actorComponent()->playerHitTimer() >= 13 && player_->actorComponent()->playerHitTimer() <= 18)) {
+                GameLib::setBlendMode(Blender::BS_MULTIPLY);   // アルファ処理
+            }
+
             primitive::rect(hpPos02,
                 { hpSize02.x / player()->actorComponent()->maxHP() * player()->actorComponent()->hp(), hpSize02.y },
                 { 0, 0 }, 0, hpColor02);
         }
 
         GameLib::setBlendMode(Blender::BS_ADD);   // 通常のアルファ処理
+
         texture::begin(TEXNO::HP_BAR);
         texture::draw(TEXNO::HP_BAR, hpPos01, { 1, 1 }, hpTexPos01, { 600, 150 });
         texture::end(TEXNO::HP_BAR);
@@ -699,40 +751,87 @@ void Game::draw()
             GameLib::TEXT_ALIGN::UPPER_MIDDLE
         );
 
-        //再挑戦を選んでいるとき
-        if (pause_num_)
+        // 再開を選んでいるとき
+        if (pause_num_ == 1)
         {
-            //"再挑戦"の文字の描画
-            sprRestart_.draw(
-                { GameLib::window::getWidth() / 4, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+            // "再開"の描画
+            sprContinue_.draw(
+                { GameLib::window::getWidth() / 2 , GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
                 { 1.0f,1.0f },
                 ToRadian(0),
                 { 1,1,1,pause_alpha_ }
             );
 
-            //"たいとるへ"の文字の描画
+            // "再挑戦"の文字の描画
+            sprRestart_.draw(
+                { GameLib::window::getWidth() / 2 - GameLib::window::getWidth() / 3, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { 1.0f,1.0f },
+                ToRadian(0),
+                { 1,1,1,1 }
+            );
+
+            // "たいとるへ"の文字の描画
             sprTotitle_.draw(
-                { GameLib::window::getWidth() / 2 + GameLib::window::getWidth() / 4, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { GameLib::window::getWidth() / 2 + GameLib::window::getWidth() / 3, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
                 { 1.0f,1.0f },
                 ToRadian(0),
                 { 1,1,1,1 }
             );
         }
-
-        //たいとるへを選んでいるとき
-        if (pause_num_ == false)
+        
+        // たいとるへを選んでいるとき
+        if (pause_num_ == 2)
         {
-            //"再挑戦"の文字の描画
-            sprRestart_.draw(
-                { GameLib::window::getWidth() / 4, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+            // "再開"の描画
+            sprContinue_.draw(
+                { GameLib::window::getWidth() / 2 , GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
                 { 1.0f,1.0f },
                 ToRadian(0),
                 { 1,1,1,1 }
             );
 
+            // 位置の変更
+            // "再挑戦"の文字の描画
+            sprRestart_.draw(
+                { GameLib::window::getWidth() / 2 - GameLib::window::getWidth() / 3, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { 1.0f,1.0f },
+                ToRadian(0),
+                { 1,1,1,pause_alpha_ }
+            );
+
+            // 位置の変更
+            // "たいとるへ"の文字の描画
+            sprTotitle_.draw(
+                { GameLib::window::getWidth() / 2 + GameLib::window::getWidth() / 3, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { 1.0f,1.0f },
+                ToRadian(0),
+                { 1,1,1,1 }
+            );
+        }
+        
+        // たいとるへを選んでいるとき
+        if (pause_num_ == 0)
+        {
+            // "再開"の描画
+            sprContinue_.draw(
+                { GameLib::window::getWidth() / 2 , GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { 1.0f,1.0f },
+                ToRadian(0),
+                { 1,1,1,1 }
+            );
+
+            // 位置の変更
+            //"再挑戦"の文字の描画
+            sprRestart_.draw(
+                { GameLib::window::getWidth() / 2 - GameLib::window::getWidth() / 3, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { 1.0f,1.0f },
+                ToRadian(0),
+                { 1,1,1,1 }
+            );
+            //位置の変更
             //"たいとるへ"の文字の描画
             sprTotitle_.draw(
-                { GameLib::window::getWidth() / 2 + GameLib::window::getWidth() / 4, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
+                { GameLib::window::getWidth() / 2 + GameLib::window::getWidth() / 3, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 4 },
                 { 1.0f,1.0f },
                 ToRadian(0),
                 { 1,1,1,pause_alpha_ }
@@ -807,9 +906,8 @@ void Game::draw()
     }
 
     //手裏剣の四角
-    for (int i = 0; i < 11; i++)
-    {
-        primitive::rect({ 2400 , shuriken_Pos_[i].y + 32 }, { shuriken_Pos_[i].x - 2400 + 64 , 128 }, { 0,128 }, ToRadian(0), { 0.0f,0.0f,0.0f,1.0f });
+    for (int i = 0; i < 11; i++) {
+        primitive::rect({ 2400 , shuriken_Pos_[i].y + 64 }, { shuriken_Pos_[i].x - 2400 + 64 , 128 }, { 0,128 }, ToRadian(0), { 0.0f,0.0f,0.0f,1.0f });
     }
 }
 
@@ -881,11 +979,30 @@ void Game::calcCombo()
         setMaxCombo(combo());
     }
 
+    // コンボ数に応じて色を変更
+    if (combo() >= 50) {
+        comboColor = { 1.0f, 1.0f, 0.0f, 1.0f };   // 黄色
+    }
+    else if (combo() >= 25) {
+        comboColor = { 0.2f, 1.0f, 1.0f, 1.0f };   // 水色
+    }
+    else {
+        comboColor = { 1, 1, 1, 1 };       // 白色
+    }
+
     // スコア表示をもとに戻す
     if (combo2Timer_ >= maxAppearTime_) {
         combo2Pos   = { 1890, 360 };        // コンボの位置
         combo2Size  = { 1.5f, 1.5f };       // コンボの大きさ
-        combo2Color = { 1, 1, 1, 0 };       // コンボの色
+        if (combo2() >= 10) {
+            combo2Color = { 1.0f, 1.0f, 0.0f, 0.0f }; // 黄色
+        }
+        else if (combo2() >= 5) {
+            combo2Color = { 0.2f, 1.0f, 1.0f, 0.0f }; // 水色
+        }
+        else {
+            combo2Color = { 1, 1, 1, 0 }; // 白色
+        }
     }
     // タイマーを減らす
     if (combo2Timer_ > 0) combo2Timer_--;
@@ -924,6 +1041,7 @@ void Game::comboDraw()
     ss1 << "COMBO" << std::setw(4) << " ";
     ss2 << std::setw(9) << combo_;
     ss3 << combo2_;
+
     // コンボ数をテキスト表示
     font::textOut(6,
         ss1.str(),
@@ -934,10 +1052,27 @@ void Game::comboDraw()
     );
 
     font::textOut(6,
+        ss1.str(),
+        { 1897, 207 },
+        { 1.5f, 1.5f },
+        { 1.0f, 1.0f, 1.0f, 0.1f },
+        TEXT_ALIGN::MIDDLE_RIGHT
+    );
+
+    // コンボ数の描画
+    font::textOut(6,
         ss2.str(),
         { 1890, 200 },
         comboSize,
-        { 1.0f, 1.0f, 1.0f, 1.0f },
+        comboColor,
+        TEXT_ALIGN::MIDDLE_RIGHT
+    );
+
+    font::textOut(6,
+        ss2.str(),
+        1897, 207,
+        comboSize.x, comboSize.y,
+        comboColor.x, comboColor.y, comboColor.z, comboColor.w - 0.9f,
         TEXT_ALIGN::MIDDLE_RIGHT
     );
     
@@ -949,6 +1084,14 @@ void Game::comboDraw()
             combo2Color,
             TEXT_ALIGN::MIDDLE_RIGHT
         );
+
+        font::textOut(6,
+            ss3.str(),
+            combo2Pos.x + 7, combo2Pos.y + 7,
+            combo2Size.x, combo2Size.y,
+            combo2Color.x, combo2Color.y, combo2Color.z, combo2Color.w - 0.9f,
+            TEXT_ALIGN::MIDDLE_RIGHT
+        );
     }
 }
 
@@ -957,7 +1100,7 @@ void Game::calcScore()
     // スコア表示をもとに戻す
     if (scoreTimer_ >= maxAppearTime_) {
         scorePos    = { 10, 80 };           // スコアの位置
-        scoreColor  = { 1.0f, 1.0f, 0.5f, 0 };       // スコアの色
+        scoreColor.w  = 0;       // スコアの色
     }
     // タイマーを減らす
     if (scoreTimer_ > 0) scoreTimer_--;
@@ -993,13 +1136,29 @@ void Game::scoreDraw()
         TEXT_ALIGN::UPPER_LEFT
     );
 
+    font::textOut(6,
+        ss1.str(),
+        { 17, 17 },
+        { 1.5f, 1.5f },
+        { 1.0f, 1.0f, 1.0f, 0.1f },
+        TEXT_ALIGN::UPPER_LEFT
+    );
+
     if (scoreTimer_) {
         // スコア数をテキスト表示
         font::textOut(6,
             ss2.str(),
-            scorePos,
-            scoreSize,
-            scoreColor,
+            scorePos.x, scorePos.y,
+            scoreSize.x, scoreSize.y,
+            notesColor.x, notesColor.y, notesColor.z, scoreColor.w,
+            TEXT_ALIGN::UPPER_LEFT
+        );
+
+        font::textOut(6,
+            ss2.str(),
+            scorePos.x + 7, scorePos.y + 7,
+            scoreSize.x, scoreSize.y,
+            notesColor.x, notesColor.y, notesColor.z, scoreColor.w - 0.9f,
             TEXT_ALIGN::UPPER_LEFT
         );
     }
@@ -1008,12 +1167,14 @@ void Game::scoreDraw()
 // ノーツ判定の判別
 void Game::decisionJudge()
 {
+    VECTOR2 BGThreeQuarters = { BG::WINDOW_W / 4 * 3 - 320, BG::WINDOW_H / 4 * 3 - 75 };
+
     switch (decision_)
     {
     case Game::MISS:
         notesText.str("MISS");
         notesTimer_ = maxAppearTime_;
-        notesPos    = { 1890, 300 };
+        notesPos    = { BGThreeQuarters.x, BGThreeQuarters.y };
         notesSize   = { 0.2f, 0.2f };
         notesColor  = { 0.0f, 0.0f, 1.0f, 0.0f };
         decision_   = NONE;
@@ -1021,7 +1182,7 @@ void Game::decisionJudge()
     case Game::GOOD:
         notesText.str("GOOD");
         notesTimer_ = maxAppearTime_;
-        notesPos    = { 1890, 300 };
+        notesPos    = { BGThreeQuarters.x, BGThreeQuarters.y };
         notesSize   = { 0.2f, 0.2f };
         notesColor  = { 1.0f, 1.0f, 1.0f, 0.0f };
         decision_   = NONE;
@@ -1029,7 +1190,7 @@ void Game::decisionJudge()
     case Game::GREAT:
         notesText.str("GREAT");
         notesTimer_ = maxAppearTime_;
-        notesPos    = { 1890, 300 };
+        notesPos    = { BGThreeQuarters.x, BGThreeQuarters.y };
         notesSize   = { 0.2f, 0.2f };
         notesColor  = { 0.2f, 1.0f, 1.0f, 0.0f };
         decision_   = NONE;
@@ -1037,7 +1198,7 @@ void Game::decisionJudge()
     case Game::PERFECT:
         notesText.str("PERFECT");
         notesTimer_ = maxAppearTime_;
-        notesPos    = { 1890, 300 };
+        notesPos    = { BGThreeQuarters.x, BGThreeQuarters.y };
         notesSize   = { 0.2f, 0.2f };
         notesColor  = { 1.0f, 1.0f, 0.0f, 0.0f };
         decision_   = NONE;
@@ -1058,7 +1219,7 @@ void Game::decisionJudge()
         notesColor.w -= 0.04f;
     }
     // 一定の値を超えないように設定
-    if (notesPos.y < 280)       notesPos.y   = 280;
+    if (notesPos.y < BGThreeQuarters.y - 20)       notesPos.y   = BGThreeQuarters.y - 20;
     if (notesSize.x > 1.5f)     notesSize    = { 1.5f, 1.5f };
     notesColor.w = clamp(notesColor.w, 0.0f, 1.0f);
     debug::setString("notesTimer:%d", notesTimer_);
@@ -1075,14 +1236,24 @@ void Game::decisionDraw()
             notesPos,
             notesSize,
             notesColor,
-            TEXT_ALIGN::MIDDLE_RIGHT
+            TEXT_ALIGN::LOWER_LEFT
+        );
+
+        // コンボ数をテキスト表示
+        font::textOut(6,
+            notesText.str(),
+            notesPos.x + 7, notesPos.y + 7,
+            notesSize.x, notesSize.y,
+            notesColor.x, notesColor.y, notesColor.z, notesColor.w - 0.9f,
+            TEXT_ALIGN::LOWER_LEFT
         );
     }
 }
 
+// HPのアニメーション
 void Game::AnimetionHP() {
     // 6フレームごとにアニメーション切替
-    if (timer_ % 6 == 0) {
+    if (HPAnimeTimer_ % 6 == 0) {
         if (hpTexPos01.x == 0) {
             hpTexPos01.x = 600;
         }
@@ -1093,10 +1264,14 @@ void Game::AnimetionHP() {
             hpTexPos01.x = 0;
         }
     }
+    // HPを増やす処理
+    if (state_ > 1 && hpSize02.x < 490) {
+        hpSize02.x += 5;
+    }
+    HPAnimeTimer_++;
 }
 
-// TODO: 試遊会用
-// 操作説明（仮）
+// チュートリアル
 void Game::operationDraw() {
     //チュートリアル画像の移動処理
     if (stageNo_ == 0 && state_ != 1 && timer_ > 30)
@@ -1144,9 +1319,6 @@ void Game::operationDraw() {
             }
             break;
 
-
-
-
         case 2:
             sprTutorial1_.draw(
                 tutorial_pos_
@@ -1187,9 +1359,6 @@ void Game::operationDraw() {
                 break;
             }
             break;
-
-
-
 
         case 4:
             sprTutorial3_.draw(
@@ -1232,9 +1401,6 @@ void Game::operationDraw() {
             }
             break;
 
-
-
-
         case 6:
             sprTutorial2_.draw(
                 tutorial_pos_
@@ -1275,9 +1441,6 @@ void Game::operationDraw() {
                 break;
             }
             break;
-
-
-
 
         case 8:
             sprTutorial4_.draw(

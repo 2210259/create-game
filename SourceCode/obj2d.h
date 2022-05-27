@@ -167,6 +167,8 @@ public:
 
     //アニメーションタイマーリセット
     void animeTimeReset() { animetimer_ = 0; }
+
+    void addColorW(const float w) { color_.w += w; }
 };
 
 //----------------------------------------
@@ -354,6 +356,7 @@ private:
     bool removeLFlag_;
     int  posType_;      // 武器の出現方向
     int weaponTimer_;  
+    bool weaponNotesHitFlag_; // 武器がノーツに当たった時のフラグ
 
 public:
     WeaponComponent()
@@ -363,6 +366,7 @@ public:
         , removeLFlag_(false)
         , posType_(0)
         , weaponTimer_(0)
+        , weaponNotesHitFlag_(false)
     {}
 
     //ゲッター
@@ -372,6 +376,7 @@ public:
     bool removeLFlag() const { return removeLFlag_; }
     int posType() const { return posType_; }
     int weaponTimer() const { return weaponTimer_; }
+    bool weaponNotesHitFlag() const { return weaponNotesHitFlag_; }
 
     //セッター
     void setOwner(OBJ2D* o) { if (!o) owner_ = o; }
@@ -380,6 +385,7 @@ public:
     void setRemoveLFlag(bool f) { removeLFlag_ = f; }
     void setPosType(int t) { posType_ = t; }
     void setWeaponTimer(int t) { weaponTimer_ = t; }
+    void setWeaponNotesHitFlag(bool f) { weaponNotesHitFlag_ = f; }
 
     void countWeaponTimer() { weaponTimer_--; }
     // void copyOwnerXFlip();

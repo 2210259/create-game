@@ -62,6 +62,7 @@ private:
     VECTOR2 tutorial_pos_ = { 0,0 };    //チュートリアル画像の位置
     int tutorial_State_ = 0;            //チュートリアル画像のステート
     float tutorial_timer_ = 0;          //チュートリアル画像の表示時間
+    int HPAnimeTimer_ = 0;
 
     static const int maxAppearTime_ = 120; // 最大表示時間
 
@@ -70,6 +71,8 @@ private:
     std::ostringstream notesText;
 
     VECTOR2 comboSize;   // コンボの大きさ
+    VECTOR4 comboColor; // コンボの色
+
     VECTOR2 combo2Pos;   // コンボ2の位置
     VECTOR2 combo2Size;  // コンボ2の大きさ
     VECTOR4 combo2Color; // コンボ2の色
@@ -81,6 +84,7 @@ private:
     VECTOR2 notesPos;    // ノーツ判定の位置
     VECTOR2 notesSize;   // ノーツ判定の大きさ
     VECTOR4 notesColor;  // ノーツ判定の色
+    VECTOR4 notesColor2;  // ノーツ判定の色
 
     VECTOR2 t_StartPos;    // 文字の位置
     VECTOR2 t_StartScale;  // 文字の大きさ
@@ -151,7 +155,7 @@ public:
     void setAppearScore(int s) { appearScore_ = s; }
     void addScore(int s) { score_ += s; }
     void setMaxScore(int s) { maxScore_ = s; }
-    void setDecision(DECISION d) {decision_ = d; }
+    void setDecision(DECISION d) { decision_ = d; }
     void deleteCombo() { combo_ = 0; }
     void deleteCombo2() { combo2_ = 0; }
     void addPerfectNum() { perfectNum_++; }
@@ -208,7 +212,7 @@ private:
         , tutorial_pos_({0.0f,0.0f})
         , tutorial_State_(0)
         , tutorial_timer_(0)
-
+        , HPAnimeTimer_(0)
     {}
     Game(const Game&) = delete; // = delete コピーコンストラクタが存在しないことを明示
     // 当たり判定
@@ -240,11 +244,12 @@ private:
 
 public:
     //使用するスプライトデータ
+    GameLib::SpriteData sprContinue_ = SPRITE_CENTER(static_cast<INT>(TEXNO::CONTINUE), 0, 0, 600, 300);
     GameLib::SpriteData sprRestart_ = SPRITE_CENTER(static_cast<INT>(TEXNO::RESTART), 0, 0, 600, 300);
     GameLib::SpriteData sprTotitle_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TOTITLE), 0, 0, 600, 300);
     GameLib::SpriteData sprL_Fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNO::L_FUSUMA), 0, 0, 960, 1080);
     GameLib::SpriteData sprR_Fusuma_ = SPRITE_CENTER(static_cast<INT>(TEXNO::R_FUSUMA), 0, 0, 960, 1080);
-    GameLib::SpriteData sprShuriken_ = SPRITE_CENTER(static_cast<INT>(TEXNO::ENEMY0), 0, 0, 128, 128);
+    GameLib::SpriteData sprShuriken_ = SPRITE_CENTER(static_cast<INT>(TEXNO::ENEMY0), 0, 0, 150, 150);
     GameLib::SpriteData sprTutorial0_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TUTORIAL0), 0, 0, 600, 700);
     GameLib::SpriteData sprTutorial1_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TUTORIAL1), 0, 0, 600, 700);
     GameLib::SpriteData sprTutorial2_ = SPRITE_CENTER(static_cast<INT>(TEXNO::TUTORIAL2), 0, 0, 600, 700);

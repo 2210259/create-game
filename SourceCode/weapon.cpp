@@ -26,8 +26,12 @@ void BaseWeaponBehavior::move(OBJ2D* obj)
         // collider->calcHitBox(getParam()->HIT_BOX);
         weaponComponent->setPosType(Game::instance()->player()->actorComponent()->direction());
         
+
         // 左右の向き、速度を設定（プレイヤーにもxFlip_の設定が必要）
         // weaponComponent->copyOwnerXFlip();   // 武器の持ち主のxFlip_を武器に設定する
+
+        // 武器がノーツに当たった時のフラグ
+        obj->weaponComponent()->setWeaponNotesHitFlag(false);
         obj->weaponComponent()->setWeaponTimer(1);
         obj->nextState();//state++
         /*fallthrough*/
@@ -47,7 +51,7 @@ void BaseWeaponBehavior::update(OBJ2D* obj)
     Renderer* renderer = obj->renderer();
     Transform* transform = obj->transform();
 
-    if (Game::instance()->playerModeFlag() == false) {
+    if (Game::instance()->playerModeFlag() == false || obj->weaponComponent()->weaponNotesHitFlag()) {
         if (obj->weaponComponent()->weaponTimer() == 0) {
             obj->remove();
         }
@@ -58,7 +62,7 @@ void BaseWeaponBehavior::update(OBJ2D* obj)
 
     // if (Game::instance()->state() <= 1) return;
 
-    // debug::setString("speed%f", transform->speed().x);
+    debug::setString("obj->weaponComponent()->weaponNotesHitFlag():%d", obj->weaponComponent()->weaponNotesHitFlag());
     // debug::setString("speedY%f", transform->speed().y);
 }
 
@@ -113,6 +117,12 @@ void WeaponBehavior::hit(OBJ2D* src, OBJ2D* dst)
         
         // パーフェクトカウントを足す
         Game::instance()->addPerfectNum();
+
+        //ノーツ撃墜音
+        GameLib::music::play(9, false);
+
+        // Perfectエフェクトを生成(連続ノーツ以外)
+        setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect2Behavior, src->transform()->position());
     }
     // 連打ノーツ
     else if (TRG(0) & PAD_START) {
@@ -137,6 +147,12 @@ void WeaponBehavior::hit(OBJ2D* src, OBJ2D* dst)
         // パーフェクトカウントを足す
         Game::instance()->addPerfectNum();
 
+        //ノーツ撃墜音
+        GameLib::music::play(9, false);
+
+        // Perfectエフェクトを生成(連続ノーツ)
+        setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect2Behavior, src->transform()->position());
+
         if (dst->actorComponent()->deleteCombo2Flag()) {
             Game::instance()->deleteCombo2();
             dst->actorComponent()->setDeleteCombo2Flag(false);
@@ -144,14 +160,19 @@ void WeaponBehavior::hit(OBJ2D* src, OBJ2D* dst)
         debug::setString("deleteCombo2Flag:%d", dst->actorComponent()->deleteCombo2Flag());
     }
     // 敵を消滅する状態に設定(長押しノーツと連続ノーツ以外)
-    if (dst->behavior() == &enemy0Behavior ||
+    if (dst->behavior() == &enemy4Behavior ||
         dst->behavior() == &enemy1Behavior) {
+
+        // 武器の判定をなくす
+        src->weaponComponent()->setWeaponNotesHitFlag(true);
 
         // 敵を消滅する状態に設定
         dst->addEnemyState();
+    }
 
-        // Perfectエフェクトを生成
-        setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect2Behavior, src->transform()->position());
+    // 長押しノーツ専用の音を流す
+    if (dst->behavior() == &enemy2Behavior) {
+        GameLib::music::play(18, false);
     }
 
     // ジャッジフラグをなくす(連打ノーツ以外)
@@ -166,16 +187,16 @@ void WeaponBehavior::hit2(OBJ2D* src, OBJ2D* dst)
 
     // falseの場合処理をしない
     if (dst->collider()->judgeBoxFlag() == false) return;
-        
+
     // コンボを追加
     Game::instance()->addCombo();
-    
+
     // コンボのサイズを設定
     Game::instance()->setComboSize(VECTOR2(2, 2));
 
     // スコアの加算(1.5倍)
     Game::instance()->addScore(dst->actorComponent()->score() * 3 / 2);
-    
+
     // スコアの表示時間を戻す
     Game::instance()->setScoreTimer(Game::instance()->maxAppearTime());
 
@@ -184,19 +205,32 @@ void WeaponBehavior::hit2(OBJ2D* src, OBJ2D* dst)
 
     // ノーツ判定を送る
     Game::instance()->setDecision(Game::instance()->GREAT);
-    
+
     // グレイトカウントを足す 
     Game::instance()->addGreatNum();
 
+    //ノーツ撃墜音
+    GameLib::music::play(15, false);
+
     // 敵を消滅する状態に設定(長押しノーツと連続ノーツ以外)
-    if (dst->behavior() == &enemy0Behavior ||
+    if (dst->behavior() == &enemy4Behavior ||
         dst->behavior() == &enemy1Behavior) {
         // 敵を消滅する状態に設定
         dst->addEnemyState();
 
-        // Greatエフェクトを生成
+        // 武器の判定をなくす
+        src->weaponComponent()->setWeaponNotesHitFlag(true);
+    }
+    // Greatエフェクトを生成(連続ノーツ以外)
+    if (dst->behavior() != &enemy3Behavior) {
         setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect1Behavior, src->transform()->position());
     }
+
+    // 長押しノーツ専用の音を流す
+    if (dst->behavior() == &enemy2Behavior) {
+        GameLib::music::play(18, false);
+    }
+
     // ジャッジフラグをなくす
     dst->collider()->setJudgeBoxFlag(false);
 }
@@ -230,16 +264,29 @@ void WeaponBehavior::hit3(OBJ2D* src, OBJ2D* dst)
     // グッドカウントを足す
     Game::instance()->addGoodNum();
 
+    //ノーツ撃墜音
+    GameLib::music::play(16, false);
+
     // 敵を消滅する状態に設定(長押しノーツと連続ノーツ以外)
-    if (dst->behavior() == &enemy0Behavior ||
+    if (dst->behavior() == &enemy4Behavior ||
         dst->behavior() == &enemy1Behavior) {
         // 敵を消滅する状態に設定
         dst->addEnemyState();
 
-        // Goodエフェクトを生成
+        // 武器の判定をなくす
+        src->weaponComponent()->setWeaponNotesHitFlag(true);
+    }
+
+    // Goodエフェクトを生成(連続ノーツ以外)
+    if (dst->behavior() != &enemy3Behavior) {
         setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect0Behavior, src->transform()->position());
     }
-    
+
+    // 長押しノーツ専用の音を流す
+    if (dst->behavior() == &enemy2Behavior) {
+        GameLib::music::play(18, false);
+    }
+
     // ジャッジフラグをなくす
     dst->collider()->setJudgeBoxFlag(false);
 }
@@ -279,6 +326,12 @@ void WeaponBehavior::hit4(OBJ2D* src, OBJ2D* dst)
         
         // ミスカウント 
         Game::instance()->addMissNum();
+
+        //効果音の再生(ダメージ)
+        GameLib::music::play(17, false);
+
+        //長押し音止める
+        GameLib::music::stop(18);
 
         // ノーツの色を変える
         dst->renderer()->setColor(VECTOR4(0.0f, 0.0f, 0.0f, 1));
@@ -325,8 +378,22 @@ void WeaponBehavior::hit5(OBJ2D* src, OBJ2D* dst)
         // パーフェクトカウントを足す
         Game::instance()->addPerfectNum();
 
+        //ノーツ撃墜音
+        GameLib::music::play(9, false);
+
+        //長押し音止める
+        GameLib::music::stop(18);
+
         // マスクの処理解除
         Game::instance()->setNotesMaskFlag(false);
+
+        // Perfectエフェクトを生成(連続ノーツ以外)
+        if (dst->behavior() != &enemy3Behavior) {
+            setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect2Behavior, src->transform()->position());
+        }
+
+        // 武器の判定をなくす
+        src->weaponComponent()->setWeaponNotesHitFlag(true);
 
         // 敵を消滅
         dst->remove();
@@ -367,8 +434,22 @@ void WeaponBehavior::hit6(OBJ2D* src, OBJ2D* dst)
         // グレイトカウントを足す
         Game::instance()->addGreatNum();
 
+        //ノーツ撃墜音
+        GameLib::music::play(15, false);
+
+        //長押し音止める
+        GameLib::music::stop(18);
+
         // マスクの処理解除
         Game::instance()->setNotesMaskFlag(false);
+
+        // Greatエフェクトを生成(連続ノーツ以外)
+        if (dst->behavior() != &enemy3Behavior) {
+            setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect1Behavior, src->transform()->position());
+        }
+
+        // 武器の判定をなくす
+        src->weaponComponent()->setWeaponNotesHitFlag(true);
 
         // 敵を消滅
         dst->remove();
@@ -409,8 +490,22 @@ void WeaponBehavior::hit7(OBJ2D* src, OBJ2D* dst)
         // グッドカウントを進める
         Game::instance()->addGoodNum();
 
+        //ノーツ撃墜音
+        GameLib::music::play(16, false);
+
+        //長押し音止める
+        GameLib::music::stop(18);
+
         // マスクの処理解除
         Game::instance()->setNotesMaskFlag(false);
+
+        // Goodエフェクトを生成(連続ノーツ以外)
+        if (dst->behavior() != &enemy3Behavior) {
+            setEffect(Game::instance()->obj2dManager(), Game::instance()->bg(), &notesEffect0Behavior, src->transform()->position());
+        }
+
+        // 武器の判定をなくす
+        src->weaponComponent()->setWeaponNotesHitFlag(true);
 
         // 敵を消滅
         dst->remove();

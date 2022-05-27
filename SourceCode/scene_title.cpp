@@ -23,12 +23,12 @@ void Title::init() {
     //データ、TEXNUMの変更
     // 読み込むテクスチャ
     LoadTexture loadTextureTitle[static_cast<size_t>(TEXNUM::NUM)] = {
-        { static_cast<int>(TEXNUM::SQUARE),  L"./Data/Images/tutorial_icon.png",    1U },
-        { static_cast<int>(TEXNUM::START), L"./Data/Images/start.png",              1U },
-        { static_cast<int>(TEXNUM::PLAYER), L"./Data/Images/player.png",            1U },
-        { static_cast<int>(TEXNUM::L_FUSUMA), L"./Data/Images/L_fusuma.png",        1U },
-        { static_cast<int>(TEXNUM::R_FUSUMA), L"./Data/Images/R_fusuma.png",        1U },
-        { static_cast<int>(TEXNUM::TITLE_BACK), L"./Data/Images/title.png",         1U }, // タイトル背景
+        { static_cast<int>(TEXNUM::SQUARE),  L"./Data/Images/stage2_icon.png",    1U },
+        { static_cast<int>(TEXNUM::L_FUSUMA), L"./Data/Images/L_fusuma.png",      1U },
+        { static_cast<int>(TEXNUM::R_FUSUMA), L"./Data/Images/R_fusuma.png",      1U },
+        { static_cast<int>(TEXNUM::START), L"./Data/Images/start.png",            1U },
+        { static_cast<int>(TEXNUM::TITLE_BACK), L"./Data/Images/title.png",       7U }, // タイトル背景
+        { static_cast<int>(TEXNUM::T_AORENTER), L"./Data/Images/textAorEnter.png",1U }
     };
 
     // テクスチャのロード
@@ -36,8 +36,8 @@ void Title::init() {
 }
 
 // 終了処理
-void Title::deinit() {
-    
+void Title::deinit()
+{    
     // テクスチャを全て解放
     texture::releaseAll();
 }
@@ -60,9 +60,10 @@ void Title::update() {
         playerColor_ = { 1, 1, 1, 1 };
         playerTexPos_ = { 0, 0 };
         titleColor_ = { 1, 1 ,1 ,1 };
+        titleBackTexPos_ = {};
 
         //シーン切り替え用の画像位置の初期化
-        T_L_Fusuma_Pos_ = { -960 / 2,540 };
+        T_L_Fusuma_Pos_ = { -960 / 2, 540 };
         T_R_Fusuma_Pos_ = { (960 * 2) + (960 / 2) , 540 };
 
         Fusuma_timer_ = 0;
@@ -133,8 +134,13 @@ void Title::update() {
         else if (timer_ % 10 == 0 && titleColor_.w <= 0) {
             titleColor_.w = 1;
         }
-        if (timer_ > 120) 
+        if (timer_ > 50)
+        {
+            //襖開閉音
+            GameLib::music::play(11, false);
             state_++;
+            timer_ = 0;
+        }
         break;
     case 4:
         //////// 襖の処理 ////////
@@ -149,25 +155,19 @@ void Title::update() {
             T_L_Fusuma_Pos_.x = 480;
             T_R_Fusuma_Pos_.x = (960 * 1.5f);
 
-            if (Fusuma_timer_ > 60)
+            if (Fusuma_timer_ > 60) {
                 music::stop(6);
                 changeScene(Select::instance());
-
+                break;
+            }
             Fusuma_timer_++;
         }
         break;
     }
     // プレイヤーのアニメーション
-    // playerAnime();
-
-    debug::setString("timer_:%d", timer_);
-    debug::setString("state_:%d", state_);
-    //debug::setString("playerPos_.x:%f", playerPos_.x);
-    //debug::setString("playerPos_.y:%f", playerPos_.y);
-    //debug::setString("playerScale_.x:%f", playerScale_.x);
-    //debug::setString("playerScale_.y:%f", playerScale_.y);
-    debug::setString("squareScale_.x%f", squareScale_.x);
-    debug::setString("squareScale_.y%f", squareScale_.y);
+    if (state_ == 3 && timer_ > 35 && timer_ % 5 == 1 || state_ == 4 && timer_ % 5 == 1 && titleBackTexPos_.x < 11520) {
+        titleBackTexPos_.x += BG::WINDOW_W;
+    }
 
     timer_++;
 }
@@ -195,7 +195,9 @@ void Title::draw() {
     
     // タイトルの描画
     sprTitleBack_.draw(
-        { GameLib::window::getWidth() / 2, GameLib::window::getHeight() / 2 }
+        { BG::WINDOW_W / 2, BG::WINDOW_H / 2 },
+        VECTOR2(1,1),
+        titleBackTexPos_.x, titleBackTexPos_.y, GameLib::window::getWidth(), GameLib::window::getHeight()
     );
 
     //"開始"の文字の描画
@@ -204,25 +206,10 @@ void Title::draw() {
         VECTOR2(1,1), ToRadian(0), titleColor_
     );
 
-    // プレイヤーの描画
-
-    // Push Enter Key の描画
-    //if (timer_ >> 5 & 0x01) {
-    //    GameLib::font::textOut(4, "Push Enter Key",
-    //        { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 6) * 5 },
-    //        VECTOR2(1.5f, 1.5f),
-    //        { 1.0f, 1.0f, 1.0f, 1.0f },
-    //        GameLib::TEXT_ALIGN::LOWER_MIDDLE
-    //    );
-    //}
-
-    // フェードアウト
-    // if (fadeOutTimer_ > 0.0f) {
-    //     DepthStencil::instance().set(DepthStencil::MODE::APPLY_MASK);
-    //     GameLib::primitive::rect({ 0, 0 }, 
-    //         { GameLib::window::getWidth(), GameLib::window::getHeight() },
-    //         { 0, 0 }, 0, { 0, 0, 0, fadeOutTimer_ });
-    // }
+    // textの描画
+    if (timer_ >> 5 & 0x01 && state_ < 3) {
+        sprAorEnter.draw(1450, 680);
+    }
 
     // ステンシルモード：マスク以外に描画
     DepthStencil::instance().set(DepthStencil::MODE::EXCLUSIVE);

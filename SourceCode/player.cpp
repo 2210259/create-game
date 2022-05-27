@@ -32,23 +32,23 @@ namespace
 
     // 上攻撃
     AnimeData animePlayer_Attack_U[] = {
-        { &sprPlayer_Attack_U0, 4 },
-        { &sprPlayer_Attack_U1, 4 },
-        { &sprPlayer_Attack_U2, 4 },
+        { &sprPlayer_Attack_U0, 2 },
+        { &sprPlayer_Attack_U1, 2 },
+        { &sprPlayer_Attack_U2, 2 },
         { nullptr, -1 },// 終了フラグ
     };
     // 右攻撃
     AnimeData animePlayer_Attack_R[] = {
-        { &sprPlayer_Attack_R0, 4 },
-        { &sprPlayer_Attack_R1, 4 },
-        { &sprPlayer_Attack_R2, 4 },
+        { &sprPlayer_Attack_R0, 2 },
+        { &sprPlayer_Attack_R1, 2 },
+        { &sprPlayer_Attack_R2, 2 },
         { nullptr, -1 },// 終了フラグ
     };
     // 左攻撃
     AnimeData animePlayer_Attack_L[] = {
-        { &sprPlayer_Attack_L0, 4 },
-        { &sprPlayer_Attack_L1, 4 },
-        { &sprPlayer_Attack_L2, 4 },
+        { &sprPlayer_Attack_L0, 2 },
+        { &sprPlayer_Attack_L1, 2 },
+        { &sprPlayer_Attack_L2, 2 },
         { nullptr, -1 },// 終了フラグ
     };
 }
@@ -61,55 +61,6 @@ void BasePlayerBehavior::moveX(OBJ2D* obj)
 {
     Transform* transform = obj->transform();
     Renderer* renderer = obj->renderer();
-
-    // 左右入力の取り出し
-    // using namespace input;
-    // switch (STATE(0) & (PAD_LEFT | PAD_RIGHT | PAD_UP))
-    // {
-    // case PAD_LEFT:  // 左だけが押されている場合
-    //     obj->actorComponent()->setDirection(obj->actorComponent()->LEFT);
-    //     //transform->addSpeedX(-getParam()->ACCEL_X);
-    //     renderer->setAnimeData(getParam()->ANIME_LEFT);
-    // 
-    //     // param_.HIT_BOX = { -290, -470, -240, -420 };
-    // 
-    //     break;
-    // case PAD_RIGHT: // 右だけが押されている場合
-    //     obj->actorComponent()->setDirection(obj->actorComponent()->RIGHT);
-    //     //transform->addSpeedX(getParam()->ACCEL_X);
-    //     // renderer->setAnimeData(getParam()->ANIME_RIGHT);
-    //     // param_.ATTACK_BOX = { 420, -700, 470, -650 };
-    //     // param_.HIT_BOX = { 360, -560, 410, -510 };
-    // 
-    //     break;
-    // default:        // どちらも押されていないか相殺されている場合
-    //     // プレイヤー画像設定左右判定
-    //     if (obj->actorComponent()->direction_ == obj->actorComponent()->RIGHT)
-    //         renderer->setAnimeData(getParam()->ANIME_IDLE);
-    // 
-    //     else if (obj->actorComponent()->direction_ == obj->actorComponent()->LEFT)
-    //         renderer->setAnimeData(getParam()->ANIME_IDLE);
-    // 
-    //     //else if (obj->actorComponent()->DOWN)
-    //     //    renderer->setAnimeData(getParam()->ANIME_DOWN);
-    // 
-    //     //else if (obj->actorComponent()->UP)
-    //     //    renderer->setAnimeData(getParam()->ANIME_UP);
-    // 
-    //     // 減速
-    //     // if (transform->speed().x > 0)
-    //     // {
-    //     //     transform->addSpeedX(-getParam()->ACCEL_X / 2);
-    //     //     if (transform->speed().x < 0) transform->setSpeedX(0.0f);
-    //     // }
-    //     // if (transform->speed().x < 0)
-    //     // {
-    //     //     transform->addSpeedX(getParam()->ACCEL_X / 2);
-    //     //     if (transform->speed().x > 0) transform->setSpeedX(0.0f);
-    //     // }
-    //     // break;
-    // }
-    // ActorBehavior::moveX(obj);
 }
 
 //----------------------------------------//
@@ -131,24 +82,9 @@ IdlePlayerBehavior::IdlePlayerBehavior()
     param_.HIT_BOX = { -size.x / 2 + param_.MARGIN, -size.y + param_.MARGIN,
         size.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
 
-    // param_.ATTACK_BOX   = { -150 / 2, 0, 150 / 2, -150 };
-    // float left,top,right,bottom
-
     // HP
-    param_.HP = 1;
+    param_.HP = 10;
 }
-
-// void IdlePlayerBehavior::moveX(OBJ2D* obj)
-// {
-//     Transform* transform = obj->transform();
-// 
-//     // 速度に加速度を加える
-//     transform->addSpeedX(getParam()->ACCEL_X);
-//     obj->renderer()->setAnimeData(getParam()->ANIME_RIGHT);
-// 
-//     debug::setString("aaaaaaaaaaaaaaaaaaaaa");
-//     ActorBehavior::moveX(obj);
-// }
 
 void IdlePlayerBehavior::modechange(OBJ2D* obj)
 {
@@ -157,6 +93,10 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
     if (obj->actorComponent()->playerHitTimer() > 0) {
         obj->actorComponent()->countPlayerHitTimer();
     }
+
+    Game::instance()->setNotesMaskFlag(false);
+    
+    // ゲーム
     if (Game::instance()->state() > 2) return;
 
     // Enterが押されたら
@@ -203,7 +143,6 @@ void IdlePlayerBehavior::modechange(OBJ2D* obj)
         obj->setBehavior(&attackPlayerBehavior);
     }
     debug::setString("IdleMode");
-    // debug::setString("HP:%d", Game::instance()->player()->actorComponent()->hp());
 }
 
 void IdlePlayerBehavior::playerAnimetion(OBJ2D* obj) 
@@ -228,17 +167,6 @@ void IdlePlayerBehavior::playerAnimetion(OBJ2D* obj)
         obj->actorComponent()->setDirection(obj->actorComponent()->UP);
         break;
     }
-    // if(obj->actorComponent()->direction() == obj->actorComponent()->UP)
-    // if (obj->actorComponent()->direction() == obj->actorComponent()->DOWN)
-    //     renderer->setAnimeData(getParam()->ANIME_DOWN);
-    // 
-    // if (obj->actorComponent()->direction() == obj->actorComponent()->LEFT)
-    //     renderer->setAnimeData(getParam()->ANIME_LEFT);
-    // 
-    // if (obj->actorComponent()->direction() == obj->actorComponent()->RIGHT)
-    //     renderer->setAnimeData(getParam()->ANIME_RIGHT);
-
-    // debug::setString("direction:%d", obj->actorComponent()->direction());
 }
 
 //----------------------------------------//
@@ -263,55 +191,8 @@ AttackPlayerBehavior::AttackPlayerBehavior()
         size.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
 
     // HP
-    param_.HP = 1;
+    param_.HP = 10;
 }
-
-// void AttackPlayerBehavior::moveX(OBJ2D* obj)
-// {
-//     Renderer* renderer = obj->renderer();
-//     Transform* transform = obj->transform();
-// 
-//     // 攻撃アニメーション
-//     if (renderer->animeTimer() < 30)
-//     {
-//         //左
-//         if(obj->actorComponent()->direction_ == obj->actorComponent()->LEFT)
-//         {
-//             // アニメセット
-//             renderer->setAnimeData(getParam()->ANIME_ATTACK_L);
-//             param_.HIT_BOX   = { -150 / 2, 0, 150 / 2, -150 };
-//             // param_.ATTACK_BOX = { -150, -560, 0, -510 };
-//             debug::setString("LEFT");
-//         }
-//         //右
-//         else if(obj->actorComponent()->direction_ == obj->actorComponent()->RIGHT)
-//         {
-//             // アニメセット
-//             renderer->setAnimeData(getParam()->ANIME_ATTACK_R);
-//             param_.HIT_BOX    = { -150 / 2, 0, 150 / 2, -150 };
-//             // param_.ATTACK_BOX = { 360, -560, 410, -510 };
-//             debug::setString("RIGHT");
-//         }
-//         //上
-//         else if(obj->actorComponent()->direction_ == obj->actorComponent()->UP)
-//         {
-//             //アニメセット
-//             renderer->setAnimeData(getParam()->ANIME_ATTACK_U);
-//             param_.HIT_BOX      = { -150 / 2, 0, 150, -150 };
-//             // param_.ATTACK_BOX   = { 360,-560,410,-510 };
-//             debug::setString("UP");
-//         }
-// 
-//         //アニメーション遷移タイマー加算
-//         renderer->countAnimeTime();
-//     }
-//     if (renderer->animeTimer() > 30) {
-//         Game::instance()->setPlayerModeFlag(true);
-//     }
-// 
-//     debug::setString("AttackMode");
-//     debug::setString("SetPlayerModeFlag:%d",Game::instance()->playerModeFlag());
-// }
 
 void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
 {
@@ -324,45 +205,35 @@ void AttackPlayerBehavior::playerAnimetion(OBJ2D* obj)
     }
 
     // 攻撃アニメーション
-    if (renderer->animeTimer() < 12)
+    if (renderer->animeTimer() < 6)
     {
         //左
         if (obj->actorComponent()->direction_ == obj->actorComponent()->LEFT)
         {
             // アニメセット
             renderer->setAnimeData(getParam()->ANIME_ATTACK_L);
-            // param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
-            //     param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
-            // debug::setString("LEFT");
         }
         //右
         else if (obj->actorComponent()->direction_ == obj->actorComponent()->RIGHT)
         {
             // アニメセット
             renderer->setAnimeData(getParam()->ANIME_ATTACK_R);
-
-            // param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
-            //     param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
-            // debug::setString("RIGHT");
         }
         //上
         else if (obj->actorComponent()->direction_ == obj->actorComponent()->UP)
         {
             //アニメセット
             renderer->setAnimeData(getParam()->ANIME_ATTACK_U);
-            // param_.HIT_BOX = { -param_.SIZE.x / 2 + param_.MARGIN, -param_.SIZE.y + param_.MARGIN,
-            //     param_.SIZE.x / 2 - param_.MARGIN, 0 - param_.MARGIN }; // 足元基準
-            // debug::setString("UP");
         }
 
         //アニメーション遷移タイマー加算
         renderer->countAnimeTime();
     }
-    else if (renderer->animeTimer() >= 12 && STATE(0) & PAD_START && Game::instance()->state() < 3)
+    else if (renderer->animeTimer() >= 6 && STATE(0) & PAD_START && Game::instance()->state() < 3)
     {
         renderer->setAnimeTimer(0);
     }
-    else if (renderer->animeTimer() >= 12)
+    else if (renderer->animeTimer() >= 6)
     {
         Game::instance()->setPlayerModeFlag(false);
     }
@@ -386,16 +257,6 @@ void AttackPlayerBehavior::modechange(OBJ2D* obj)
     debug::setString("AttackMode");
     // debug::setString("HP:%d",Game::instance()->player()->actorComponent()->hp());
 }
-
-// 多分使わない
-// プレイヤー(→)敵に当たった時の処理
-// void AttackPlayerBehavior::hit(OBJ2D* src, OBJ2D* dst) {
-//     if (Game::instance()->esaFlag() == false && dst->enemyState() == 3)
-//     {
-//         dst->setEnemyState(4);
-//         Game::instance()->setHit(true);
-//     }
-// }
 
 void ErasePlayer::erase(OBJ2D* obj)
 {

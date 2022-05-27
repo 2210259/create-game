@@ -24,21 +24,23 @@ struct ENEMY_SET1
     float       timer;      // oŒ»ŽžŠÔ(¦oŒ»ŽžŠÔ‚ª0•b‚¾‚ÆƒoƒO‚é‚©‚à)(—á‚¦‚Î1.5•b‚ÉÝ’è‚µ‚½‚¢‚Æ‚«‚Í1.5f‚Æf‚ð”Žš‚ÌŒã‚ë‚É‚Â‚¯‚é)
 } enemySet[] = {
 
-    //////////////////////////
+    ////////////////////////////
     /////@ƒ`ƒ…[ƒgƒŠƒAƒ‹@/////
-    //////////////////////////
-    //Žè— Œ•‚Ìà–¾
-   {  0,  0,  2, { 0,   0 },  0.5f,  },  
-   {  0,  0,  0, { 0,   0 },  3.3f,  },
-   {  0,  0,  2, { 0,   0 },  5.6f,  },
-   {  0,  0,  2, { 0,   0 },  7.8f,  },
-   {  0,  0,  1, { 0,   0 },  8.2f,  },
-   {  0,  0,  1, { 0,   0 },  10.8f, },
-   {  0,  0,  1, { 0,   0 },  13.1f, },
-   {  0,  0,  2, { 0,   0 },  13.4f, },
-   {  0,  0,  2, { 0,   0 },  16.0f, },
-   {  0,  0,  2, { 0,   0 },  18.3f, },
-   {  0,  0,  0, { 0,   0 },  18.8f, },
+    ////////////////////////////
+    
+   // TODO:ENEMY‚ÌƒRƒƒ“ƒgƒAƒEƒg
+   // Žè— Œ•‚Ìà–¾
+   {  0,  4,  2, { 0,   0 },  0.5f,  },  
+   {  0,  4,  0, { 0,   0 },  3.3f,  },
+   {  0,  4,  2, { 0,   0 },  5.6f,  },
+   {  0,  4,  2, { 0,   0 },  7.8f,  },
+   {  0,  4,  1, { 0,   0 },  8.2f,  },
+   {  0,  4,  1, { 0,   0 },  10.8f, },
+   {  0,  4,  1, { 0,   0 },  13.1f, },
+   {  0,  4,  2, { 0,   0 },  13.4f, },
+   {  0,  4,  2, { 0,   0 },  16.0f, },
+   {  0,  4,  2, { 0,   0 },  18.3f, },
+   {  0,  4,  0, { 0,   0 },  18.8f, },
 
    //ƒNƒiƒC‚Ìà–¾
    {  0,  1,  0, { 0,   0 },  22.7f,  },
@@ -51,7 +53,7 @@ struct ENEMY_SET1
    {  0,  1,  0, { 0,   0 },  35.4f,  },
    {  0,  1,  1, { 0,   0 },  35.6f,  },
    {  0,  1,  1, { 0,   0 },  38.3f,  },
-   {  0,  1,  1, { 0,   0 },  40.8f,  },
+   {  0,  1,  1, { 0,   0 },  40.8f,  },// HP35
    
    //˜A‘Åƒm[ƒc‚Ìà–¾
    {  0,  3,  1, { 0.0f,   0 },  42.0f,  },
@@ -70,24 +72,174 @@ struct ENEMY_SET1
    {  0,  3,  2, { 2.0f,0.0f },  73.6f,  },
    {  0,  3,  0, { 0.0f,2.0f },  76.2f,  },
    {  0,  3,  1, { 2.5f,0.0f },  78.6f,  },
-   {  0,  0,  2, { 0.0f,0.0f },  82.0f,  },
-   {  0,  0,  1, { 0.0f,0.0f },  82.4f,  },
-   {  0,  0,  0, { 0.0f,0.0f },  83.5f,  },
-   {  0,  1,  2, { 0.0f,0.0f },  85.3f,  },
-   {  0,  0,  1, { 0.0f,0.0f },  84.8f,  },
-   {  0,  0,  0, { 0.0f,0.0f },  85.3f,  },
-   {  0,  0,  2, { 0.0f,0.0f },  86.0f,  },
-   {  0,  1,  2, { 0.0f,0.0f },  87.9f,  },
+   {  0,  4,  2, { 0.0f,0.0f },  82.0f,  },
+   {  0,  4,  1, { 0.0f,0.0f },  82.4f,  },
+   {  0,  4,  0, { 0.0f,0.0f },  83.5f,  },
+   {  0,  1,  2, { 0.0f,0.0f },  85.1f,  },
+   {  0,  4,  1, { 0.0f,0.0f },  84.6f,  },
+   {  0,  4,  0, { 0.0f,0.0f },  85.2f,  },
+   {  0,  4,  2, { 0.0f,0.0f },  85.9f,  },
+   {  0,  1,  2, { 0.0f,0.0f },  87.8f,  },
+   {  0,  4,  1, { 0.0f,0.0f },  87.2f,  },
+   {  0,  4,  0, { 0.0f,0.0f },  88.0f,  },
+   {  0,  3,  0, { 0.0f,0.5f },  89.3f,  },
+   {  0,  1,  1, { 0.0f,0.0f },  90.0f,  },
+   {  0,  1,  1, { 0.0f,0.0f },  90.4f,  },
 
-   {  0,  0,  1, { 0.0f,0.0f },  86.4f,  },
-   //{  0,  0,  0, { 0.0f,0.0f },  85.3f,  },
-   //{  0,  3,  0, { 0.0f,0.0f },  86.0f,  },
+   ////////////////////////////
+   /////@   ƒXƒe[ƒW1    /////
+   ////////////////////////////
+   {  1,  1,  0, {    0,     0 },  1.3f, },
+   {  1,  1,  0, {    0,     0 },  1.7f, },
+   {  1,  3,  0, {    0,  0.6f },  1.9f, },
+   {  1,  3,  2, {    0,     0 },  2.8f, },
+   {  1,  1,  1, {    0,     0 },  4.3f, },
+   {  1,  3,  1, { 0.6f,     0 },  4.5f, },
+   {  1,  3,  0, {    0, 0.75f },  5.6f, },                
+   {  1,  1,  0, {    0,     0 },     7, },
+   {  1,  1,  0, {    0,     0 }, 7.35f, },
+   {  1,  3,  0, {    0,  0.6f },  7.6f, },
+   {  1,  3,  0, {    0, 0.78f },  8.5f, },
+   {  1,  1,  1, {    0,     0 },  9.7f, },
+   {  1,  1,  1, {    0,     0 },    10, },
+   {  1,  3,  1, { 0.7f,     0 }, 10.2f, },
+   {  1,  3,  0, {    0,  0.9f }, 11.5f, },
+   {  1,  2,  1, {    0,     0 },    12, },
+   {  1,  3,  1, { 0.8f,     0 }, 14.2f, },
+   {  1,  2,  1, {    0,     0 }, 14.9f, },
+   {  1,  3,  1, { 0.8f,     0 },    17, },
+   {  1,  2,  1, {    0,     0 }, 17.7f, },
+   {  1,  3,  1, {    0,     0 },    20, },
+   {  1,  3,  1, {    0,     0 },    21, },
+   {  1,  3,  1, {    0,     0 },    22, },
+   {  1,  1,  2, {    0,     0 }, 23.7f, },
+   {  1,  3,  1, { 0.9f,     0 }, 25.3f, },
+   {  1,  3,  1, { 0.9f,     0 }, 24.3f, },
+   {  1,  3,  0, {    0,     0 }, 26.5f, },
+   {  1,  3,  0, {    0,     0 }, 27.5f, },
+   {  1,  3,  0, {    0,     0 }, 28.5f, },
+   {  1,  3,  0, {    0,     0 }, 29.5f, },
+   {  1,  3,  0, {    0,     0 }, 30.5f, },
+   {  1,  3,  0, {    0,     0 }, 31.5f, },
+   {  1,  3,  0, {    0,     0 }, 32.5f, },
+   {  1,  3,  1, {    0,     0 },    34, },
+   {  1,  1,  1, {    0,     0 }, 35.2f, },
+   {  1,  1,  1, {    0,     0 }, 35.5f, },
+   {  1,  3,  1, { 0.6f,     0 }, 35.7f, },
+   {  1,  3,  2, {    0,     0 }, 36.6f, },
+   {  1,  1,  2, {    0,     0 }, 37.9f, },
+   {  1,  1,  2, {    0,     0 }, 38.2f, },
+   {  1,  3,  2, { 0.6f,     0 }, 38.5f, },
+   {  1,  3,  0, {    0,     0 }, 39.4f, },
+   {  1,  1,  1, {    0,     0 }, 40.7f, },
+   {  1,  1,  1, {    0,     0 }, 41.1f, },
+   {  1,  3,  1, { 0.6f,     0 }, 41.4f, },
+   {  1,  3,  0, {    0,     0 }, 42.3f, },
+   {  1,  1,  1, {    0,     0 }, 43.6f, },
+   {  1,  1,  1, {    0,     0 },    44, },
+   {  1,  3,  1, { 0.6f,     0 }, 44.2f, },
+   {  1,  3,  0, {    0,     0 }, 45.1f, },
+   {  1,  1,  1, {    0,     0 }, 46.4f, },
+   {  1,  1,  2, {    0,     0 }, 46.8f, },
+   {  1,  3,  0, {    0,  0.6f },    47, },
+   {  1,  3,  0, {    0,     0 }, 48.1f, },
+   {  1,  1,  1, {    0,     0 }, 49.3f, },
+   {  1,  1,  1, {    0,     0 }, 49.7f, },
+   {  1,  3,  1, { 0.6f,     0 }, 49.9f, },
+   {  1,  3,  0, {    0,     0 },    51, },
+   {  1,  1,  2, {    0,     0 }, 52.1f, },
+   {  1,  1,  2, {    0,     0 }, 52.5f, },
+   {  1,  3,  2, { 0.6f,     0 }, 52.7f, },
+   {  1,  3,  0, {    0,     0 }, 53.8f, },
+   {  1,  1,  1, {    0,     0 }, 54.9f, },
+   {  1,  1,  1, {    0,     0 }, 55.3f, },
+   {  1,  3,  1, { 0.6f,     0 }, 55.5f, },
+   {  1,  3,  0, {    0,     0 }, 56.9f, },
+   {  1,  1,  1, {    0,     0 }, 57.9f, },
+   {  1,  1,  2, {    0,     0 }, 58.2f, },
+   {  1,  1,  1, {    0,     0 }, 58.7f, },
+   {  1,  1,  1, {    0,     0 },    59, },
+   {  1,  1,  2, {    0,     0 }, 59.5f, },
+   {  1,  1,  2, {    0,     0 }, 59.8f, },
+   {  1,  1,  2, {    0,     0 }, 60.3f, },
+   {  1,  1,  1, {    0,     0 }, 60.6f, },
+   {  1,  1,  1, {    0,     0 }, 61.1f, },
+   {  1,  1,  2, {    0,     0 }, 61.4f, },
+   {  1,  1,  0, {    0,     0 }, 61.9f, },
+   {  1,  1,  0, {    0,     0 }, 62.2f, },
+   {  1,  1,  1, {    0,     0 }, 62.7f, },
+   {  1,  1,  2, {    0,     0 },    63, },
+   {  1,  1,  1, {    0,     0 }, 63.5f, },
+   {  1,  1,  1, {    0,     0 }, 63.8f, },
+   {  1,  1,  2, {    0,     0 }, 64.3f, },
+   {  1,  1,  2, {    0,     0 }, 64.6f, },
+   {  1,  1,  0, {    0,     0 }, 65.1f, },
+   {  1,  1,  0, {    0,     0 }, 65.4f, },
+   {  1,  1,  1, {    0,     0 }, 65.9f, },
+   {  1,  1,  0, {    0,     0 }, 66.2f, },
+   {  1,  1,  0, {    0,     0 }, 66.7f, },
+   {  1,  1,  1, {    0,     0 },    67, },
+   {  1,  1,  2, {    0,     0 }, 67.5f, },
+   {  1,  1,  1, {    0,     0 }, 67.8f, },
+   {  1,  3,  0, {    0,  0.7f }, 68.6f, },
+   {  1,  1,  2, {    0,     0 }, 69.4f, },
+   {  1,  1,  1, {    0,     0 }, 69.5f, },
+   {  1,  3,  0, {    0,  0.7f },    70, },
+   {  1,  1,  2, {    0,     0 },70.65f, },
+   {  1,  1,  1, {    0,     0 },70.75f, },
+   {  1,  3,  0, {    0,  0.7f },71.35f, },
+   {  1,  1,  2, {    0,     0 },    72, },
+   {  1,  1,  1, {    0,     0 }, 72.1f, },
+   {  1,  3,  0, {    0,  0.7f }, 72.7f, },
+   {  1,  1,  2, {    0,     0 },73.35f, },
+   {  1,  1,  1, {    0,     0 },73.55f, },
+   {  1,  3,  0, {    0,  0.7f }, 74.2f, },
+   {  1,  1,  2, {    0,     0 },74.85f, },
+   {  1,  1,  1, {    0,     0 },75.05f, },
+   {  1,  3,  0, {    0,  0.7f },75.55f, },
+   {  1,  1,  2, {    0,     0 }, 76.2f, },
+   {  1,  1,  1, {    0,     0 }, 76.4f, },
+   {  1,  3,  0, {    0,     1 }, 76.9f, },
+   {  1,  3,  0, {    0,  0.7f },78.22f, },
+   {  1,  1,  2, {    0,     0 },78.87f, },
+   {  1,  1,  1, {    0,     0 },79.07f, },
+   {  1,  3,  0, {    0,  0.7f },79.57f, },
+   {  1,  1,  2, {    0,     0 },80.22f, },
+   {  1,  1,  1, {    0,     0 },80.42f, },
+   {  1,  3,  0, {    0,  0.7f },80.97f, },
+   {  1,  1,  2, {    0,     0 },81.57f, },
+   {  1,  1,  1, {    0,     0 },81.77f, },
+   {  1,  3,  0, {    0,     1 },82.19f, },
+   {  1,  3,  0, {    0,  0.7f },83.54f, },
+   {  1,  1,  2, {    0,     0 },84.19f, },
+   {  1,  1,  1, {    0,     0 },84.39f, },
+   {  1,  3,  0, {    0,  0.7f },84.89f, },
+   {  1,  3,  0, {    0,  0.7f },85.99f, },
+   {  1,  1,  2, {    0,     0 },86.34f, },
+   {  1,  1,  1, {    0,     0 },86.54f, },
+   {  1,  3,  0, {    0,  0.7f },87.14f, },
+   {  1,  1,  2, {    0,     0 },87.79f, },
+   {  1,  1,  1, {    0,     0 },87.99f, },
+   {  1,  2,  0, {    0,  1.5f }, 88.5f, },
+   {  1,  1,  0, {    0,     0 }, 91.6f, },
+   {  1,  1,  0, {    0,     0 },    92, },
+   {  1,  3,  0, {    0,  0.6f }, 92.2f, },
+   {  1,  3,  1, {    0,     0 },    93, },
+   {  1,  1,  1, {    0,     0 }, 94.2f, },
+   {  1,  1,  1, {    0,     0 }, 94.6f, },
+   {  1,  3,  1, { 0.6f,     0 }, 94.8f, },
+   {  1,  3,  0, {    0, 0.75f }, 95.9f, },
+   {  1,  1,  0, {    0,     0 }, 97.3f, },
+   {  1,  1,  0, {    0,     0 },97.65f, },
+   {  1,  3,  0, {    0,  0.6f }, 98.1f, },
+   {  1,  3,  0, {    0, 0.78f }, 98.8f, },
+   {  1,  1,  1, {    0,     0 },   100, },
+   {  1,  1,  1, {    0,     0 },100.3f, },
+   {  1,  3,  1, { 0.7f,     0 },100.5f, },
+   {  1,  3,  0, {    0,  0.9f },101.8f, },
+   {  1,  1,  0, {    0,     0 },102.9f, },
 
-
-   //{  0,  1,  1, { 0.0f,0.0f },  87.9f,  },
-   //{  0,  1,  1, { 0.0f,0.0f },  87.9f,  },
-
-    { -1, -1, -1, { -1, -1 }, -1 }, // ¦‚±‚êÁ‚³‚È‚¢‚æ‚¤‚É
+   { -1, -1, -1, { -1, -1 }, -1 }, // ¦‚±‚êÁ‚³‚È‚¢‚æ‚¤‚É
 };
 
 void setEnemy(OBJ2DManager* obj2dManager, BG* bg)
@@ -98,6 +250,7 @@ void setEnemy(OBJ2DManager* obj2dManager, BG* bg)
         &enemy1Behavior,    // ƒNƒiƒC
         &enemy2Behavior,    // ’·‰Ÿ‚µƒm[ƒc
         &enemy3Behavior,    // ˜A‘Åƒm[ƒc
+        &enemy4Behavior,    // Žè— Œ•
     };
 
     for (int i = 0; enemySet[i].enemyType >= 0; ++i)
@@ -148,9 +301,9 @@ namespace
 
     // Ž€–SŽž
     AnimeData animeEnemy0_Dead[] = {
-        { &sprEnemy0_Dead0, 5 },
-        { &sprEnemy0_Dead1, 5 },
-        { &sprEnemy0_Dead2, 5 },
+        { &sprEnemy0_Dead0, 6 },
+        { &sprEnemy0_Dead1, 6 },
+        { &sprEnemy0_Dead2, 6 },
         { nullptr, -1 },// I—¹ƒtƒ‰ƒO
     };
 
@@ -164,9 +317,9 @@ namespace
 
     // Ž€–SŽž
     AnimeData animeEnemy1_Dead[] = {
-        { &sprEnemy1_Dead0, 5 },
-        { &sprEnemy1_Dead1, 5 },
-        { &sprEnemy1_Dead2, 5 },
+        { &sprEnemy1_Dead0, 6 },
+        { &sprEnemy1_Dead1, 6 },
+        { &sprEnemy1_Dead2, 6 },
         { nullptr, -1 },// I—¹ƒtƒ‰ƒO
     };
 
@@ -188,8 +341,8 @@ namespace
 
     // Ž€–SŽž
     AnimeData animeEnemy2_Dead[] = {
-        { &sprEnemy2_Dead0, 5 },
-        { &sprEnemy2_Dead1, 5 },
+        { &sprEnemy2_Dead0, 6 },
+        { &sprEnemy2_Dead1, 6 },
         { nullptr, -1 },// I—¹ƒtƒ‰ƒO
     };
 
@@ -211,8 +364,8 @@ namespace
 
     // Ž€–SŽž
     AnimeData animeEnemy3_Dead[] = {
-        { &sprEnemy3_Dead0, 5 },
-        { &sprEnemy3_Dead1, 5 },
+        { &sprEnemy3_Dead0, 6 },
+        { &sprEnemy3_Dead1, 6 },
         { nullptr, -1 },// I—¹ƒtƒ‰ƒO
     };
 }
@@ -295,8 +448,8 @@ void BaseEnemyBehavior::moveEnemy(OBJ2D* obj)
     // debug::setString("size.x:%f", collider->size().x);
     // debug::setString("size.y:%f", collider->size().y);
 
-    debug::setString("speed.x:%f", transform->speed().x);
-    debug::setString("speed.y:%f", transform->speed().y);
+    // debug::setString("speed.x:%f", transform->speed().x);
+    // debug::setString("speed.y:%f", transform->speed().y);
 
     transform->addPosition(transform->speed());
 }
@@ -314,6 +467,9 @@ void BaseEnemyBehavior::hit(OBJ2D* src, OBJ2D* dst)
     // ƒ}ƒXƒN‚Ìˆ—‰ðœ
     Game::instance()->setNotesMaskFlag(false);
     
+    //’·‰Ÿ‚µ‰¹Ž~‚ß‚é
+    GameLib::music::stop(18);
+
     // ’Êíƒm[ƒc‚ªƒvƒŒƒCƒ„[‚É“–‚½‚Á‚½Žž‚Ì‚Ý
     if (src->behavior() != &enemy2Behavior && src->behavior() != &enemy3Behavior) {
 
@@ -334,6 +490,9 @@ void BaseEnemyBehavior::hit(OBJ2D* src, OBJ2D* dst)
 
         // ƒ~ƒXƒJƒEƒ“ƒg 
         Game::instance()->addMissNum();
+    
+        // ƒ_ƒ[ƒW‰¹
+        GameLib::music::play(17);
     }
     // “G‚ðÁ–Å
     src->remove();
@@ -363,8 +522,7 @@ Enemy0Behavior::Enemy0Behavior()
     param_.SPEED_X_MAX = 3.0f;
     param_.HP = 1;    // ƒqƒbƒgƒ|ƒCƒ“ƒg
     param_.SCORE = 300;
-    param_.HIT_TIMER = 90;
-    param_.DEAD_TIMER = 15;
+    param_.DEAD_TIMER = 18;
 }
 
 void Enemy0Behavior::enemyParam(OBJ2D* obj)
@@ -383,7 +541,7 @@ void Enemy0Behavior::enemyParam(OBJ2D* obj)
         break;
     }
     // ‰ñ“]ˆ—
-    obj->transform()->rotate(ToRadian(10));
+    // obj->transform()->rotate(ToRadian(10));
 }
 
 // ƒNƒiƒC
@@ -408,7 +566,7 @@ Enemy1Behavior::Enemy1Behavior()
     param_.SPEED_X_MAX  = 5.0f;
     param_.HP           = 1;    // ƒqƒbƒgƒ|ƒCƒ“ƒg
     param_.SCORE        = 500;
-    param_.DEAD_TIMER   = 15;
+    param_.DEAD_TIMER   = 18;
 }
 
 void Enemy1Behavior::enemyParam(OBJ2D* obj)
@@ -457,7 +615,7 @@ Enemy2Behavior::Enemy2Behavior()
     param_.HP           = 1;    // ƒqƒbƒgƒ|ƒCƒ“ƒg
     param_.SCORE        = 1000; // ƒm[ƒc‚ÌƒXƒRƒA“_”
     param_.HIT_TIMER    = 50;
-    param_.DEAD_TIMER   = 15;
+    param_.DEAD_TIMER   = 12;
 }
 
 // ’·‰Ÿ‚µƒm[ƒc
@@ -483,7 +641,7 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
         };
         collider->setSize(size);
         transform->setSpeedY(param_.SPEED);
-        param_.HIT_BOX = { -size.x / 2, size.y / 2 - (size.x / 6), size.x / 2, size.y / 2 + (size.x / 6) }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
+        param_.HIT_BOX = { -size.x / 2, size.y / 2 - (size.x / 6), size.x / 2, size.y / 2 + (size.x / 6) };  // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
         param_.HIT_BOX2 = { -size.x / 2, size.y / 2 - (size.x / 3), size.x / 2, size.y / 2 + (size.x / 3) }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
         param_.HIT_BOX3 = { -size.x / 2, size.y / 2 - (size.x / 2), size.x / 2, size.y / 2 + (size.x / 2) }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
 
@@ -493,9 +651,9 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
         param_.HIT_BOX6 = { -size.x / 2, -size.y / 2 - (size.x / 3), size.x / 2, -size.y / 2 + (size.x / 3) }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
         param_.HIT_BOX7 = { -size.x / 2, -size.y / 2 - (size.x / 2), size.x / 2, -size.y / 2 + (size.x / 2) }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
 
-        param_.ATTACK_BOX = { -size.x / 2, -size.y - (size.x / 6), size.x / 2, -size.y + (size.x / 6) }; // “G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚·‚é”ÍˆÍ
+        param_.ATTACK_BOX = { -size.x / 2, -size.y / 2 + (size.x / 2), size.x / 2, -size.y / 2 + (size.x) }; // “G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚·‚é”ÍˆÍ
 
-        const float playerHeadPos = Game::instance()->player()->transform()->position().y - Game::instance()->player()->collider()->size().y;
+        const float playerHeadPos = Game::instance()->player()->transform()->position().y - Game::instance()->player()->collider()->size().y - 50.0f;
         const float notesPosBottom = transform->position().y + (size.y / 2);
         
         // ˆê’è‚ÌˆÊ’u‚ð’´‚¦‚½‚ç•`‰æˆÊ’u‚ð•ÏX
@@ -505,6 +663,9 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
         else {
             collider->setMergin({ 0, 0 });
         }
+        debug::setString("scale.y:%f", transform->scale().y);
+        debug::setString("size.y:%f", collider->size().y);
+        debug::setString("merzin.y:%f", collider->mergin().y);
         break;
     }
     case 1: { // (ˆÊ’u‚ª¶‚ÌŽž)
@@ -530,9 +691,9 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
         param_.HIT_BOX6 = { -size.x / 2 - (size.y / 3), -size.y / 2, -size.x / 2 + (size.y / 3), size.y / 2 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
         param_.HIT_BOX7 = { -size.x / 2 - (size.y / 2), -size.y / 2, -size.x / 2 + (size.y / 2), size.y / 2 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
 
-        param_.ATTACK_BOX = { -size.x - (size.y / 6), -size.y / 2, -size.x + (size.y / 6), size.y / 2 }; // “G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚·‚é”ÍˆÍ
+        param_.ATTACK_BOX = { -size.x / 2 + (size.y / 2), -size.y / 2, -size.x / 2 + (size.y), size.y / 2 }; // “G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚·‚é”ÍˆÍ
 
-        const float playerMiddlePos = Game::instance()->player()->transform()->position().x;
+        const float playerMiddlePos = Game::instance()->player()->transform()->position().x - 75.0f;
         const float notesPosRight = transform->position().x + (size.x / 2);
 
         // ˆê’è‚ÌˆÊ’u‚ð’´‚¦‚½‚ç•`‰æˆÊ’u‚ð•ÏX
@@ -568,9 +729,9 @@ void Enemy2Behavior::enemyParam(OBJ2D* obj)
         param_.HIT_BOX6 = { size.x / 2 - (size.y / 3), -size.y / 2, size.x / 2 + (size.y / 3), size.y / 2 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
         param_.HIT_BOX7 = { size.x / 2 - (size.y / 2), -size.y / 2, size.x / 2 + (size.y / 2), size.y / 2 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
         
-        param_.ATTACK_BOX = { size.x - (size.y / 6), -size.y / 2, size.x + (size.y / 6), size.y / 2 }; // “G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚·‚é”ÍˆÍ
+        param_.ATTACK_BOX = { size.x / 2 - (size.y / 2), -size.y / 2, size.x / 2 - (size.y), size.y / 2 }; // “G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚·‚é”ÍˆÍ
 
-        const float playerMiddlePos = Game::instance()->player()->transform()->position().x;
+        const float playerMiddlePos = Game::instance()->player()->transform()->position().x + 75.0f;
         const float notesPosLeft = transform->position().x - (size.x / 2);
 
         // ˆê’è‚ÌˆÊ’u‚ð’´‚¦‚½‚ç•`‰æˆÊ’u‚ð•ÏX
@@ -608,7 +769,7 @@ Enemy3Behavior::Enemy3Behavior()
     param_.HP           = 1;    // ƒqƒbƒgƒ|ƒCƒ“ƒg
     param_.SCORE        = 50;
     param_.HIT_TIMER    = 50;
-    param_.DEAD_TIMER   = 15;
+    param_.DEAD_TIMER   = 12;
     param_.FLAG_DELETE_COMBO2 = true;
 }
 
@@ -637,7 +798,7 @@ void Enemy3Behavior::enemyParam(OBJ2D* obj)
         obj->transform()->setSpeedY(param_.SPEED);
         param_.HIT_BOX = { -size.x / 2, -size.y / 2, size.x / 2, size.y / 2 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
         param_.ATTACK_BOX = { -size.x / 2, -size.y - (size.x / 6), size.x / 2, -size.y + (size.x / 6) }; // “G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚·‚é”ÍˆÍ
-        const float playerHeadPos = Game::instance()->player()->transform()->position().y - Game::instance()->player()->collider()->size().y;
+        const float playerHeadPos = Game::instance()->player()->transform()->position().y - Game::instance()->player()->collider()->size().y - 50.0f;
         const float notesPosBottom = transform->position().y + (size.y / 2);
 
         // ˆê’è‚ÌˆÊ’u‚ð’´‚¦‚½‚ç•`‰æˆÊ’u‚ð•ÏX
@@ -665,7 +826,7 @@ void Enemy3Behavior::enemyParam(OBJ2D* obj)
         param_.HIT_BOX = { -size.x / 2, -size.y / 2, size.x / 2, size.y / 2 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
         param_.ATTACK_BOX = { -size.x - (size.y / 6), -size.y / 2, -size.x + (size.y / 6), size.y / 2 }; // “G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚·‚é”ÍˆÍ
 
-        const float playerMiddlePos = Game::instance()->player()->transform()->position().x;
+        const float playerMiddlePos = Game::instance()->player()->transform()->position().x - 75.0f;
         const float notesPosRight = transform->position().x + (size.x / 2);
 
         // ˆê’è‚ÌˆÊ’u‚ð’´‚¦‚½‚ç•`‰æˆÊ’u‚ð•ÏX
@@ -694,7 +855,7 @@ void Enemy3Behavior::enemyParam(OBJ2D* obj)
         param_.HIT_BOX = { -size.x / 2, -size.y / 2, size.x / 2, size.y / 2 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
         param_.ATTACK_BOX = { size.x - (size.y / 6), -size.y / 2, size.x + (size.y / 6), size.y / 2 }; // “G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚·‚é”ÍˆÍ
 
-        const float playerMiddlePos = Game::instance()->player()->transform()->position().x;
+        const float playerMiddlePos = Game::instance()->player()->transform()->position().x + 75.0f;
         const float notesPosLeft = transform->position().x - (size.x / 2);
 
         // ˆê’è‚ÌˆÊ’u‚ð’´‚¦‚½‚ç•`‰æˆÊ’u‚ð•ÏX
@@ -708,6 +869,56 @@ void Enemy3Behavior::enemyParam(OBJ2D* obj)
     }
     default:
 
+        break;
+    }
+}
+
+// Žè— Œ•
+Enemy4Behavior::Enemy4Behavior()
+{
+    param_.ANIME_IDLE = animeEnemy0_Idle;
+    param_.ANIME_DEAD = animeEnemy0_Dead;
+
+    param_.SIZE = VECTOR2(150, 150);
+    param_.SCALE = VECTOR2(1.5f, 1.5f);
+    const VECTOR2 size = {
+        param_.SIZE.x * param_.SCALE.x,
+        param_.SIZE.y * param_.SCALE.y
+    };
+    param_.ATTACK_BOX = { -size.x / 2, -size.y / 2, size.x / 2, size.y / 2 }; // “G‚ªƒvƒŒƒCƒ„[‚ÉUŒ‚‚·‚é”ÍˆÍ
+    param_.HIT_BOX = { -size.x / 6, -size.y / 6, size.x / 6, size.y / 6 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ(Perfect)
+    param_.HIT_BOX2 = { -size.x / 3, -size.y / 3, size.x / 3, size.y / 3 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ(Great)
+    param_.HIT_BOX3 = { -size.x / 2, -size.y / 2, size.x / 2, size.y / 2 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ(Good)
+
+    // param_.HIT_BOX2 = { -300 / 4, -300 / 4, 300 / 4, 300 / 4 }; // “G‚ª•Ší‚ÉUŒ‚‚³‚ê‚é”ÍˆÍ
+
+    param_.SPEED = 6.0f;
+    param_.SPEED_Y_MAX = 6.0f;
+    param_.SPEED_X_MAX = 3.0f;
+    param_.HP = 1;    // ƒqƒbƒgƒ|ƒCƒ“ƒg
+    param_.SCORE = 300;
+    param_.DEAD_TIMER = 18;
+}
+
+void Enemy4Behavior::enemyParam(OBJ2D* obj)
+{
+    // o‚Ä‚­‚éˆÊ’u‚É‚æ‚Á‚ÄƒXƒs[ƒh‚ðÝ’è
+    switch (obj->actorComponent()->posType())
+    {
+    case 0:// (ˆÊ’u‚ªã‚ÌŽž)
+        obj->transform()->setSpeedY(param_.SPEED);
+        // ‰ñ“]ˆ—
+        obj->transform()->rotate(ToRadian(10));
+        break;
+    case 1:// (ˆÊ’u‚ª¶‚ÌŽž)
+        obj->transform()->setSpeedX(param_.SPEED);
+        // ‰ñ“]ˆ—
+        obj->transform()->rotate(ToRadian(10));
+        break;
+    case 2:// (ˆÊ’u‚ª‰E‚ÌŽž)
+        obj->transform()->setSpeedX(-param_.SPEED);
+        // ‰ñ“]ˆ—
+        obj->transform()->rotate(ToRadian(-10));
         break;
     }
 }

@@ -25,10 +25,10 @@ void Score::init()
 
     // 読み込むテクスチャ
     LoadTexture loadTextureTitle[static_cast<size_t>(TEXNOM::NUM)] = {
-        { static_cast<int>(TEXNOM::RESTART),  L"./Data/Images/continue.png", 1U },
-        { static_cast<int>(TEXNOM::TOTITLE),  L"./Data/Images/to title.png", 1U },
-        { static_cast<int>(TEXNOM::CLEAR),  L"./Data/Images/clear.png", 1U },
-        { static_cast<int>(TEXNOM::GAMEOVER),  L"./Data/Images/gameover.png", 1U },
+        { static_cast<int>(TEXNOM::TOSELECT), L"./Data/Images/to_select.png", 1U },
+        { static_cast<int>(TEXNOM::RESTART),  L"./Data/Images/restart.png", 1U },
+        { static_cast<int>(TEXNOM::CLEAR),    L"./Data/Images/clear.png", 1U },
+        { static_cast<int>(TEXNOM::GAMEOVER), L"./Data/Images/gameover.png", 1U },
         { static_cast<int>(TEXNOM::L_FUSUMA), L"./Data/Images/L_fusuma.png", 1U },
         { static_cast<int>(TEXNOM::R_FUSUMA), L"./Data/Images/R_fusuma.png", 1U },
         { static_cast<int>(TEXNOM::SHURIKEN), L"./Data/Images/no-tsu01.png", 1U },
@@ -76,7 +76,7 @@ void Score::update()
         missText_pos_ = { 1920.0f,0.0f };   //ミステキストの位置の初期化  
         missNum_ = 0;                       //ミスの初期化  
 
-        rank_Scale = 150.0f;     //ランクスケールの初期化
+        rank_Scale = 50.0f;     //ランクスケールの初期化
 
         performState_ = 0;                  //演出用ステートの初期化
 
@@ -87,18 +87,11 @@ void Score::update()
 
         restart_push_flg_ = false;          //再挑戦を押したときのフラグ
 
-        title_push_flg_ = false;            //タイトルへを押したときのフラグ
+        select_push_flg_ = false;            //TODO:選択へを押したときのフラグ
+                                             //ここから下の"title_push_flg_"を
+                                             //"select_push_flg_"に変更
 
-        //手裏剣位置の初期化
-        for (int i = 0; i < 10; i++)
-        {
-            shuriken_Pos_[i].x = static_cast<float>(2400 + (128 * i));
-            shuriken_Pos_[i].y = static_cast<float>(128 * i);
-        }
-
-        shuriken_Angle_ = 0;
-
-        //BGM再生
+        // BGM再生
         GameLib::music::play(5, false);
 
         GameLib::setBlendMode(GameLib::Blender::BS_ALPHA);  //通常のアルファ処理
@@ -112,6 +105,7 @@ void Score::update()
         break;
     }
 
+    // デバッグ
     debug::setString("timer_:%d", timer_);
     debug::setString("Game::instance()->perfectNum():%d", Game::instance()->perfectNum());
     timer_++;
@@ -122,23 +116,6 @@ void  Score::draw()
 {
     //画面クリア
     GameLib::clear(VECTOR4(0.5f, 0.5f, 0.5f, 1.0f));
-
-    //GameLib::font::textOut(4, "Score",
-    //{ GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 3) },
-    //  VECTOR2(5.0f, 5.0f),
-    //  { 1.0f, 1.0f, 1.0f, 1.0f },
-    //  GameLib::TEXT_ALIGN::UPPER_MIDDLE
-    //);
-
-    //    // Push Enter Key の描画
-    //if (timer_ >> 5 & 0x01) {
-    //    GameLib::font::textOut(4, "Push BackSpace Key",
-    //        { GameLib::window::getWidth() / 2, (GameLib::window::getHeight() / 6) * 5 },
-    //        VECTOR2(1.5f, 1.5f),
-    //        { 1.0f, 1.0f, 1.0f, 1.0f },
-    //        GameLib::TEXT_ALIGN::LOWER_MIDDLE
-    //    );
-    //}
 
     ///// 画像分岐 /////
     //生存したとき
@@ -165,16 +142,29 @@ void  Score::draw()
     scoreDraw();
 }
 
+// リザルト表示の処理
 void Score::scoreRusult() {
     switch (performState_)
     {
+        //ケースの追加
     case 0:
-
         //音楽が流れるのが早すぎるので一時的に止める
         GameLib::music::pause(5);
 
+        //１秒置いてからスコア表示へ
+        if (C_Fusuma_timer_ > 60)
+        {
+            // 襖開閉音
+            GameLib::music::play(11, false);
+            C_Fusuma_timer_ = 0;
+            performState_++;
+            break;
+        }
+        C_Fusuma_timer_++;
+        break;
+    case 1:
         // 襖の処理
-        if (C_L_Fusuma_Pos_.x > -960 / 2 && C_R_Fusuma_Pos_.x < (960 * 2) + (960 / 2) && C_Fusuma_timer_ > 60)
+        if (C_L_Fusuma_Pos_.x > -960 / 2 && C_R_Fusuma_Pos_.x < (960 * 2) + (960 / 2))
         {
             C_L_Fusuma_Pos_.x -= 30;
             C_R_Fusuma_Pos_.x += 30;
@@ -183,16 +173,15 @@ void Score::scoreRusult() {
             {
                 C_L_Fusuma_Pos_.x = -960 / 2;
                 C_R_Fusuma_Pos_.x = (960 * 2) + (960 / 2);
-                C_Fusuma_timer_ = 0;
                 performState_++;
+                break;
             }
         }
-        C_Fusuma_timer_++;
         break;
 
-        //"MAXCONBO"の文字の移動
-    case 1:
-        //音楽の再生
+        // "MAXCONBO"の文字の移動
+    case 2:
+        // 音楽の再生
         music::resume(5);
         if (comboText_pos_.x > GameLib::window::getWidth() - 800)
         {
@@ -206,10 +195,13 @@ void Score::scoreRusult() {
             break;
         }
         //"MAXCONBO"の数値を加算
-    case 2:
+    case 3:
         if (comboNum_ <= Game::instance()->maxCombo())
         {
-
+            // SEの再生
+            GameLib::music::play(13, false);
+            
+            //数値の増加速度を数値が高くなるに連れて早くする処理
             if (timer_ % 5 == 0 && comboNum_ < 12)
                 comboNum_++;
             else if (timer_ % 2 == 0 && 12 <= comboNum_ && comboNum_ < 100)
@@ -217,6 +209,7 @@ void Score::scoreRusult() {
             else if (timer_ % 1 == 0 && comboNum_ >= 100)
                 comboNum_++;
 
+            //Enterを押してスキップできるように
             if (comboNum_ >= Game::instance()->maxCombo() || TRG(0) & PAD_START)
             {
                 comboNum_ = Game::instance()->maxCombo();
@@ -226,7 +219,7 @@ void Score::scoreRusult() {
             break;
         }
         //"PERFECT"の文字の移動
-    case 3:
+    case 4:
         if (perfectText_pos_.x > GameLib::window::getWidth() - 800)
         {
             perfectText_pos_.x -= 30.0f;
@@ -238,10 +231,14 @@ void Score::scoreRusult() {
             }
             break;
         }
-        //"PERFECT"の数値を加算
-    case 4:
+        // "PERFECT"の数値を加算
+    case 5:
         if (perfectNum_ <= Game::instance()->perfectNum())
         {
+            // SEの再生
+            GameLib::music::play(13, false);
+
+            //数値の増加速度を数値が高くなるに連れて早くする処理
             if (timer_ % 5 == 0 && perfectNum_ < 12)
                 perfectNum_++;
             else if (timer_ % 2 == 0 && 12 <= perfectNum_ && perfectNum_ < 100)
@@ -249,6 +246,7 @@ void Score::scoreRusult() {
             else if (timer_ % 1 == 0 && perfectNum_ >= 100)
                 perfectNum_++;
 
+            // Enterを押してスキップできるように
             if (perfectNum_ >= Game::instance()->perfectNum() || TRG(0) & PAD_START)
             {
                 perfectNum_ = Game::instance()->perfectNum();
@@ -258,7 +256,7 @@ void Score::scoreRusult() {
             break;
         }
         //"GREAT"の文字の移動
-    case 5:
+    case 6:
         if (greatText_pos_.x > GameLib::window::getWidth() - 800)
         {
             greatText_pos_.x -= 30.0f;
@@ -271,10 +269,13 @@ void Score::scoreRusult() {
             break;
         }
         //"GREAT"の数値を加算
-    case 6:
+    case 7:
         if (greatNum_ <= Game::instance()->greatNum())
         {
+            // SEの再生
+            GameLib::music::play(13, false);
 
+            //数値の増加速度を数値が高くなるに連れて早くする処理
             if (timer_ % 5 == 0 && greatNum_ < 12)
                 greatNum_++;
             else if (timer_ % 2 == 0 && 12 <= greatNum_ && greatNum_ < 100)
@@ -282,6 +283,7 @@ void Score::scoreRusult() {
             else if (timer_ % 1 == 0 && greatNum_ >= 100)
                 greatNum_++;
 
+            //Enterを押してスキップできるように
             if (greatNum_ >= Game::instance()->greatNum() || TRG(0) & PAD_START)
             {
                 greatNum_ = Game::instance()->greatNum();
@@ -291,7 +293,7 @@ void Score::scoreRusult() {
             break;
         }
         //"GOOD"の文字の移動
-    case 7:
+    case 8:
         if (goodText_pos_.x > GameLib::window::getWidth() - 800)
         {
             goodText_pos_.x -= 30.0f;
@@ -304,10 +306,13 @@ void Score::scoreRusult() {
             break;
         }
         //"GOOD"の数値を加算
-    case 8:
+    case 9:
         if (goodNum_ <= Game::instance()->goodNum())
         {
+            // SEの再生
+            GameLib::music::play(13, false);
 
+            //数値の増加速度を数値が高くなるに連れて早くする処理
             if (timer_ % 5 == 0 && goodNum_ < 12)
                 goodNum_++;
             else if (timer_ % 2 == 0 && 12 <= goodNum_ && goodNum_ < 100)
@@ -315,6 +320,7 @@ void Score::scoreRusult() {
             else if (timer_ % 1 == 0 && goodNum_ >= 100)
                 goodNum_++;
 
+            // Enterを押してスキップできるように
             if (goodNum_ >= Game::instance()->goodNum() || TRG(0) & PAD_START)
             {
                 goodNum_ = Game::instance()->goodNum();
@@ -324,7 +330,7 @@ void Score::scoreRusult() {
             break;
         }
         //"MISS"の文字の移動
-    case 9:
+    case 10:
         if (missText_pos_.x > GameLib::window::getWidth() - 800)
         {
             missText_pos_.x -= 30.0f;
@@ -337,9 +343,13 @@ void Score::scoreRusult() {
             break;
         }
         // "MISS"の数値を加算
-    case 10:
+    case 11:
         if (missNum_ <= Game::instance()->missNum())
         {
+            // SEの再生
+            GameLib::music::play(13, false);
+
+            //数値の増加速度を数値が高くなるに連れて早くする処理
             if (timer_ % 5 == 0 && missNum_ < 12)
                 missNum_++;
             else if (timer_ % 2 == 0 && 12 <= missNum_ && missNum_ < 100)
@@ -347,6 +357,7 @@ void Score::scoreRusult() {
             else if (timer_ % 1 == 0 && missNum_ >= 100)
                 missNum_++;
 
+            //Enterを押してスキップできるように
             if (missNum_ >= Game::instance()->missNum() || TRG(0) & PAD_START)
             {
                 missNum_ = Game::instance()->missNum();
@@ -356,7 +367,7 @@ void Score::scoreRusult() {
             break;
         }
         //"SCORE"の文字の移動
-    case 11:
+    case 12:
         if (scoreText_pos_.x > GameLib::window::getHeight() / 2 + 60)
         {
             scoreText_pos_.x -= 30.0f;
@@ -369,12 +380,15 @@ void Score::scoreRusult() {
             break;
         }
         //"SCORE"の数値を加算
-    case 12:
+    case 13:
         if (scoreNum_ <= Game::instance()->score())
         {
+            // SEの再生
+            GameLib::music::play(13, false);
 
             scoreNum_ += 100;
 
+            //Enterを押してスキップできるように
             if (scoreNum_ >= Game::instance()->score() || TRG(0) & PAD_START)
             {
                 scoreNum_ = Game::instance()->score();
@@ -384,21 +398,24 @@ void Score::scoreRusult() {
 
             break;
         }
-        //ランクの表示
-    case 13:
-
+        //TODO:ランクの表示(分岐処理あり)
+    case 14:
         rank_Scale--;
 
         if (rank_Scale < 6.0f || TRG(0) & PAD_START)
         {
+            // ランク音
+            GameLib::music::play(14, false);
+
             rank_Scale = 6.0f;
             performState_++;
             break;
         }
+        break;
 
         //プレイヤー入力
-    case 14:
-        if (title_push_flg_ == false)
+    case 15:
+        if (select_push_flg_ == false)
         {
 
             // Aキーが押された時
@@ -436,27 +453,69 @@ void Score::scoreRusult() {
         //１(再挑戦)を選んでいるとき
         if (score_select_num_)
         {
-            if (TRG(0) & PAD_START&& restart_push_flg_ == false && title_push_flg_ == false)
+            if (TRG(0) & PAD_START&& restart_push_flg_ == false && select_push_flg_ == false)
             {
                 music::play(8,false);
                 restart_push_flg_ = true;
+                performState_++;
+                break;
             }
         }
 
         //０(たいとるへ)を選んでいるとき
-        if (score_select_num_ == false&& restart_push_flg_ == false && title_push_flg_ == false)
+        if (score_select_num_ == false&& restart_push_flg_ == false && select_push_flg_ == false)
         {
             if (TRG(0) & PAD_START)
             {
                 music::play(8,false);
-                title_push_flg_ = true;
+                select_push_flg_ = true;
+                performState_++;
                 break;
             }
         }
+        break;
+
+    case 16:
+
+        if (C_Fusuma_timer_ > 30) {
+            // 襖開閉音
+            GameLib::music::play(11, false);
+            performState_++;
+            C_Fusuma_timer_ = 0;
+        }
+
+        C_Fusuma_timer_++;
+        break;
+    case 17:
         //restart_push_flg_がtrueの時
-        if (restart_push_flg_)
+        if (restart_push_flg_) {
+            // 襖の処理
+            if (C_L_Fusuma_Pos_.x <= 960 && C_R_Fusuma_Pos_.x >= (960 * 1.5f))
+            {
+                C_L_Fusuma_Pos_.x += 30;
+                C_R_Fusuma_Pos_.x -= 30;
+            }
+
+            if (C_L_Fusuma_Pos_.x >= 480 && C_R_Fusuma_Pos_.x <= (960 * 1.5f))
+            {
+                C_L_Fusuma_Pos_.x = 480;
+                C_R_Fusuma_Pos_.x = (960 * 1.5f);
+
+                //１秒置いてから遷移
+                if (C_Fusuma_timer_ > 60)
+                {
+                    changeScene(Game::instance());
+                    break;
+                }
+
+                C_Fusuma_timer_++;
+            }
+        }
+
+        // title_push_flg_がtrueの時
+        if (select_push_flg_)
         {
-            //TODO:襖の処理
+            //襖の処理
             if (C_L_Fusuma_Pos_.x <= 960 && C_R_Fusuma_Pos_.x >= (960 * 1.5f))
             {
                 C_L_Fusuma_Pos_.x += 30;
@@ -470,35 +529,21 @@ void Score::scoreRusult() {
 
                 if (C_Fusuma_timer_ > 60)
                 {
-                    changeScene(Game::instance());
+                    changeScene(Select::instance());
                     break;
                 }
 
                 C_Fusuma_timer_++;
             }
         }
-
-        //title_push_flg_がtrueの時
-        if (title_push_flg_)
-        {
-            for (int i = 0; i < 10; i++)
-            {
-                shuriken_Pos_[i].x -= 20;
-                shuriken_Angle_++;
-            }
-
-            if (shuriken_Pos_[9].x <= -500)
-            {
-                changeScene(Title::instance());
-                break;
-            }
-        }
-
         break;
     }
+    // デバッグ
+    debug::setString("state:%d", performState_);
 }
 
-void Score::scoreDraw() {
+void Score::scoreDraw()
+{
 
     ///// 画像分岐 /////
     //生存したとき
@@ -591,18 +636,47 @@ void Score::scoreDraw() {
         TEXT_ALIGN::MIDDLE_LEFT
     );
 
-    ss7 << "S";
+    if (performState_ >= 14)
+    {
+        //ランクをテキスト表示(分岐あり)
+        //プレイヤーが生きていたら
+        if (Game::instance()->playerAlive())
+        {
+            //チュートリアルステージの時
+            if (Game::instance()->stageNo() == 0)
+            {
+                if (Game::instance()->score() < 30000) ss7 << "C";
+                else if (Game::instance()->score() < 40000) ss7 << "B";
+                else if (Game::instance()->score() < 50000) ss7 << "A";
+                else                                        ss7 << "S";
+            }
+            //ステージ１の時
+            if (Game::instance()->stageNo() == 1)
+            {
+                //完成してから決める
+                if (Game::instance()->score() < 50000) ss7 << "C";
+                else if (Game::instance()->score() < 70000) ss7 << "B";
+                else if (Game::instance()->score() < 90000) ss7 << "A";
+                else                                        ss7 << "S";
+            }
+        }
+        //プレイヤーが死んでいたら
+        else
+        {
+            ss7 << "E";
+        }
 
-    //ランクをテキスト表示
-    font::textOut(6,
-        ss7.str(),
-        { GameLib::window::getWidth() / 2 + 670 , GameLib::window::getHeight() / 2 + 60 },
-        { rank_Scale , rank_Scale },
-        { 1.0f, 1.0f, 1.0f, 1.0f },
-        TEXT_ALIGN::MIDDLE_LEFT
-    );
-
-    if (performState_ == 14)
+        // ランクをテキスト表示(分岐あり)
+        font::textOut(6,
+            ss7.str(),
+            { GameLib::window::getWidth() / 2 + 670 , GameLib::window::getHeight() / 2 + 60 },
+            { rank_Scale , rank_Scale },
+            { 1.0f, 1.0f, 1.0f, 1.0f },
+            TEXT_ALIGN::MIDDLE_LEFT
+        );
+    }
+    //スコア表示が終わってから
+    if (performState_ == 15)
     {
         //再挑戦を選んでいるとき
         if (score_select_num_)
@@ -615,8 +689,8 @@ void Score::scoreDraw() {
                 { 1,1,1,score_alpha_ }
             );
 
-            //"たいとるへ"の文字の描画
-            sprTotitle_.draw(
+            // "選択へ"の文字の描画
+            sprToselect_.draw(
                 { GameLib::window::getWidth() / 2 + GameLib::window::getWidth() / 4, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 3 },
                 { 1.0f,1.0f },
                 ToRadian(0),
@@ -624,7 +698,7 @@ void Score::scoreDraw() {
             );
         }
 
-        //たいとるへを選んでいるとき
+        // 選択へを選んでいるとき
         if (score_select_num_ == false)
         {
             //"再挑戦"の文字の描画
@@ -635,8 +709,8 @@ void Score::scoreDraw() {
                 { 1,1,1,1 }
             );
 
-            //"たいとるへ"の文字の描画
-            sprTotitle_.draw(
+            // "選択へ"の文字の描画
+            sprToselect_.draw(
                 { GameLib::window::getWidth() / 2 + GameLib::window::getWidth() / 4, GameLib::window::getHeight() / 2 + GameLib::window::getHeight() / 3 },
                 { 1.0f,1.0f },
                 ToRadian(0),
@@ -645,24 +719,7 @@ void Score::scoreDraw() {
         }
     }
 
-    //手裏剣の描画
-    for (int i = 0; i < 10; i++)
-    {
-        sprShuriken_.draw(
-            shuriken_Pos_[i], {1.0f,1.0f},
-            ToRadian(shuriken_Angle_)
-        );
-    }
-
-    //TODO:描画
-    //手裏剣の四角
-    for (int i = 0; i < 10; i++)
-    {
-        primitive::rect({ 2400 , shuriken_Pos_[i].y + 32 }, { shuriken_Pos_[i].x - 2400 + 64 , 128 }, { 0,128 }, ToRadian(0) ,{ 0.0f,0.0f,0.0f,1.0f });
-    }
-
-    //TODO:描画
-    //襖の描画
+    // 襖の描画
     sprL_fusuma_.draw(
         C_L_Fusuma_Pos_
     );

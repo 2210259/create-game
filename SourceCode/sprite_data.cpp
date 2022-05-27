@@ -15,30 +15,31 @@ using namespace GameLib;
 //------< データ >---------------------------------------------------------------
 // 2D画像ロードデータ
 LoadTexture loadTexture[] = {
-    { TEXNO::PLAYER,        L"./Data/Images/player.png",        1U }, // プレイヤー
-    { TEXNO::ENEMY0,        L"./Data/Images/no-tsu01.png",      1U }, // 手裏剣
-    { TEXNO::ENEMY1,        L"./Data/Images/no-tsu02.png",      1U }, // クナイ
-    { TEXNO::ENEMY2_1,      L"./Data/Images/no-tsu03_1.png",    1U }, // 長押しノーツ
-    { TEXNO::ENEMY2_2,      L"./Data/Images/no-tsu03_2.png",    1U }, // 長押しノーツ
-    { TEXNO::ENEMY2_DEAD,   L"./Data/Images/no-tsu03_dead.png", 1U }, // 長押しノーツ(死亡時)
-    { TEXNO::ENEMY3_1,      L"./Data/Images/no-tsu04_1.png",    1U }, // 連打ノーツ
-    { TEXNO::ENEMY3_2,      L"./Data/Images/no-tsu04_2.png",    1U }, // 連打ノーツ
-    { TEXNO::ENEMY3_DEAD,   L"./Data/Images/no-tsu04_dead.png", 1U }, // 連打ノーツ(死亡時)
-    { TEXNO::EFFECT,        L"./Data/Images/effect.png",        1U }, // エフェクト
+    { TEXNO::PLAYER,        L"./Data/Images/player.png",        12U }, // プレイヤー
+    { TEXNO::ENEMY0,        L"./Data/Images/no-tsu01.png",      20U }, // 手裏剣
+    { TEXNO::ENEMY1,        L"./Data/Images/no-tsu02.png",      20U }, // クナイ
+    { TEXNO::ENEMY2_1,      L"./Data/Images/no-tsu03_1.png",    20U }, // 長押しノーツ
+    { TEXNO::ENEMY2_2,      L"./Data/Images/no-tsu03_2.png",    20U }, // 長押しノーツ
+    { TEXNO::ENEMY2_DEAD,   L"./Data/Images/no-tsu03_dead.png", 20U }, // 長押しノーツ(死亡時)
+    { TEXNO::ENEMY3_1,      L"./Data/Images/no-tsu04_1.png",    20U }, // 連打ノーツ
+    { TEXNO::ENEMY3_2,      L"./Data/Images/no-tsu04_2.png",    20U }, // 連打ノーツ
+    { TEXNO::ENEMY3_DEAD,   L"./Data/Images/no-tsu04_dead.png", 20U }, // 連打ノーツ(死亡時)
+    { TEXNO::EFFECT,        L"./Data/Images/effect.png",        20U }, // エフェクト
     { TEXNO::RESTART,       L"./Data/Images/restart.png",       1U }, // "再挑戦"文字
     { TEXNO::TOTITLE,       L"./Data/Images/to title.png",      1U }, // "たいとるへ"文字
+    { TEXNO::CONTINUE,      L"./Data/Images/continue.png",      1U }, // "再開"文字
     { TEXNO::MAP_BACK,      L"./Data/Images/background.png",    1U }, // 背景
-    { TEXNO::T_START,       L"./Data/Images/textStart.png",     1U }, // "開幕！！"
-    { TEXNO::T_END,         L"./Data/Images/textEnd.png",       1U }, // "閉幕！！"
-    { TEXNO::T_FULLCOMBO,   L"./Data/Images/textFullCombo.png", 1U }, // "フルコンボ"
+    { TEXNO::T_START,       L"./Data/Images/textStart.png",     1U }, // "いざ！！"
+    { TEXNO::T_END,         L"./Data/Images/textEnd.png",       1U }, // "そこまで！！"
+    { TEXNO::T_FULLCOMBO,   L"./Data/Images/textFullCombo.png", 1U }, // "あっぱれ"
     { TEXNO::L_FUSUMA,      L"./Data/Images/L_fusuma.png",      1U }, // 左襖
     { TEXNO::R_FUSUMA,      L"./Data/Images/R_fusuma.png",      1U }, // 右襖
-    { TEXNO::HP_BAR,        L"./Data/Images/HP_Bar.png",        1U }, // HPバー
-    { TEXNO::TUTORIAL0,     L"./Data/Images/tutorial_operate.png",      1U },  // チュートリアル操作説明
-    { TEXNO::TUTORIAL1,     L"./Data/Images/tutorial_normalnotes.png",      1U },  // チュートリアル普通ノーツ
-    { TEXNO::TUTORIAL2,     L"./Data/Images/tutorial_hold_notes.png",      1U },  // チュートリアル長押しノーツ
-    { TEXNO::TUTORIAL3,     L"./Data/Images/tutorial_barragenotes.png",      1U }, // チュートリアル連打ノーツ
-    { TEXNO::TUTORIAL4,     L"./Data/Images/tutorial_puose.png",      1U }, // チュートリアルポーズノーツ
+    { TEXNO::HP_BAR,        L"./Data/Images/HP_Bar.png",        3U }, // HPバー
+    { TEXNO::TUTORIAL0,     L"./Data/Images/tutorial_operate.png",      1U }, // チュートリアル操作説明
+    { TEXNO::TUTORIAL1,     L"./Data/Images/tutorial_normalnotes.png",  1U }, // チュートリアル普通ノーツ
+    { TEXNO::TUTORIAL2,     L"./Data/Images/tutorial_hold_notes.png",   1U }, // チュートリアル長押しノーツ
+    { TEXNO::TUTORIAL3,     L"./Data/Images/tutorial_barragenotes.png", 1U }, // チュートリアル連打ノーツ
+    { TEXNO::TUTORIAL4,     L"./Data/Images/tutorial_pause.png",        1U }, // チュートリアルポーズノーツ
 
     { -1, nullptr }	// 終了フラグ
 };
